@@ -11,6 +11,5 @@ public class MainApplication extends Application {
         super.onCreate();
 
         InjectorManager.init(this);
-
     }
 }

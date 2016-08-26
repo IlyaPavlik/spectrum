@@ -14,6 +14,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public abstract class BaseFragment extends Fragment {
+
     private static final AtomicInteger lastFragmentId = new AtomicInteger(0);
     private final int fragmentId;
     private Unbinder unbinder;

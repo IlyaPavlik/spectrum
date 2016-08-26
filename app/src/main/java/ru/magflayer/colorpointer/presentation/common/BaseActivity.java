@@ -5,12 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.lang.annotation.Annotation;
 
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
 public abstract class BaseActivity extends AppCompatActivity {
-
-    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,12 +15,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         Annotation annotation = cls.getAnnotation(Layout.class);
         Layout layout = (Layout) annotation;
         setContentView(layout.id());
-        unbinder = ButterKnife.bind(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
     }
 }

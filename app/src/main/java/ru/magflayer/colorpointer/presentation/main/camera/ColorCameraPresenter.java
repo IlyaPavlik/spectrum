@@ -3,7 +3,7 @@ package ru.magflayer.colorpointer.presentation.main.camera;
 import javax.inject.Inject;
 
 import ru.magflayer.colorpointer.presentation.common.BasePresenter;
-import ru.magflayer.colorpointer.presentation.main.MainRouter;
+import ru.magflayer.colorpointer.presentation.main.router.MainRouter;
 
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
 
