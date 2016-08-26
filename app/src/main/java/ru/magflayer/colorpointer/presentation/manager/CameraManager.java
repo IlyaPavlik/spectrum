@@ -16,7 +16,7 @@ public class CameraManager {
     private Camera camera;
 
     @Inject
-    public CameraManager(){
+    public CameraManager() {
     }
 
     public void open() {
@@ -38,6 +38,12 @@ public class CameraManager {
             throw new IllegalStateException("Your Android version does not support this method.");
         }
         camera.startPreview();
+    }
+
+    public void takePicture(Camera.PictureCallback callback) {
+        if (camera != null) {
+            camera.takePicture(null, null, callback);
+        }
     }
 
     public void close() {
