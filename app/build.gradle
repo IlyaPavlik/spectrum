@@ -7,7 +7,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "ru.pavlik.colorlive"
+        applicationId "ru.magflayer.colorpointer"
         minSdkVersion 17
         targetSdkVersion 23
         versionCode 1
