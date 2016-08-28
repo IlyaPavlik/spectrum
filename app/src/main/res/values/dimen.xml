@@ -5,4 +5,6 @@
     <dimen name="indent_normal">16dp</dimen>
     <dimen name="indent_large">32dp</dimen>
 
+    <dimen name="color_list_width">100dp</dimen>
+
 </resources>

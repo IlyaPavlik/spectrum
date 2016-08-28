@@ -9,11 +9,14 @@ import android.view.ViewGroup;
 
 import java.lang.annotation.Annotation;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public abstract class BaseFragment extends Fragment {
+
+    protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private static final AtomicInteger lastFragmentId = new AtomicInteger(0);
     private final int fragmentId;

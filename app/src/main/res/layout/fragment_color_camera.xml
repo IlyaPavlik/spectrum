@@ -8,9 +8,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/color_recycler"
-        android:layout_width="200dp"
-        android:layout_height="match_parent" />
+    <LinearLayout
+        android:layout_width="@dimen/color_list_width"
+        android:layout_height="match_parent"
+        android:background="@color/semi_black"
+        android:orientation="vertical">
 
+        <ru.magflayer.colorpointer.presentation.widget.ToggleWidget
+            android:id="@+id/toggle_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/indent_small" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/color_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/color_details"
+            layout="@layout/include_color_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 </RelativeLayout>

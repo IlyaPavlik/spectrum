@@ -40,9 +40,14 @@ public class CameraManager {
         camera.startPreview();
     }
 
-    public void takePicture(Camera.PictureCallback callback) {
+    public void autoFocus() {
         if (camera != null) {
-            camera.takePicture(null, null, callback);
+            camera.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    camera.cancelAutoFocus();
+                }
+            });
         }
     }
 
