@@ -1,8 +1,8 @@
 package ru.magflayer.colorpointer.presentation.main.camera;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.graphics.Palette;
-import android.view.TextureView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,12 +39,12 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
     }
 
-    public void handleCameraSurface(final TextureView textureView) {
+    public void handleCameraSurface(final Bitmap bitmap) {
         Observable.create(new Observable.OnSubscribe<Palette>() {
             @Override
             public void call(Subscriber<? super Palette> subscriber) {
                 try {
-                    Palette palette = Palette.from(textureView.getBitmap()).generate();
+                    Palette palette = Palette.from(bitmap).generate();
                     subscriber.onNext(palette);
                 } catch (Exception e) {
                     subscriber.onError(e);
@@ -94,5 +94,14 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                         getView().showColors(colors);
                     }
                 });
+    }
+
+    public void handleColorDetails(final Bitmap bmp) {
+        int centerX = bmp.getWidth() / 2;
+        int centerY = bmp.getHeight() / 2;
+
+        Palette.Swatch color = new Palette.Swatch(bmp.getPixel(centerX, centerY), 1);
+        getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
+
     }
 }

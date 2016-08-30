@@ -1,4 +1,4 @@
-package ru.magflayer.colorpointer.presentation.injection;
+package ru.magflayer.colorpointer.injection;
 
 import android.content.Context;
 

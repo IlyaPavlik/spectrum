@@ -8,6 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ru.magflayer.colorpointer.presentation.widget.PointView
+        android:id="@+id/point_detector"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
     <LinearLayout
         android:layout_width="@dimen/color_list_width"
         android:layout_height="match_parent"

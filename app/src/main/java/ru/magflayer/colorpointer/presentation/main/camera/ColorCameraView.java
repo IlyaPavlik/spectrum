@@ -8,4 +8,6 @@ public interface ColorCameraView {
 
     void showColors(List<Palette.Swatch> colors);
 
+    void showColorDetails(int mainColor, int titleColor);
+
 }
