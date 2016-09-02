@@ -25,7 +25,6 @@ public class PointView extends View {
     private float currentX;
     private float currentY;
     private float circleRadius;
-    private float circleStrokeWidth;
 
     private RectF leftTopArc;
     private RectF leftBottomArc;
@@ -59,7 +58,7 @@ public class PointView extends View {
 
     private void init() {
         circleRadius = AppUtils.convertDpToPixel(RADIUS_DP, getContext());
-        circleStrokeWidth = AppUtils.convertDpToPixel(STROKE_WIDTH_DP, getContext());
+        float circleStrokeWidth = AppUtils.convertDpToPixel(STROKE_WIDTH_DP, getContext());
 
         aimPaint = new Paint();
         aimPaint.setAntiAlias(true);
@@ -109,10 +108,13 @@ public class PointView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(currentX, currentY, circleRadius, aimPaint);
 
-        canvas.drawArc(leftTopArc, 180, 90, false, aimPaint);
-        canvas.drawArc(leftBottomArc, 180, -90, false, aimPaint);
-        canvas.drawArc(rightTopArc, 0, -90, false, aimPaint);
-        canvas.drawArc(rightBottomArc, 0, 90, false, aimPaint);
+        if (leftTopArc != null && leftBottomArc != null
+                && rightTopArc != null && rightBottomArc != null) {
+            canvas.drawArc(leftTopArc, 180, 90, false, aimPaint);
+            canvas.drawArc(leftBottomArc, 180, -90, false, aimPaint);
+            canvas.drawArc(rightTopArc, 0, -90, false, aimPaint);
+            canvas.drawArc(rightBottomArc, 0, 90, false, aimPaint);
+        }
 
         if (onPointChangeListener != null) {
             onPointChangeListener.onPointChanged(currentX, currentY, getRadius());

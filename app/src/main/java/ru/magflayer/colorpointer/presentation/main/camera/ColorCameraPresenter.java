@@ -4,15 +4,21 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.graphics.Palette;
 
+import com.squareup.otto.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import ru.magflayer.colorpointer.domain.event.PictureSavedEvent;
+import ru.magflayer.colorpointer.domain.model.ColorPicture;
 import ru.magflayer.colorpointer.presentation.common.BasePresenter;
 import ru.magflayer.colorpointer.presentation.main.router.MainRouter;
+import ru.magflayer.colorpointer.utils.Base64Utils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -102,6 +108,24 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
         Palette.Swatch color = new Palette.Swatch(bmp.getPixel(centerX, centerY), 1);
         getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
+    }
 
+    public void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
+        String pictureBase64 = Base64Utils.bitmapToBase64(bitmap);
+
+        ColorPicture colorPicture = new ColorPicture();
+        colorPicture.setDateInMillis(new Date().getTime());
+        colorPicture.setPictureBase64(pictureBase64);
+        colorPicture.setSwatches(swatches);
+        appRealm.savePicture(colorPicture);
+    }
+
+    public void openHistory() {
+        getRouter().openHistory();
+    }
+
+    @Subscribe
+    public void onPictureSaved(PictureSavedEvent event) {
+        getView().showPictureSaved();
     }
 }

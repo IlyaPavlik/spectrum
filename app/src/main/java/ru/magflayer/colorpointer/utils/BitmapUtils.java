@@ -3,6 +3,8 @@ package ru.magflayer.colorpointer.utils;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
@@ -62,6 +64,24 @@ public class BitmapUtils {
         }
 
         return popularColor;
+    }
+
+    public static Bitmap createMultiColorHorizontalBitmap(int width, int height, List<Palette.Swatch> colors) {
+        Bitmap resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+
+        Canvas canvas = new Canvas(resultBitmap);
+        Paint paint = new Paint();
+        int colorWidth = width / colors.size();
+        int startX = 0;
+
+        for (Palette.Swatch swatch : colors) {
+            paint.setColor(swatch.getRgb());
+            RectF rect = new RectF(startX, 0, startX + colorWidth, height);
+            canvas.drawRect(rect, paint);
+            startX += colorWidth;
+        }
+
+        return resultBitmap;
     }
 
 }

@@ -5,7 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.lang.annotation.Annotation;
 
-public abstract class BaseActivity extends AppCompatActivity {
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
+public abstract class BaseActivity<Router> extends AppCompatActivity {
+
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,5 +20,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         Annotation annotation = cls.getAnnotation(Layout.class);
         Layout layout = (Layout) annotation;
         setContentView(layout.id());
+
+        unbinder = ButterKnife.bind(this);
+
+        inject();
+    }
+
+    public abstract Router getRouter();
+
+    protected abstract void inject();
+
+    @Override
+    protected void onDestroy() {
+        unbinder.unbind();
+        super.onDestroy();
     }
 }

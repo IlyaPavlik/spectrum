@@ -70,9 +70,20 @@ public class CameraManager {
     public void close() {
         if (camera != null) {
             camera.stopPreview();
+            camera.setPreviewCallback(null);
+            camera.unlock();
             camera.release();
             camera = null;
         }
+    }
+
+    public void closeAsync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                close();
+            }
+        }).start();
     }
 
 }

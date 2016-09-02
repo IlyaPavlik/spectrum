@@ -1,8 +1,10 @@
 package ru.magflayer.colorpointer.presentation.main.camera;
 
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,10 +44,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     protected RecyclerView colorRecycler;
     @BindView(R.id.color_details)
     protected ViewGroup colorDetailsContainer;
-
     @BindView(R.id.toggle_mode)
     protected ToggleWidget toggleView;
-
     @BindView(R.id.color)
     protected View colorView;
     @BindView(R.id.color_id)
@@ -59,6 +62,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     protected CameraManager cameraManager;
 
     private ColorCameraAdapter adapter;
+    private List<Palette.Swatch> swatches = new ArrayList<>();
 
     public static ColorCameraFragment newInstance() {
         return new ColorCameraFragment();
@@ -88,7 +92,6 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         toggleView.setOnCheckChangedListener(new ToggleWidget.OnCheckChangedListener() {
             @Override
             public void checkChanged(boolean isSingle) {
-                logger.info("Toggle changed (isSingle): " + isSingle);
                 if (isSingle) {
                     colorRecycler.setVisibility(View.GONE);
                     colorDetailsContainer.setVisibility(View.VISIBLE);
@@ -100,26 +103,23 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
                 }
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        cameraManager.open();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        cameraManager.close();
+        FloatingActionButton fab = getFloatingActionButton();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bitmap = cameraManager.loadCameraBitmap(cameraView);
+                presenter.saveColorPicture(bitmap, swatches);
+            }
+        });
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        cameraManager.open();
         try {
             cameraManager.startCamera(surface);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error while start camera ", e);
         }
     }
 
@@ -130,7 +130,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        cameraManager.close();
+        cameraManager.closeAsync();
         return true;
     }
 
@@ -146,8 +146,14 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     }
 
     @Override
+    public void showPictureSaved() {
+        Toast.makeText(getContext(), "Picture saved!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void showColors(List<Palette.Swatch> colors) {
         adapter.setColors(colors);
+        swatches = new ArrayList<>(colors);
     }
 
     @Override
@@ -155,10 +161,17 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         colorView.setBackgroundColor(mainColor);
         colorIdView.setText(String.format("#%06X", (0xFFFFFF & mainColor)));
         pointView.setAimColor(titleColor);
+
+        swatches = Collections.singletonList(new Palette.Swatch(mainColor, Integer.MAX_VALUE));
     }
 
     @OnClick(R.id.camera)
     protected void onFocusClick() {
         cameraManager.autoFocus();
+    }
+
+    @OnClick(R.id.menu)
+    protected void onMenuClick() {
+        presenter.openHistory();
     }
 }

@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.magflayer.colorpointer.data.database.AppRealm;
 
 @Module
 class AppModule {
@@ -23,5 +24,11 @@ class AppModule {
     @Provides
     public Bus provideBus() {
         return new Bus(ThreadEnforcer.ANY);
+    }
+
+    @Singleton
+    @Provides
+    public AppRealm provideAppRealm(Bus bus) {
+        return new AppRealm(context, bus);
     }
 }

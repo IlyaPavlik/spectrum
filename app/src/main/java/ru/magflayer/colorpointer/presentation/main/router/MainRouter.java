@@ -4,4 +4,6 @@ public interface MainRouter {
 
     void openColorCameraPage();
 
+    void openHistory();
+
 }

@@ -16,7 +16,7 @@ public class FragmentUtils {
             transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
 
-        transaction.add(containerId, fragment);
+        transaction.replace(containerId, fragment);
 
         transaction.commit();
     }
