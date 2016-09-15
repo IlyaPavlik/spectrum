@@ -31,4 +31,17 @@
         android:textColor="@android:color/white"
         tools:text="Aqua" />
 
+    <include
+        android:id="@+id/color_rgb"
+        layout="@layout/include_rgb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/color_hsv"
+        layout="@layout/include_hsv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
 </LinearLayout>

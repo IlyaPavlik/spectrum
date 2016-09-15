@@ -1,4 +1,4 @@
-package ru.magflayer.colorpointer.presentation.main.history;
+package ru.magflayer.colorpointer.presentation.pages.main.history;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

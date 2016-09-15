@@ -1,18 +1,18 @@
-package ru.magflayer.colorpointer.presentation.main.camera;
+package ru.magflayer.colorpointer.presentation.pages.main.camera;
 
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -25,11 +25,13 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.magflayer.colorpointer.R;
+import ru.magflayer.colorpointer.domain.model.PageAppearance;
 import ru.magflayer.colorpointer.injection.InjectorManager;
 import ru.magflayer.colorpointer.presentation.common.BaseFragment;
 import ru.magflayer.colorpointer.presentation.common.BasePresenter;
 import ru.magflayer.colorpointer.presentation.common.Layout;
 import ru.magflayer.colorpointer.presentation.manager.CameraManager;
+import ru.magflayer.colorpointer.presentation.widget.ColorDetailsWidget;
 import ru.magflayer.colorpointer.presentation.widget.PointView;
 import ru.magflayer.colorpointer.presentation.widget.ToggleWidget;
 
@@ -42,18 +44,12 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     protected TextureView cameraView;
     @BindView(R.id.color_recycler)
     protected RecyclerView colorRecycler;
-    @BindView(R.id.color_details)
-    protected ViewGroup colorDetailsContainer;
     @BindView(R.id.toggle_mode)
     protected ToggleWidget toggleView;
-    @BindView(R.id.color)
-    protected View colorView;
-    @BindView(R.id.color_id)
-    protected TextView colorIdView;
-    @BindView(R.id.color_name)
-    protected TextView colorNameView;
     @BindView(R.id.point_detector)
     protected PointView pointView;
+    @BindView(R.id.color_details)
+    protected ColorDetailsWidget colorDetailsWidget;
 
     @Inject
     protected ColorCameraPresenter presenter;
@@ -94,15 +90,18 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
             public void checkChanged(boolean isSingle) {
                 if (isSingle) {
                     colorRecycler.setVisibility(View.GONE);
-                    colorDetailsContainer.setVisibility(View.VISIBLE);
+                    colorDetailsWidget.setVisibility(View.VISIBLE);
                     pointView.setVisibility(View.VISIBLE);
                 } else {
                     colorRecycler.setVisibility(View.VISIBLE);
-                    colorDetailsContainer.setVisibility(View.GONE);
+                    colorDetailsWidget.setVisibility(View.GONE);
                     pointView.setVisibility(View.GONE);
                 }
             }
         });
+
+        int fabColor = ContextCompat.getColor(getContext(), R.color.gray);
+
         FloatingActionButton fab = getFloatingActionButton();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,13 +110,14 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
                 presenter.saveColorPicture(bitmap, swatches);
             }
         });
+        fab.setBackgroundTintList(ColorStateList.valueOf(fabColor));
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        cameraManager.open();
         try {
             cameraManager.startCamera(surface);
+            cameraManager.setCameraDisplayOrientation(getContext());
         } catch (IOException e) {
             logger.error("Error while start camera ", e);
         }
@@ -130,7 +130,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        cameraManager.closeAsync();
+        cameraManager.stopPreview();
         return true;
     }
 
@@ -158,11 +158,17 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public void showColorDetails(int mainColor, int titleColor) {
-        colorView.setBackgroundColor(mainColor);
-        colorIdView.setText(String.format("#%06X", (0xFFFFFF & mainColor)));
+        colorDetailsWidget.setColor(mainColor);
         pointView.setAimColor(titleColor);
 
         swatches = Collections.singletonList(new Palette.Swatch(mainColor, Integer.MAX_VALUE));
+    }
+
+    @Override
+    public PageAppearance getPageAppearance() {
+        return PageAppearance.builder()
+                .showFloatingButton(true)
+                .build();
     }
 
     @OnClick(R.id.camera)

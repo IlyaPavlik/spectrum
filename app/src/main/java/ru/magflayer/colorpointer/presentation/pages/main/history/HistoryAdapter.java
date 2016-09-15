@@ -1,4 +1,4 @@
-package ru.magflayer.colorpointer.presentation.main.history;
+package ru.magflayer.colorpointer.presentation.pages.main.history;
 
 import android.content.Context;
 import android.graphics.Bitmap;

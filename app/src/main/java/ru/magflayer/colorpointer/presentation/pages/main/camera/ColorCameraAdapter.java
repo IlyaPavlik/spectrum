@@ -1,4 +1,4 @@
-package ru.magflayer.colorpointer.presentation.main.camera;
+package ru.magflayer.colorpointer.presentation.pages.main.camera;
 
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;

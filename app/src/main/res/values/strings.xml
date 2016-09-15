@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ColorLive</string>
+
+    <string name="red_format">R: %d</string>
+    <string name="green_format">G: %d</string>
+    <string name="blue_format">B: %d</string>
+
+    <string name="hue_format">"H: %d°"</string>
+    <string name="saturation_format">S: %d%%</string>
+    <string name="value_format">V: %d%%</string>
 </resources>

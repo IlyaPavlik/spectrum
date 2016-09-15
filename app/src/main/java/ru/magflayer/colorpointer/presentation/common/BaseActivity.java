@@ -1,38 +1,54 @@
 package ru.magflayer.colorpointer.presentation.common;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-
-import java.lang.annotation.Annotation;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.magflayer.colorpointer.domain.model.PageAppearance;
+import ru.magflayer.colorpointer.utils.AppUtils;
 
-public abstract class BaseActivity<Router> extends AppCompatActivity {
+@SuppressWarnings("unchecked")
+public abstract class BaseActivity<Presenter extends BasePresenter> extends AppCompatActivity implements BaseView {
 
     private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Class cls = getClass();
-        if (!cls.isAnnotationPresent(Layout.class)) return;
-        Annotation annotation = cls.getAnnotation(Layout.class);
-        Layout layout = (Layout) annotation;
-        setContentView(layout.id());
-
-        unbinder = ButterKnife.bind(this);
 
         inject();
-    }
+        getPresenter().registerBus();
 
-    public abstract Router getRouter();
+        AppUtils.applyLayout(this);
+
+        unbinder = ButterKnife.bind(this);
+        getPresenter().setView(this);
+    }
 
     protected abstract void inject();
 
+    @NonNull
+    protected abstract Presenter getPresenter();
+
     @Override
     protected void onDestroy() {
+        getPresenter().unregisterBus();
         unbinder.unbind();
         super.onDestroy();
+    }
+
+    @Override
+    public void changePageAppearance(PageAppearance pageAppearance) {
+        getPresenter().setupPageAppearance(pageAppearance);
+    }
+
+    @Override
+    public PageAppearance getPageAppearance() {
+        return PageAppearance.builder()
+                .showFloatingButton(false)
+                .showToolbar(false)
+                .build();
     }
 }

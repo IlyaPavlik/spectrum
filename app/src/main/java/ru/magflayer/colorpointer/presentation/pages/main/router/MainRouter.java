@@ -1,6 +1,8 @@
-package ru.magflayer.colorpointer.presentation.main.router;
+package ru.magflayer.colorpointer.presentation.pages.main.router;
 
 public interface MainRouter {
+
+    void openSplash();
 
     void openColorCameraPage();
 

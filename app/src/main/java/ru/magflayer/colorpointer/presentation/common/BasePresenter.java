@@ -1,11 +1,15 @@
 package ru.magflayer.colorpointer.presentation.common;
 
+import com.squareup.otto.Bus;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 import ru.magflayer.colorpointer.data.database.AppRealm;
+import ru.magflayer.colorpointer.domain.event.PageAppearanceEvent;
+import ru.magflayer.colorpointer.domain.model.PageAppearance;
 
 public abstract class BasePresenter<View, Router> {
 
@@ -15,11 +19,10 @@ public abstract class BasePresenter<View, Router> {
     private Router router;
 
     @Inject
+    protected Bus bus;
+
+    @Inject
     protected AppRealm appRealm;
-
-    public abstract void onStart();
-
-    public abstract void onStop();
 
     public View getView() {
         return view;
@@ -43,5 +46,17 @@ public abstract class BasePresenter<View, Router> {
 
     public void closeRealm() {
         appRealm.close();
+    }
+
+    public void registerBus() {
+        bus.register(this);
+    }
+
+    public void unregisterBus() {
+        bus.unregister(this);
+    }
+
+    public void setupPageAppearance(PageAppearance pageAppearance) {
+        bus.post(new PageAppearanceEvent(pageAppearance));
     }
 }

@@ -26,7 +26,7 @@
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/indent_small"
+        android:layout_margin="@dimen/indent_normal"
         android:background="@android:color/white"
         android:gravity="center"
         android:text=". . ." />
@@ -49,10 +49,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <include
+        <ru.magflayer.colorpointer.presentation.widget.ColorDetailsWidget
             android:id="@+id/color_details"
-            layout="@layout/widget_color_details"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </RelativeLayout>

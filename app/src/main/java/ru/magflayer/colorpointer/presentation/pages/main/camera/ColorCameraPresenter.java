@@ -1,4 +1,4 @@
-package ru.magflayer.colorpointer.presentation.main.camera;
+package ru.magflayer.colorpointer.presentation.pages.main.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -17,8 +17,9 @@ import javax.inject.Inject;
 import ru.magflayer.colorpointer.domain.event.PictureSavedEvent;
 import ru.magflayer.colorpointer.domain.model.ColorPicture;
 import ru.magflayer.colorpointer.presentation.common.BasePresenter;
-import ru.magflayer.colorpointer.presentation.main.router.MainRouter;
+import ru.magflayer.colorpointer.presentation.pages.main.router.MainRouter;
 import ru.magflayer.colorpointer.utils.Base64Utils;
+import ru.magflayer.colorpointer.utils.RxUtils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -33,16 +34,6 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     @Inject
     public ColorCameraPresenter() {
         super();
-    }
-
-    @Override
-    public void onStart() {
-
-    }
-
-    @Override
-    public void onStop() {
-
     }
 
     public void handleCameraSurface(final Bitmap bitmap) {
@@ -111,13 +102,36 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     }
 
     public void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
-        String pictureBase64 = Base64Utils.bitmapToBase64(bitmap);
+        Observable.create(new Observable.OnSubscribe<ColorPicture>() {
+            @Override
+            public void call(Subscriber<? super ColorPicture> subscriber) {
+                try {
+                    String pictureBase64 = Base64Utils.bitmapToBase64(bitmap);
 
-        ColorPicture colorPicture = new ColorPicture();
-        colorPicture.setDateInMillis(new Date().getTime());
-        colorPicture.setPictureBase64(pictureBase64);
-        colorPicture.setSwatches(swatches);
-        appRealm.savePicture(colorPicture);
+                    ColorPicture colorPicture = new ColorPicture();
+                    colorPicture.setDateInMillis(new Date().getTime());
+                    colorPicture.setPictureBase64(pictureBase64);
+                    colorPicture.setSwatches(swatches);
+                    subscriber.onNext(colorPicture);
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+                subscriber.onCompleted();
+            }
+        })
+                .compose(RxUtils.<ColorPicture>applySchedulers())
+                .subscribe(new Action1<ColorPicture>() {
+                               @Override
+                               public void call(ColorPicture colorPicture) {
+                                   appRealm.savePicture(colorPicture);
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                logger.error("Error while save picture: ", throwable);
+                            }
+                        });
     }
 
     public void openHistory() {
