@@ -66,6 +66,10 @@ public class ColorDetailsWidget extends LinearLayout {
         initHsvColor(color);
     }
 
+    public void setColorName(String colorName) {
+        colorNameView.setText(colorName);
+    }
+
     private void init(Context context) {
         View view = View.inflate(context, R.layout.widget_color_details, this);
         ButterKnife.bind(this, view);

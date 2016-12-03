@@ -7,4 +7,6 @@
 
     <dimen name="color_list_width">100dp</dimen>
 
+    <dimen name="color_indicator_size">50dp</dimen>
+
 </resources>

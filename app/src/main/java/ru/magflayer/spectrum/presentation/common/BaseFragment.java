@@ -62,6 +62,7 @@ public abstract class BaseFragment extends Fragment implements BaseView {
         unbinder.unbind();
         getPresenter().closeRealm();
         getPresenter().unregisterBus();
+        getPresenter().unsubscribe();
         super.onDestroyView();
     }
 

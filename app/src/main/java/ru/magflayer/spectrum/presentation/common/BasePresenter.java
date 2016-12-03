@@ -10,6 +10,10 @@ import javax.inject.Inject;
 import ru.magflayer.spectrum.data.database.AppRealm;
 import ru.magflayer.spectrum.domain.event.PageAppearanceEvent;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
+import ru.magflayer.spectrum.utils.RxUtils;
+import rx.Observable;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 public abstract class BasePresenter<View, Router> {
 
@@ -17,6 +21,7 @@ public abstract class BasePresenter<View, Router> {
 
     private View view;
     private Router router;
+    private CompositeSubscription subscription = new CompositeSubscription();
 
     @Inject
     protected Bus bus;
@@ -58,5 +63,25 @@ public abstract class BasePresenter<View, Router> {
 
     public void setupPageAppearance(PageAppearance pageAppearance) {
         bus.post(new PageAppearanceEvent(pageAppearance));
+    }
+
+    public <T> void execute(Observable<T> observable, Action1<T> action1) {
+        execute(observable, action1, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                logger.error("Error occurred: ", throwable);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> void execute(Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction) {
+        subscription.add(observable
+                .compose(RxUtils.<T>applySchedulers())
+                .subscribe(action1, errorAction));
+    }
+
+    public void unsubscribe() {
+        subscription.clear();
     }
 }

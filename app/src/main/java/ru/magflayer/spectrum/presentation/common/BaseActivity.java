@@ -35,6 +35,7 @@ public abstract class BaseActivity<Presenter extends BasePresenter> extends AppC
     @Override
     protected void onDestroy() {
         getPresenter().unregisterBus();
+        getPresenter().unsubscribe();
         unbinder.unbind();
         super.onDestroy();
     }
