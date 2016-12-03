@@ -26,7 +26,6 @@ import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.utils.Base64Utils;
-import ru.magflayer.spectrum.utils.RxUtils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -152,7 +151,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                                 return aDouble.second != Integer.MAX_VALUE;
                             }
                         })
-                .debounce(500, TimeUnit.MILLISECONDS)
+                        .debounce(500, TimeUnit.MILLISECONDS)
                 , new Action1<Pair<String, Integer>>() {
                     @Override
                     public void call(Pair<String, Integer> result) {
@@ -163,36 +162,29 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     }
 
     void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
-        Observable.create(new Observable.OnSubscribe<ColorPicture>() {
-            @Override
-            public void call(Subscriber<? super ColorPicture> subscriber) {
-                try {
-                    String pictureBase64 = Base64Utils.bitmapToBase64(bitmap);
-
-                    ColorPicture colorPicture = new ColorPicture();
-                    colorPicture.setDateInMillis(new Date().getTime());
-                    colorPicture.setPictureBase64(pictureBase64);
-                    colorPicture.setSwatches(swatches);
-                    subscriber.onNext(colorPicture);
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
-                subscriber.onCompleted();
-            }
-        })
-                .compose(RxUtils.<ColorPicture>applySchedulers())
-                .subscribe(new Action1<ColorPicture>() {
-                               @Override
-                               public void call(ColorPicture colorPicture) {
-                                   appRealm.savePicture(colorPicture);
-                               }
-                           },
-                        new Action1<Throwable>() {
+        execute(Observable.just(bitmap)
+                        .flatMap(new Func1<Bitmap, Observable<String>>() {
                             @Override
-                            public void call(Throwable throwable) {
-                                logger.error("Error while save picture: ", throwable);
+                            public Observable<String> call(Bitmap s) {
+                                return Observable.just(Base64Utils.bitmapToBase64(bitmap));
                             }
-                        });
+                        })
+                        .map(new Func1<String, ColorPicture>() {
+                            @Override
+                            public ColorPicture call(String pictureBase64) {
+                                ColorPicture colorPicture = new ColorPicture();
+                                colorPicture.setDateInMillis(new Date().getTime());
+                                colorPicture.setPictureBase64(pictureBase64);
+                                colorPicture.setSwatches(swatches);
+                                return colorPicture;
+                            }
+                        }),
+                new Action1<ColorPicture>() {
+                    @Override
+                    public void call(ColorPicture colorPicture) {
+                        appRealm.savePicture(colorPicture);
+                    }
+                });
     }
 
     void openHistory() {

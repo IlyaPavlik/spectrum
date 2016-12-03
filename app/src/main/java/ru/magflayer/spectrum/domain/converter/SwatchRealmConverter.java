@@ -8,9 +8,9 @@ import java.util.List;
 import io.realm.RealmList;
 import ru.magflayer.spectrum.data.database.model.SwatchRealm;
 
-public class SwatchRealmConverter {
+class SwatchRealmConverter {
 
-    public List<Palette.Swatch> fromRealm(List<SwatchRealm> swatchRealms) {
+    List<Palette.Swatch> fromRealm(List<SwatchRealm> swatchRealms) {
         List<Palette.Swatch> swatches = new ArrayList<>();
 
         for (SwatchRealm swatchRealm : swatchRealms) {
@@ -21,11 +21,13 @@ public class SwatchRealmConverter {
 
     }
 
-    public RealmList<SwatchRealm> toRealm(List<Palette.Swatch> swatches) {
+    RealmList<SwatchRealm> toRealm(List<Palette.Swatch> swatches) {
         RealmList<SwatchRealm> swatchRealmList = new RealmList<>();
 
-        for (Palette.Swatch swatch : swatches) {
-            swatchRealmList.add(new SwatchRealm(swatch.getRgb()));
+        if (swatches != null) {
+            for (Palette.Swatch swatch : swatches) {
+                swatchRealmList.add(new SwatchRealm(swatch.getRgb()));
+            }
         }
 
         return swatchRealmList;
