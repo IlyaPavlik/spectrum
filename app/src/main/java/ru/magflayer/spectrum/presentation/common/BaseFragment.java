@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.presentation.common;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,8 +15,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
@@ -24,6 +27,10 @@ import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 public abstract class BaseFragment extends Fragment implements BaseView {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
+
+    @BindView(R.id.progress_bar)
+    @Nullable
+    protected View progressBar;
 
     private static final AtomicInteger lastFragmentId = new AtomicInteger(0);
     private final int fragmentId;
@@ -102,5 +109,20 @@ public abstract class BaseFragment extends Fragment implements BaseView {
         }
 
         return null;
+    }
+
+
+    @Override
+    public void showProgressBar() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void hideProgressBar() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

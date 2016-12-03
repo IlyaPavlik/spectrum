@@ -2,15 +2,23 @@ package ru.magflayer.spectrum.presentation.common;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
 import ru.magflayer.spectrum.utils.AppUtils;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseActivity<Presenter extends BasePresenter> extends AppCompatActivity implements BaseView {
+
+    @BindView(R.id.progress_bar)
+    @Nullable
+    protected View progressBar;
 
     private Unbinder unbinder;
 
@@ -51,5 +59,19 @@ public abstract class BaseActivity<Presenter extends BasePresenter> extends AppC
                 .showFloatingButton(false)
                 .showToolbar(false)
                 .build();
+    }
+
+    @Override
+    public void showProgressBar() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void hideProgressBar() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

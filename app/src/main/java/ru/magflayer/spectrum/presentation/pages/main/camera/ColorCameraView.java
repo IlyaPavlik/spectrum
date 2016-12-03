@@ -1,10 +1,13 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera;
 
+import android.graphics.Bitmap;
 import android.support.v7.graphics.Palette;
 
 import java.util.List;
 
-interface ColorCameraView {
+import ru.magflayer.spectrum.presentation.common.BaseView;
+
+interface ColorCameraView extends BaseView {
 
     void showPictureSaved();
 
@@ -13,5 +16,7 @@ interface ColorCameraView {
     void showColorDetails(int mainColor, int titleColor);
 
     void showColorName(String name);
+
+    Bitmap getSurfaceBitmap();
 
 }

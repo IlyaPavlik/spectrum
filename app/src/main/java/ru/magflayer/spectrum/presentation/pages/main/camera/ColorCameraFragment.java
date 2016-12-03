@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.data.local.SurfaceInfo;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
 import ru.magflayer.spectrum.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
@@ -39,8 +40,6 @@ import ru.magflayer.spectrum.utils.AppUtils;
 
 @Layout(id = R.layout.fragment_color_camera)
 public class ColorCameraFragment extends BaseFragment implements TextureView.SurfaceTextureListener, ColorCameraView {
-
-    private static final int PERIOD = 3;
 
     @BindView(R.id.camera)
     protected TextureView cameraView;
@@ -95,28 +94,22 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         colorRecycler.setAdapter(adapter);
         cameraView.setSurfaceTextureListener(this);
         colorRecycler.setVisibility(toggleView.isSingle() ? View.GONE : View.VISIBLE);
-        toggleView.setOnCheckChangedListener(new ToggleWidget.OnCheckChangedListener() {
-            @Override
-            public void checkChanged(boolean isSingle) {
-                if (isSingle) {
-                    AppUtils.changeViewVisibility(true, colorDetailsWidget, pointView);
-                    AppUtils.changeViewVisibility(false, colorRecycler);
-                } else {
-                    AppUtils.changeViewVisibility(false, colorDetailsWidget, pointView);
-                    AppUtils.changeViewVisibility(true, colorRecycler);
-                }
+        toggleView.setOnCheckChangedListener(isSingle -> {
+            if (isSingle) {
+                AppUtils.changeViewVisibility(true, colorDetailsWidget, pointView);
+                AppUtils.changeViewVisibility(false, colorRecycler);
+            } else {
+                AppUtils.changeViewVisibility(false, colorDetailsWidget, pointView);
+                AppUtils.changeViewVisibility(true, colorRecycler);
             }
         });
 
         int fabColor = ContextCompat.getColor(getContext(), R.color.gray);
 
         FloatingActionButton fab = getFloatingActionButton();
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bitmap bitmap = cameraManager.loadCameraBitmap(cameraView);
-                presenter.saveColorPicture(bitmap, swatches);
-            }
+        fab.setOnClickListener(v -> {
+            Bitmap bitmap = cameraManager.loadCameraBitmap(cameraView);
+            presenter.saveColorPicture(bitmap, swatches);
         });
         fab.setBackgroundTintList(ColorStateList.valueOf(fabColor));
     }
@@ -126,6 +119,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         try {
             cameraManager.startCamera(surface);
             cameraManager.setCameraDisplayOrientation(getContext());
+            hideProgressBar();
         } catch (IOException e) {
             logger.error("Error occurred while starting camera ", e);
         }
@@ -144,14 +138,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        if (System.currentTimeMillis() % PERIOD == 0) {
-            Bitmap cameraBitmap = cameraManager.loadCameraBitmap(cameraView);
-            if (colorRecycler.getVisibility() == View.VISIBLE) {
-                presenter.handleCameraSurface(cameraBitmap);
-            } else {
-                presenter.handleColorDetails(cameraBitmap);
-            }
-        }
+        boolean isMultiColor = colorRecycler.getVisibility() == View.VISIBLE;
+        presenter.updateSurface(isMultiColor ? SurfaceInfo.Type.FULL : SurfaceInfo.Type.SINGLE);
     }
 
     @Override
@@ -176,6 +164,11 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     @Override
     public void showColorName(String name) {
         colorDetailsWidget.setColorName(name);
+    }
+
+    @Override
+    public Bitmap getSurfaceBitmap() {
+        return cameraManager.loadCameraBitmap(cameraView);
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.domain.model;
 
 import android.support.v7.graphics.Palette;
 
+import java.util.Date;
 import java.util.List;
 
 public class ColorPicture {
@@ -32,5 +33,13 @@ public class ColorPicture {
 
     public void setSwatches(List<Palette.Swatch> swatches) {
         this.swatches = swatches;
+    }
+
+    public static ColorPicture fromBase64(String pictureBase64, List<Palette.Swatch> swatches) {
+        ColorPicture colorPicture = new ColorPicture();
+        colorPicture.setDateInMillis(new Date().getTime());
+        colorPicture.setPictureBase64(pictureBase64);
+        colorPicture.setSwatches(swatches);
+        return colorPicture;
     }
 }

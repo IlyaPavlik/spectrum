@@ -11,8 +11,6 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,27 +19,49 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.data.local.ColorInfo;
+import ru.magflayer.spectrum.data.local.SurfaceInfo;
 import ru.magflayer.spectrum.domain.event.PictureSavedEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.utils.Base64Utils;
 import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
 
+    private static final int SURFACE_UPDATE_DELAY_MILLIS = 300;
+
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
+    private PublishSubject<SurfaceInfo.Type> changeObservable = PublishSubject.create();
 
     @Inject
     ColorCameraPresenter() {
         super();
+
+        execute(changeObservable
+                        .sample(SURFACE_UPDATE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
+                        .flatMap(new Func1<SurfaceInfo.Type, Observable<SurfaceInfo>>() {
+                            @Override
+                            public Observable<SurfaceInfo> call(SurfaceInfo.Type type) {
+                                Bitmap bitmap = getView().getSurfaceBitmap();
+                                return Observable.just(new SurfaceInfo(type, bitmap));
+                            }
+                        }),
+                surfaceInfo -> {
+                    Bitmap bitmap = surfaceInfo.getBitmap();
+                    if (surfaceInfo.getType() == SurfaceInfo.Type.FULL) {
+                        handleCameraSurface(bitmap);
+                    } else {
+                        handleColorDetails(bitmap);
+                    }
+                });
+    }
+
+    void updateSurface(SurfaceInfo.Type type) {
+        changeObservable.onNext(type);
     }
 
     void handleColorInfo(String colorInfoJson) {
@@ -49,72 +69,32 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         List<ColorInfo> colorInfoList = gson.fromJson(colorInfoJson, new TypeToken<List<ColorInfo>>() {
         }.getType());
         execute(Observable.from(colorInfoList),
-                new Action1<ColorInfo>() {
-                    @Override
-                    public void call(ColorInfo colorInfo) {
-                        colorInfoMap.put(colorInfo.getId(), colorInfo.getName());
-                    }
-                });
+                colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()));
     }
 
-    void handleCameraSurface(final Bitmap bitmap) {
-        Observable.create(new Observable.OnSubscribe<Palette>() {
-            @Override
-            public void call(Subscriber<? super Palette> subscriber) {
-                try {
-                    Palette palette = Palette.from(bitmap).generate();
-                    subscriber.onNext(palette);
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                } finally {
-                    subscriber.onCompleted();
-                }
-            }
-        })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .filter(new Func1<Palette, Boolean>() {
-                    @Override
-                    public Boolean call(Palette palette) {
-                        return (palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK)) != previousColor;
-                    }
-                })
-                .map(new Func1<Palette, List<Palette.Swatch>>() {
-                    @Override
-                    public List<Palette.Swatch> call(Palette palette) {
-                        List<Palette.Swatch> colors = new ArrayList<>(palette.getSwatches());
-                        previousColor = palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK);
-
-                        Collections.sort(colors, new Comparator<Palette.Swatch>() {
+    private void handleCameraSurface(final Bitmap bitmap) {
+        execute(Observable.just(bitmap)
+                        .flatMap(new Func1<Bitmap, Observable<Palette>>() {
                             @Override
-                            public int compare(Palette.Swatch lhs, Palette.Swatch rhs) {
-                                float leftValue = lhs.getHsl()[2];
-                                float rightValue = rhs.getHsl()[2];
-
-                                if (leftValue < rightValue) {
-                                    return -1;
-                                }
-
-                                if (leftValue > rightValue) {
-                                    return 1;
-                                }
-
-                                return 0;
+                            public Observable<Palette> call(Bitmap bitmap) {
+                                return Observable.just(Palette.from(bitmap).generate());
                             }
-                        });
+                        })
+                        .filter(palette ->
+                                (palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK)) != previousColor)
+                        .map(palette -> {
+                            List<Palette.Swatch> colors = new ArrayList<>(palette.getSwatches());
+                            previousColor = palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK);
 
-                        return colors;
-                    }
-                })
-                .subscribe(new Action1<List<Palette.Swatch>>() {
-                    @Override
-                    public void call(List<Palette.Swatch> colors) {
-                        getView().showColors(colors);
-                    }
-                });
+                            Collections.sort(colors,
+                                    (lhs, rhs) -> Float.compare(lhs.getHsl()[2], rhs.getHsl()[2]));
+
+                            return colors;
+                        }),
+                colors -> getView().showColors(colors));
     }
 
-    void handleColorDetails(final Bitmap bmp) {
+    private void handleColorDetails(final Bitmap bmp) {
         int centerX = bmp.getWidth() / 2;
         int centerY = bmp.getHeight() / 2;
 
@@ -128,40 +108,26 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         final int blue = Color.blue(newColor);
 
         execute(Observable.from(colorInfoMap.keySet())
-                        .reduce(Pair.create("", Integer.MAX_VALUE), new Func2<Pair<String, Integer>, String, Pair<String, Integer>>() {
-                            @Override
-                            public Pair<String, Integer> call(Pair<String, Integer> currentMin, String s) {
-                                int otherColor = Color.parseColor(s);
+                        .reduce(Pair.create("", Integer.MAX_VALUE), (currentMin, s) -> {
+                            int otherColor = Color.parseColor(s);
 
-                                int otherRed = Color.red(otherColor);
-                                int otherGreen = Color.green(otherColor);
-                                int otherBlue = Color.blue(otherColor);
-                                int newFi = (int) (Math.pow(otherRed - red, 2)
-                                        + Math.pow(otherGreen - green, 2)
-                                        + Math.pow(otherBlue - blue, 2));
+                            int otherRed = Color.red(otherColor);
+                            int otherGreen = Color.green(otherColor);
+                            int otherBlue = Color.blue(otherColor);
+                            int newFi = (int) (Math.pow(otherRed - red, 2)
+                                    + Math.pow(otherGreen - green, 2)
+                                    + Math.pow(otherBlue - blue, 2));
 
-                                int result = currentMin.second > newFi ? newFi : currentMin.second;
-                                String color = currentMin.second > newFi ? s : currentMin.first;
-                                return Pair.create(color, result);
-                            }
+                            int result = currentMin.second > newFi ? newFi : currentMin.second;
+                            String color1 = currentMin.second > newFi ? s : currentMin.first;
+                            return Pair.create(color1, result);
                         })
-                        .filter(new Func1<Pair<String, Integer>, Boolean>() {
-                            @Override
-                            public Boolean call(Pair<String, Integer> aDouble) {
-                                return aDouble.second != Integer.MAX_VALUE;
-                            }
-                        })
-                        .debounce(500, TimeUnit.MILLISECONDS)
-                , new Action1<Pair<String, Integer>>() {
-                    @Override
-                    public void call(Pair<String, Integer> result) {
-                        logger.debug("Show color: {}", result.first);
-                        getView().showColorName(colorInfoMap.get(result.first));
-                    }
-                });
+                        .filter(aDouble -> aDouble.second != Integer.MAX_VALUE),
+                result -> getView().showColorName(colorInfoMap.get(result.first)));
     }
 
     void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
+        getView().showProgressBar();
         execute(Observable.just(bitmap)
                         .flatMap(new Func1<Bitmap, Observable<String>>() {
                             @Override
@@ -169,21 +135,10 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                                 return Observable.just(Base64Utils.bitmapToBase64(bitmap));
                             }
                         })
-                        .map(new Func1<String, ColorPicture>() {
-                            @Override
-                            public ColorPicture call(String pictureBase64) {
-                                ColorPicture colorPicture = new ColorPicture();
-                                colorPicture.setDateInMillis(new Date().getTime());
-                                colorPicture.setPictureBase64(pictureBase64);
-                                colorPicture.setSwatches(swatches);
-                                return colorPicture;
-                            }
-                        }),
-                new Action1<ColorPicture>() {
-                    @Override
-                    public void call(ColorPicture colorPicture) {
-                        appRealm.savePicture(colorPicture);
-                    }
+                        .map(pictureBase64 -> ColorPicture.fromBase64(pictureBase64, swatches)),
+                colorPicture -> {
+                    getView().hideProgressBar();
+                    appRealm.savePicture(colorPicture);
                 });
     }
 

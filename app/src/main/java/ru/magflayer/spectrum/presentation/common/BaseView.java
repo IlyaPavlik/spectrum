@@ -8,4 +8,8 @@ public interface BaseView {
 
     PageAppearance getPageAppearance();
 
+    void showProgressBar();
+
+    void hideProgressBar();
+
 }
