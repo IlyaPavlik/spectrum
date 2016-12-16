@@ -8,4 +8,6 @@ public interface MainRouter {
 
     void openHistory();
 
+    void handleBack();
+
 }

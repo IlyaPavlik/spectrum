@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.router;
 
-import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 
 import ru.magflayer.spectrum.presentation.common.FragmentRouter;
 import ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraFragment;
@@ -9,8 +9,8 @@ import ru.magflayer.spectrum.presentation.pages.main.splash.SplashFragment;
 
 public class MainRouterImpl extends FragmentRouter implements MainRouter {
 
-    public MainRouterImpl(FragmentManager fragmentManager) {
-        super(fragmentManager);
+    public MainRouterImpl(AppCompatActivity activity) {
+        super(activity);
     }
 
     @Override
@@ -26,5 +26,17 @@ public class MainRouterImpl extends FragmentRouter implements MainRouter {
     @Override
     public void openHistory() {
         replaceFragment(HistoryFragment.newInstance(), true);
+    }
+
+    @Override
+    public void handleBack() {
+        int count = fragmentManager.getBackStackEntryCount();
+        for (int i = 0; i < count; i++) {
+            if (fragmentManager.popBackStackImmediate()) {
+                return;
+            }
+        }
+
+        activity.onBackPressed();
     }
 }

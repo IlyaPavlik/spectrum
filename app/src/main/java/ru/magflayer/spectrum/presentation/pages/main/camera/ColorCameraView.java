@@ -6,8 +6,9 @@ import android.support.v7.graphics.Palette;
 import java.util.List;
 
 import ru.magflayer.spectrum.presentation.common.BaseView;
+import ru.magflayer.spectrum.presentation.common.PageView;
 
-interface ColorCameraView extends BaseView {
+interface ColorCameraView extends PageView {
 
     void showPictureSaved();
 

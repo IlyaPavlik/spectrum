@@ -17,6 +17,8 @@ import ru.magflayer.spectrum.presentation.common.Layout;
 import ru.magflayer.spectrum.presentation.manager.CameraManager;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouterImpl;
+import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarPresenter;
+import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarViewHolder;
 
 @Layout(id = R.layout.activity_main)
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
@@ -29,11 +31,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @Inject
     protected MainPresenter presenter;
+    @Inject
+    protected ToolbarPresenter toolbarPresenter;
 
     @Inject
     protected CameraManager cameraManager;
 
     private MainRouter mainRouter;
+    private ToolbarViewHolder toolbarViewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +47,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        mainRouter = new MainRouterImpl(getSupportFragmentManager());
+        mainRouter = new MainRouterImpl(this);
         getPresenter().setRouter(mainRouter);
+
+        toolbarViewHolder = new ToolbarViewHolder(this, toolbar);
 
         if (savedInstanceState == null) {
             getPresenter().openMainScreen();
@@ -54,12 +61,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     protected void onResume() {
         super.onResume();
         cameraManager.open();
+        toolbarViewHolder.onRegisterBus();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         cameraManager.close();
+        toolbarViewHolder.onUnregisterBus();
     }
 
     public MainRouter getRouter() {

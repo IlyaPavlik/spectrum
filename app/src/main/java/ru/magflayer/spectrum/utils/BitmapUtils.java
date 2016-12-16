@@ -72,7 +72,8 @@ public class BitmapUtils {
 
         Canvas canvas = new Canvas(resultBitmap);
         Paint paint = new Paint();
-        int colorWidth = width / colors.size();
+        int colorSize = colors.size() > 0 ? colors.size() : 1;
+        int colorWidth = width / colorSize;
         int startX = 0;
 
         for (Palette.Swatch swatch : colors) {

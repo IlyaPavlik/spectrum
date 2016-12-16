@@ -11,10 +11,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
+import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.utils.AppUtils;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseActivity<Presenter extends BasePresenter> extends AppCompatActivity implements BaseView {
+public abstract class BaseActivity<Presenter extends BasePresenter> extends AppCompatActivity implements PageView {
 
     @BindView(R.id.progress_bar)
     @Nullable
@@ -27,7 +28,6 @@ public abstract class BaseActivity<Presenter extends BasePresenter> extends AppC
         super.onCreate(savedInstanceState);
 
         inject();
-        getPresenter().registerBus();
 
         AppUtils.applyLayout(this);
 
@@ -41,23 +41,38 @@ public abstract class BaseActivity<Presenter extends BasePresenter> extends AppC
     protected abstract Presenter getPresenter();
 
     @Override
-    protected void onDestroy() {
+    protected void onResume() {
+        super.onResume();
+        getPresenter().registerBus();
+
+        getPresenter().setupPageAppearance(getPageAppearance());
+        getPresenter().setupToolbarAppearance(getToolbarAppearance());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         getPresenter().unregisterBus();
+    }
+
+    @Override
+    protected void onDestroy() {
         getPresenter().unsubscribe();
         unbinder.unbind();
         super.onDestroy();
     }
 
     @Override
-    public void changePageAppearance(PageAppearance pageAppearance) {
-        getPresenter().setupPageAppearance(pageAppearance);
+    public ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.NO_INFLUENCE)
+                .build();
     }
 
     @Override
     public PageAppearance getPageAppearance() {
         return PageAppearance.builder()
                 .showFloatingButton(false)
-                .showToolbar(false)
                 .build();
     }
 

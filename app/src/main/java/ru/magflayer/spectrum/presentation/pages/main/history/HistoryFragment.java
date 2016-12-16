@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
+import ru.magflayer.spectrum.domain.model.PageAppearance;
+import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
@@ -50,6 +52,11 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         adapter = new HistoryAdapter();
         historyRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         historyRecycler.setAdapter(adapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         presenter.loadHistory();
     }
@@ -57,5 +64,13 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     @Override
     public void showHistory(List<ColorPicture> history) {
         adapter.setHistory(history);
+    }
+
+    @Override
+    public ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.VISIBLE)
+                .title("История")
+                .build();
     }
 }

@@ -1,26 +1,13 @@
 package ru.magflayer.spectrum.domain.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PageAppearance {
 
     private boolean showFloatingButton;
-
-    private boolean showToolbar;
-
-    public boolean isShowFloatingButton() {
-        return showFloatingButton;
-    }
-
-    public void setShowFloatingButton(boolean showFloatingButton) {
-        this.showFloatingButton = showFloatingButton;
-    }
-
-    public boolean isShowToolbar() {
-        return showToolbar;
-    }
-
-    public void setShowToolbar(boolean showToolbar) {
-        this.showToolbar = showToolbar;
-    }
 
     public static Builder builder() {
         return new Builder();
@@ -32,11 +19,6 @@ public class PageAppearance {
 
         public Builder showFloatingButton(boolean showFloatingButton) {
             pageAppearance.setShowFloatingButton(showFloatingButton);
-            return this;
-        }
-
-        public Builder showToolbar(boolean showToolbar) {
-            pageAppearance.setShowToolbar(showToolbar);
             return this;
         }
 

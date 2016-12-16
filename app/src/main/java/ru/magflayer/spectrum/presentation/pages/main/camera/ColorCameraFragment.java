@@ -28,6 +28,7 @@ import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.data.local.SurfaceInfo;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
+import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
@@ -74,11 +75,6 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     @Override
     protected void inject() {
         InjectorManager.getAppComponent().inject(this);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -175,6 +171,13 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     public PageAppearance getPageAppearance() {
         return PageAppearance.builder()
                 .showFloatingButton(true)
+                .build();
+    }
+
+    @Override
+    public ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.INVISIBLE)
                 .build();
     }
 

@@ -7,6 +7,7 @@ import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
 import ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraFragment;
 import ru.magflayer.spectrum.presentation.pages.main.history.HistoryFragment;
 import ru.magflayer.spectrum.presentation.pages.main.splash.SplashFragment;
+import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarViewHolder;
 import ru.magflayer.spectrum.presentation.pages.splash.SplashActivity;
 
 @Singleton
@@ -27,6 +28,7 @@ public interface AppComponent {
 
     void inject(SplashFragment fragment);
 
-    //PRESENTER
+    //VIEW HOLDER
+    void inject(ToolbarViewHolder viewHolder);
 
 }

@@ -20,11 +20,12 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
+import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseFragment extends Fragment implements BaseView {
+public abstract class BaseFragment extends Fragment implements PageView {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
@@ -57,18 +58,29 @@ public abstract class BaseFragment extends Fragment implements BaseView {
         inject();
         //noinspection unchecked
         getPresenter().setView(this);
-        getPresenter().openRealm();
         getPresenter().setRouter(getRouter());
-        getPresenter().registerBus();
-        changePageAppearance(getPageAppearance());
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPresenter().openRealm();
+        getPresenter().registerBus();
+
+        getPresenter().setupPageAppearance(getPageAppearance());
+        getPresenter().setupToolbarAppearance(getToolbarAppearance());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getPresenter().closeRealm();
+        getPresenter().unregisterBus();
+    }
 
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        getPresenter().closeRealm();
-        getPresenter().unregisterBus();
         getPresenter().unsubscribe();
         super.onDestroyView();
     }
@@ -91,15 +103,16 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     }
 
     @Override
-    public void changePageAppearance(PageAppearance pageAppearance) {
-        getPresenter().setupPageAppearance(pageAppearance);
+    public ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.NO_INFLUENCE)
+                .build();
     }
 
     @Override
     public PageAppearance getPageAppearance() {
         return PageAppearance.builder()
                 .showFloatingButton(false)
-                .showToolbar(false)
                 .build();
     }
 

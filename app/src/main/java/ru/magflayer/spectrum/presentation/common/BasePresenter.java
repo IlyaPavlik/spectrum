@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.data.database.AppRealm;
-import ru.magflayer.spectrum.domain.event.PageAppearanceEvent;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
+import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.utils.RxUtils;
 import rx.Observable;
 import rx.functions.Action1;
@@ -61,23 +61,22 @@ public abstract class BasePresenter<View, Router> {
         bus.unregister(this);
     }
 
+    public void setupToolbarAppearance(ToolbarAppearance toolbarAppearance) {
+        bus.post(toolbarAppearance);
+    }
+
     public void setupPageAppearance(PageAppearance pageAppearance) {
-        bus.post(new PageAppearanceEvent(pageAppearance));
+        bus.post(pageAppearance);
     }
 
     public <T> void execute(Observable<T> observable, Action1<T> action1) {
-        execute(observable, action1, new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
-                logger.error("Error occurred: ", throwable);
-            }
-        });
+        execute(observable, action1, throwable -> logger.error("Error occurred: ", throwable));
     }
 
     @SuppressWarnings("unchecked")
     public <T> void execute(Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction) {
         subscription.add(observable
-                .compose(RxUtils.<T>applySchedulers())
+                .compose(RxUtils.applySchedulers())
                 .subscribe(action1, errorAction));
     }
 
