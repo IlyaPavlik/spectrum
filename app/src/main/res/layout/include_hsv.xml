@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/indent_small">
+    android:padding="@dimen/indent_small"
+    tools:background="@color/semi_black">
 
     <TextView
         android:id="@+id/hue"

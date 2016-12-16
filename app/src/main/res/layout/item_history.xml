@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -7,12 +7,15 @@
 
     <ImageView
         android:id="@+id/picture"
-        android:layout_width="150dp"
-        android:layout_height="100dp" />
+        android:layout_width="@dimen/history_item_image_width"
+        android:layout_height="@dimen/history_item_image_height"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_menu" />
 
     <ImageView
         android:id="@+id/color_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/picture" />
 
-</LinearLayout>
+</RelativeLayout>

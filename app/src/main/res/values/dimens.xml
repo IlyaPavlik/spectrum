@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <dimen name="indent_small">8dp</dimen>
+    <dimen name="indent_normal">16dp</dimen>
+    <dimen name="indent_large">32dp</dimen>
+
+    <dimen name="color_list_width">100dp</dimen>
+
+    <dimen name="color_indicator_size">50dp</dimen>
+    <dimen name="button_size">56dp</dimen>
+
     <dimen name="text_normal">14dp</dimen>
+
+    <dimen name="history_item_image_width">150dp</dimen>
+    <dimen name="history_item_image_height">100dp</dimen>
+
 </resources>

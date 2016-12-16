@@ -20,7 +20,7 @@ import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.utils.Base64Utils;
 import ru.magflayer.spectrum.utils.BitmapUtils;
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
+class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
     private List<ColorPicture> history = new ArrayList<>();
 
@@ -48,15 +48,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                 .fitCenter()
                 .into(holder.pictureView);
 
-        holder.colorContainer.post(new Runnable() {
-            @Override
-            public void run() {
-                int width = holder.colorContainer.getMeasuredWidth();
-                int height = holder.colorContainer.getMeasuredHeight();
+        holder.colorContainer.post(() -> {
+            int width = holder.colorContainer.getMeasuredWidth();
+            int height = holder.colorContainer.getMeasuredHeight();
 
-                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getSwatches());
-                holder.colorContainer.setImageBitmap(colorsBitmap);
-            }
+            Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getSwatches());
+            holder.colorContainer.setImageBitmap(colorsBitmap);
         });
     }
 
@@ -65,14 +62,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         return history.size();
     }
 
-    class HistoryViewHolder extends RecyclerView.ViewHolder {
+    static class HistoryViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.picture)
         ImageView pictureView;
         @BindView(R.id.color_container)
         ImageView colorContainer;
 
-        public HistoryViewHolder(View itemView) {
+        HistoryViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
