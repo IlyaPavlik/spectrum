@@ -31,7 +31,6 @@
         android:layout_gravity="right|bottom"
         android:layout_margin="@dimen/indent_normal"
         android:src="@drawable/ic_save"
-        app:backgroundTint="@color/white"
         app:elevation="8dp"
         app:fabSize="normal"
         app:layout_anchorGravity="bottom|end" />

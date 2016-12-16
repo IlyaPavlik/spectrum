@@ -70,7 +70,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     public ToolbarAppearance getToolbarAppearance() {
         return ToolbarAppearance.builder()
                 .visible(ToolbarAppearance.Visibility.VISIBLE)
-                .title("История")
+                .title(getString(R.string.history_toolbar_title))
                 .build();
     }
 }

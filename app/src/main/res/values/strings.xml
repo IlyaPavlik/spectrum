@@ -10,4 +10,6 @@
     <string name="value_format">V: %d%%</string>
 
     <string name="camera_image_saved">Изображение сохранено!</string>
+
+    <string name="history_toolbar_title">История</string>
 </resources>
