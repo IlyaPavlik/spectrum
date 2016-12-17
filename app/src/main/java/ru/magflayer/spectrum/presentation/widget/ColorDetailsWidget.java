@@ -13,6 +13,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.utils.ColorUtils;
 
 public class ColorDetailsWidget extends LinearLayout {
 
@@ -60,7 +61,7 @@ public class ColorDetailsWidget extends LinearLayout {
 
     public void setColor(@ColorInt int color) {
         colorView.setBackgroundColor(color);
-        colorHexView.setText(String.format("#%06X", (0xFFFFFF & color)));
+        colorHexView.setText(ColorUtils.colorToHex(color));
 
         initRgbColor(color);
         initHsvColor(color);

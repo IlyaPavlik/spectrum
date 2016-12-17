@@ -1,15 +1,23 @@
 <resources>
     <string name="app_name">Спектр</string>
 
-    <string name="red_format">К: %d</string>
-    <string name="green_format">З: %d</string>
-    <string name="blue_format">С: %d</string>
+    <string name="red_format">R: %d</string>
+    <string name="green_format">G: %d</string>
+    <string name="blue_format">B: %d</string>
 
     <string name="hue_format">"H: %d°"</string>
     <string name="saturation_format">S: %d%%</string>
     <string name="value_format">V: %d%%</string>
+    
+    <string name="cyan_format">C: %d%%</string>
+    <string name="magenta_format">M: %d%%</string>
+    <string name="yellow_format">Y: %d%%</string>
+    <string name="key_color_format">K: %d%%</string>
 
     <string name="camera_image_saved">Изображение сохранено!</string>
 
     <string name="history_toolbar_title">История</string>
+
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Отмена</string>
 </resources>

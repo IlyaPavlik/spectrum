@@ -2,7 +2,6 @@ package ru.magflayer.spectrum.presentation.pages.main.history;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,26 +9,15 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
+import ru.magflayer.spectrum.presentation.common.BaseRecyclerView;
+import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
 import ru.magflayer.spectrum.utils.Base64Utils;
 import ru.magflayer.spectrum.utils.BitmapUtils;
 
-class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
-
-    private List<ColorPicture> history = new ArrayList<>();
-
-    public void setHistory(List<ColorPicture> history) {
-        if (history != null) {
-            this.history = history;
-            notifyDataSetChanged();
-        }
-    }
+class HistoryAdapter extends BaseRecyclerView<HistoryAdapter.HistoryViewHolder, ColorPicture> {
 
     @Override
     public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,7 +28,7 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHold
     @Override
     public void onBindViewHolder(final HistoryViewHolder holder, int position) {
         final Context context = holder.itemView.getContext();
-        final ColorPicture colorPicture = history.get(position);
+        final ColorPicture colorPicture = getItem(position);
 
         Glide.with(context)
                 .load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
@@ -52,17 +40,14 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHold
             int width = holder.colorContainer.getMeasuredWidth();
             int height = holder.colorContainer.getMeasuredHeight();
 
-            Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getSwatches());
-            holder.colorContainer.setImageBitmap(colorsBitmap);
+            if (width > 0 && height > 0) {
+                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getSwatches());
+                holder.colorContainer.setImageBitmap(colorsBitmap);
+            }
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return history.size();
-    }
-
-    static class HistoryViewHolder extends RecyclerView.ViewHolder {
+    static class HistoryViewHolder extends BaseViewHolder {
 
         @BindView(R.id.picture)
         ImageView pictureView;
@@ -71,7 +56,6 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHold
 
         HistoryViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
         }
     }
 }
