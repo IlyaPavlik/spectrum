@@ -6,18 +6,19 @@
     android:orientation="vertical"
     android:padding="@dimen/indent_normal">
 
-    <ImageView
-        android:id="@+id/color"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        tools:background="@color/colorAccent" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/color_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never" />
 
     <TextView
         android:id="@+id/color_hex"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginLeft="@dimen/indent_small"
-        android:layout_toRightOf="@+id/color"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/color_recycler"
+        android:layout_marginBottom="@dimen/indent_small"
+        android:layout_marginTop="@dimen/indent_small"
         android:gravity="center_vertical"
         android:textSize="20dp"
         tools:text="#000000" />
@@ -25,8 +26,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/color"
-        android:layout_marginTop="@dimen/indent_small">
+        android:layout_below="@+id/color_hex">
 
         <LinearLayout
             android:layout_width="wrap_content"

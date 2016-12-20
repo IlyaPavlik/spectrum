@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
@@ -19,6 +17,10 @@ import ru.magflayer.spectrum.utils.BitmapUtils;
 
 class HistoryAdapter extends BaseRecyclerView<HistoryAdapter.HistoryViewHolder, ColorPicture> {
 
+    public HistoryAdapter(Context context) {
+        super(context);
+    }
+
     @Override
     public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -27,11 +29,9 @@ class HistoryAdapter extends BaseRecyclerView<HistoryAdapter.HistoryViewHolder, 
 
     @Override
     public void onBindViewHolder(final HistoryViewHolder holder, int position) {
-        final Context context = holder.itemView.getContext();
         final ColorPicture colorPicture = getItem(position);
 
-        Glide.with(context)
-                .load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
+        glide.load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
                 .asBitmap()
                 .fitCenter()
                 .into(holder.pictureView);
