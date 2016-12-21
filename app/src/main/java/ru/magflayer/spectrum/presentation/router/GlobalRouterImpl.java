@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.presentation.pages.router;
+package ru.magflayer.spectrum.presentation.router;
 
 import android.content.Context;
 

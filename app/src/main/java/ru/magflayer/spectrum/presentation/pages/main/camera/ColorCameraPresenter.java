@@ -25,6 +25,7 @@ import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.utils.Base64Utils;
+import ru.magflayer.spectrum.utils.ColorUtils;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
@@ -32,10 +33,13 @@ import rx.subjects.PublishSubject;
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
 
     private static final int SURFACE_UPDATE_DELAY_MILLIS = 300;
+    private static final int COLOR_ERROR = 5;
 
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
     private PublishSubject<SurfaceInfo.Type> changeObservable = PublishSubject.create();
+
+    private int currentDetailsColor;
 
     @Inject
     ColorCameraPresenter() {
@@ -99,9 +103,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         int centerY = bmp.getHeight() / 2;
 
         Palette.Swatch color = new Palette.Swatch(bmp.getPixel(centerX, centerY), 1);
-        getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
 
-        final String hexColor = String.format("#%06X", (0xFFFFFF & color.getRgb()));
+        final String hexColor = ColorUtils.colorToHex(color.getRgb());
         int newColor = Color.parseColor(hexColor);
         final int red = Color.red(newColor);
         final int green = Color.green(newColor);
@@ -122,8 +125,12 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                             String color1 = currentMin.second > newFi ? s : currentMin.first;
                             return Pair.create(color1, result);
                         })
-                        .filter(aDouble -> aDouble.second != Integer.MAX_VALUE),
-                result -> getView().showColorName(colorInfoMap.get(result.first)));
+                        .filter(aDouble -> aDouble.second != Integer.MAX_VALUE && isSameColor(currentDetailsColor, newColor)),
+                result -> {
+                    currentDetailsColor = color.getRgb();
+                    getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
+                    getView().showColorName(colorInfoMap.get(result.first));
+                });
     }
 
     void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
@@ -149,5 +156,14 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     @Subscribe
     public void onPictureSaved(PictureSavedEvent event) {
         getView().showPictureSaved();
+    }
+
+    private boolean isSameColor(int previousColor, int newColor) {
+        int[] previousRgb = {Color.red(previousColor), Color.green(previousColor), Color.blue(previousColor)};
+        int[] newRgb = {Color.red(newColor), Color.green(newColor), Color.blue(newColor)};
+
+        return Math.abs(previousRgb[0] - newRgb[0]) >= COLOR_ERROR
+                || Math.abs(previousRgb[1] - newRgb[1]) >= COLOR_ERROR
+                || Math.abs(previousRgb[2] - newRgb[2]) >= COLOR_ERROR;
     }
 }

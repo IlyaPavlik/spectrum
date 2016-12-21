@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import ru.magflayer.spectrum.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseActivity;
-import ru.magflayer.spectrum.presentation.pages.router.GlobalRouterImpl;
+import ru.magflayer.spectrum.presentation.router.GlobalRouterImpl;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> {
 
