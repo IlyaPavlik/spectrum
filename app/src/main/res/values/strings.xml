@@ -17,6 +17,7 @@
     <string name="camera_image_saved">Изображение сохранено!</string>
 
     <string name="history_toolbar_title">История</string>
+    <string name="history_empty">Здесь будут храниться сохраненные цвета/наборы цветов</string>
 
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Отмена</string>

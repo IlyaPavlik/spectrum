@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -24,7 +26,9 @@ import ru.magflayer.spectrum.presentation.widget.ColorSelectedWidget;
 public class HistoryFragment extends BaseFragment implements HistoryView {
 
     @BindView(R.id.history_recycler)
-    protected RecyclerView historyRecycler;
+    RecyclerView historyRecycler;
+    @BindView(R.id.empty)
+    TextView emptyView;
 
     @Inject
     protected HistoryPresenter presenter;
@@ -69,6 +73,8 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     @Override
     public void showHistory(List<ColorPicture> history) {
         adapter.setData(history);
+
+        emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     @Override
