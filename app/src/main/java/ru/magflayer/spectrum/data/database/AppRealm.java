@@ -36,17 +36,11 @@ public class AppRealm {
     }
 
     public void savePicture(final ColorPicture colorPicture) {
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                ColorPictureRealm colorPictureRealm = colorPictureRealmConverter.toRealm(colorPicture);
-                realm.copyToRealmOrUpdate(colorPictureRealm);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                bus.post(new PictureSavedEvent());
-            }
+        realm.executeTransactionAsync(realm1 -> {
+            ColorPictureRealm colorPictureRealm = colorPictureRealmConverter.toRealm(colorPicture);
+            realm1.copyToRealmOrUpdate(colorPictureRealm);
+        }, () -> {
+            bus.post(new PictureSavedEvent());
         });
     }
 
@@ -59,8 +53,13 @@ public class AppRealm {
         return colorPictures;
     }
 
-    public void removePicture() {
-
+    public void removePicture(ColorPicture colorPicture) {
+        realm.executeTransactionAsync(realm1 -> {
+            RealmResults<ColorPictureRealm> rows = realm1.where(ColorPictureRealm.class)
+                    .equalTo("date", colorPicture.getDateInMillis())
+                    .findAll();
+            rows.deleteAllFromRealm();
+        });
     }
 
     public void close() {

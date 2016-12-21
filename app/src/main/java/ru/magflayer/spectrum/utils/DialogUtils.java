@@ -19,13 +19,23 @@ public class DialogUtils {
     @StringRes
     private static final int negativeButtonRes = R.string.dialog_cancel;
 
+    public static Dialog buildYesNoDialog(Context context, String title, String message, DialogInterface.OnClickListener clickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton(positiveButtonRes, clickListener);
+        builder.setNegativeButton(negativeButtonRes, (dialogInterface, i) -> dialogInterface.dismiss());
+
+        return builder.create();
+    }
+
     public static Dialog buildViewDialog(Context context, String title, View view, DialogInterface.OnClickListener clickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         builder.setTitle(title);
         builder.setView(view);
         builder.setPositiveButton(positiveButtonRes, clickListener);
-//        builder.setNegativeButton(negativeButtonRes, (dialogInterface, i) -> dialogInterface.dismiss());
 
         return builder.create();
     }

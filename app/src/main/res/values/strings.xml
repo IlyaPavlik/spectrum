@@ -19,6 +19,9 @@
     <string name="history_toolbar_title">История</string>
     <string name="history_empty">Здесь будут храниться сохраненные цвета/наборы цветов</string>
 
+    <string name="history_remove_title">Удаление</string>
+    <string name="history_remove_description">Вы действительно хотите удалить этот цвет/набор цветов?</string>
+
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Отмена</string>
 </resources>

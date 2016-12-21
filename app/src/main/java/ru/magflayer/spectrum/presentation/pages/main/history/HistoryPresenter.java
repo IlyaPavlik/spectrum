@@ -11,12 +11,16 @@ import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 public class HistoryPresenter extends BasePresenter<HistoryView, MainRouter> {
 
     @Inject
-    public HistoryPresenter() {
+    HistoryPresenter() {
         super();
     }
 
-    public void loadHistory() {
+    void loadHistory() {
         List<ColorPicture> colorPictures = appRealm.loadPictures();
         getView().showHistory(colorPictures);
+    }
+
+    void removeColor(ColorPicture colorPicture) {
+        appRealm.removePicture(colorPicture);
     }
 }

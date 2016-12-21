@@ -20,12 +20,17 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
         void onItemClick(int position);
     }
 
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
+    }
+
     public interface OnItemSelectListener {
         void onItemSelect(int position);
     }
 
     private List<T> data = new ArrayList<>();
     private OnItemClickListener itemClickListener;
+    private OnItemLongClickListener itemLongClickListener;
     private OnItemSelectListener itemSelectListener;
     private int selectedPosition;
 
@@ -49,12 +54,22 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
         }
     }
 
+    public void remove(int position) {
+        this.data.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+    }
+
     public void setItemClickListener(OnItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
     public void setItemSelectListener(OnItemSelectListener itemSelectListener) {
         this.itemSelectListener = itemSelectListener;
+    }
+
+    public void setItemLongClickListener(OnItemLongClickListener itemLongClickListener) {
+        this.itemLongClickListener = itemLongClickListener;
     }
 
     public T getItem(int position) {
@@ -69,6 +84,13 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
                 itemClickListener.onItemClick(position);
             }
             select(holder.getAdapterPosition());
+        });
+        holder.itemView.setOnLongClickListener(view -> {
+            if(itemLongClickListener != null){
+                itemLongClickListener.onItemLongClick(position);
+                return true;
+            }
+            return false;
         });
     }
 

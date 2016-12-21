@@ -21,6 +21,7 @@ import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
 import ru.magflayer.spectrum.presentation.widget.ColorSelectedWidget;
+import ru.magflayer.spectrum.utils.DialogUtils;
 
 @Layout(id = R.layout.fragment_history)
 public class HistoryFragment extends BaseFragment implements HistoryView {
@@ -61,6 +62,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
             ColorPicture colorPicture = adapter.getItem(position);
             openHistoryDetailsDialog(colorPicture.getSwatches());
         });
+        adapter.setItemLongClickListener(this::openAcceptDeleteColor);
     }
 
     @Override
@@ -88,5 +90,16 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     private void openHistoryDetailsDialog(List<Palette.Swatch> swatches) {
         ColorSelectedWidget widget = new ColorSelectedWidget(getContext());
         widget.showDialog(swatches);
+    }
+
+    private void openAcceptDeleteColor(int position) {
+        String title = getString(R.string.history_remove_title);
+        String message = getString(R.string.history_remove_description);
+
+        DialogUtils.buildYesNoDialog(getContext(), title, message, (dialogInterface, i) -> {
+            presenter.removeColor(adapter.getItem(position));
+            adapter.remove(position);
+            emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+        }).show();
     }
 }
