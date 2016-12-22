@@ -32,10 +32,12 @@
         android:src="@drawable/ic_menu" />
 
     <LinearLayout
+        android:id="@+id/left_menu"
         android:layout_width="@dimen/color_list_width"
         android:layout_height="match_parent"
         android:background="@color/semi_black"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ru.magflayer.spectrum.presentation.widget.ToggleWidget
             android:id="@+id/toggle_mode"

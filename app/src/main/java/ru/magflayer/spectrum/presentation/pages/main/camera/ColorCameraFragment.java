@@ -13,7 +13,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -44,6 +49,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @BindView(R.id.camera)
     protected TextureView cameraView;
+    @BindView(R.id.left_menu)
+    ViewGroup leftMenuView;
     @BindView(R.id.color_recycler)
     protected RecyclerView colorRecycler;
     @BindView(R.id.toggle_mode)
@@ -116,6 +123,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
             cameraManager.startCamera(surface);
             cameraManager.setCameraDisplayOrientation(getContext());
             hideProgressBar();
+            showLeftMenu();
         } catch (IOException e) {
             logger.error("Error occurred while starting camera ", e);
         }
@@ -189,5 +197,24 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     @OnClick(R.id.menu)
     protected void onMenuClick() {
         presenter.openHistory();
+    }
+
+    private void showLeftMenu() {
+        if (leftMenuView.getVisibility() != View.VISIBLE) {
+            leftMenuView.setVisibility(View.VISIBLE);
+
+            leftMenuView.startAnimation(inFromLeftAnimation());
+        }
+    }
+
+    private Animation inFromLeftAnimation() {
+        Animation inFromLeft = new TranslateAnimation(
+                Animation.RELATIVE_TO_PARENT, -1.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f);
+        inFromLeft.setDuration(800);
+        inFromLeft.setInterpolator(new AccelerateInterpolator());
+        return inFromLeft;
     }
 }
