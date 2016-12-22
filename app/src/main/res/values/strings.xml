@@ -8,7 +8,7 @@
     <string name="hue_format">"H: %d°"</string>
     <string name="saturation_format">S: %d%%</string>
     <string name="value_format">V: %d%%</string>
-    
+
     <string name="cyan_format">C: %d%%</string>
     <string name="magenta_format">M: %d%%</string>
     <string name="yellow_format">Y: %d%%</string>
@@ -18,6 +18,10 @@
 
     <string name="history_toolbar_title">История</string>
     <string name="history_empty">Здесь будут храниться сохраненные цвета/наборы цветов</string>
+
+    <string name="history_dialog_title">Цвет</string>
+    <string name="history_dialog_copy_label">Цвет hex</string>
+    <string name="history_dialog_copy">Цвет скопирован</string>
 
     <string name="history_remove_title">Удаление</string>
     <string name="history_remove_description">Вы действительно хотите удалить этот цвет/набор цветов?</string>

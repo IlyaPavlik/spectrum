@@ -12,21 +12,37 @@
         android:layout_height="wrap_content"
         android:overScrollMode="never" />
 
-    <TextView
-        android:id="@+id/color_hex"
+    <LinearLayout
+        android:id="@+id/color_hex_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/color_recycler"
-        android:layout_marginBottom="@dimen/indent_small"
-        android:layout_marginTop="@dimen/indent_small"
-        android:gravity="center_vertical"
-        android:textSize="20dp"
-        tools:text="#000000" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/color_hex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/indent_small"
+            android:layout_marginTop="@dimen/indent_small"
+            android:gravity="center_vertical"
+            android:textSize="20dp"
+            tools:text="#000000" />
+
+        <ImageView
+            android:id="@+id/copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/indent_small"
+            android:src="@drawable/ic_copy" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/color_hex">
+        android:layout_below="@+id/color_hex_container">
 
         <LinearLayout
             android:layout_width="wrap_content"

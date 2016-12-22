@@ -1,5 +1,7 @@
 package ru.magflayer.spectrum.presentation.widget;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.graphics.Palette;
@@ -11,11 +13,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.presentation.common.BaseRecyclerView;
 import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
@@ -71,8 +75,19 @@ public class ColorSelectedWidget extends RelativeLayout {
     public void showDialog(List<Palette.Swatch> swatches) {
         colorAdapter.setData(swatches);
         colorAdapter.select(0);
-        //TODO replace title string to res string
-        DialogUtils.buildViewDialog(getContext(), "Цвет", this, (dialogInterface, i) -> dialogInterface.dismiss()).show();
+
+        String title = getContext().getString(R.string.history_dialog_title);
+        DialogUtils.buildViewDialog(getContext(), title, this, (dialogInterface, i) -> dialogInterface.dismiss()).show();
+    }
+
+    @OnClick(R.id.color_hex_container)
+    public void onCopyClick() {
+        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        String label = getContext().getString(R.string.history_dialog_copy_label);
+        ClipData clip = ClipData.newPlainText(label, hexView.getText());
+        clipboard.setPrimaryClip(clip);
+
+        Toast.makeText(getContext(), R.string.history_dialog_copy, Toast.LENGTH_SHORT).show();
     }
 
     private void init(Context context) {
