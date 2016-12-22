@@ -17,7 +17,7 @@ import ru.magflayer.spectrum.utils.BitmapUtils;
 
 class HistoryAdapter extends BaseRecyclerView<HistoryAdapter.HistoryViewHolder, ColorPicture> {
 
-    public HistoryAdapter(Context context) {
+    HistoryAdapter(Context context) {
         super(context);
     }
 

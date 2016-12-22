@@ -58,7 +58,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         adapter = new HistoryAdapter(getContext());
         historyRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         historyRecycler.setAdapter(adapter);
-        adapter.setItemClickListener(position -> {
+        adapter.setItemSelectListener(position -> {
             ColorPicture colorPicture = adapter.getItem(position);
             openHistoryDetailsDialog(colorPicture.getSwatches());
         });

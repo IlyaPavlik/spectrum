@@ -16,10 +16,6 @@ import lombok.Setter;
 
 public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends RecyclerView.Adapter<VH> {
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
     public interface OnItemLongClickListener {
         void onItemLongClick(int position);
     }
@@ -29,7 +25,6 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
     }
 
     private List<T> data = new ArrayList<>();
-    private OnItemClickListener itemClickListener;
     private OnItemLongClickListener itemLongClickListener;
     private OnItemSelectListener itemSelectListener;
     private int selectedPosition;
@@ -60,10 +55,6 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
         notifyItemRangeChanged(position, getItemCount());
     }
 
-    public void setItemClickListener(OnItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
-
     public void setItemSelectListener(OnItemSelectListener itemSelectListener) {
         this.itemSelectListener = itemSelectListener;
     }
@@ -79,14 +70,9 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
     @Override
     public void onBindViewHolder(VH holder, int position, List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
-        holder.itemView.setOnClickListener(view -> {
-            if (itemClickListener != null) {
-                itemClickListener.onItemClick(position);
-            }
-            select(holder.getAdapterPosition());
-        });
+        holder.itemView.setOnClickListener(view -> select(holder.getAdapterPosition()));
         holder.itemView.setOnLongClickListener(view -> {
-            if(itemLongClickListener != null){
+            if (itemLongClickListener != null) {
                 itemLongClickListener.onItemLongClick(position);
                 return true;
             }
@@ -108,6 +94,5 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
         if (itemSelectListener != null) {
             itemSelectListener.onItemSelect(position);
         }
-        notifyDataSetChanged();
     }
 }

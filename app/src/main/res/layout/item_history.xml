@@ -10,10 +10,12 @@
         android:id="@+id/picture"
         android:layout_width="@dimen/history_item_image_width"
         android:layout_height="@dimen/history_item_image_height"
+        android:scaleType="centerCrop"
         tools:src="@drawable/ic_menu" />
 
     <ImageView
         android:id="@+id/color_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/indent_small" />
 </LinearLayout>

@@ -29,8 +29,8 @@ public class CameraManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CameraManager.class);
 
-    private static final int CAMERA_WIDTH = 640;
-    private static final int CAMERA_HEIGHT = 480;
+    private static final int CAMERA_WIDTH = 1280;
+    private static final int CAMERA_HEIGHT = 720;
 
     interface OnTakePictureListener {
         void onTakePicture(Bitmap bitmap);

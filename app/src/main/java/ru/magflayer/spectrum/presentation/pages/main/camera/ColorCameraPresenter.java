@@ -35,6 +35,9 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     private static final int SURFACE_UPDATE_DELAY_MILLIS = 300;
     private static final int COLOR_ERROR = 5;
 
+    private static final int SAVE_IMAGE_WIDTH = 640;
+    private static final int SAVE_IMAGE_HEIGHT = 360;
+
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
     private PublishSubject<SurfaceInfo.Type> changeObservable = PublishSubject.create();
@@ -78,12 +81,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
     private void handleCameraSurface(final Bitmap bitmap) {
         execute(Observable.just(bitmap)
-                        .flatMap(new Func1<Bitmap, Observable<Palette>>() {
-                            @Override
-                            public Observable<Palette> call(Bitmap bitmap) {
-                                return Observable.just(Palette.from(bitmap).generate());
-                            }
-                        })
+                        .flatMap(bitmap1 -> Observable.just(Palette.from(bitmap1).generate()))
                         .filter(palette ->
                                 (palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK)) != previousColor)
                         .map(palette -> {
@@ -136,13 +134,12 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
         getView().showProgressBar();
         execute(Observable.just(bitmap)
-                        .flatMap(new Func1<Bitmap, Observable<String>>() {
-                            @Override
-                            public Observable<String> call(Bitmap s) {
-                                return Observable.just(Base64Utils.bitmapToBase64(bitmap));
-                            }
-                        })
-                        .map(pictureBase64 -> ColorPicture.fromBase64(pictureBase64, swatches)),
+                        .flatMap(bitmap1 ->
+                                Observable.just(Bitmap.createScaledBitmap(bitmap1, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false)))
+                        .flatMap((bitmap1 ->
+                                Observable.just(Base64Utils.bitmapToBase64(bitmap1))))
+                        .map(pictureBase64 ->
+                                ColorPicture.fromBase64(pictureBase64, swatches)),
                 colorPicture -> {
                     getView().hideProgressBar();
                     appRealm.savePicture(colorPicture);
