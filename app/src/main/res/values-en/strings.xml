@@ -9,5 +9,23 @@
     <string name="saturation_format">S: %d%%</string>
     <string name="value_format">V: %d%%</string>
 
-    <string name="camera_image_saved">Picture saved!</string>
+    <string name="cyan_format">C: %d%%</string>
+    <string name="magenta_format">M: %d%%</string>
+    <string name="yellow_format">Y: %d%%</string>
+    <string name="key_color_format">K: %d%%</string>
+
+    <string name="camera_image_saved">Picture has been saved!</string>
+
+    <string name="history_toolbar_title">History</string>
+    <string name="history_empty">There will be kept stored color / color sets</string>
+
+    <string name="history_dialog_title">Color</string>
+    <string name="history_dialog_copy_label">Color hex</string>
+    <string name="history_dialog_copy">Color has been copied</string>
+
+    <string name="history_remove_title">Remove</string>
+    <string name="history_remove_description">Are you sure you want to remove the color / colors set?</string>
+
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "96920062743",
+    "firebase_url": "https://spectrum-b20dc.firebaseio.com",
+    "project_id": "spectrum-b20dc",
+    "storage_bucket": "spectrum-b20dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96920062743:android:c0cc0f9a2a6fb8b7",
+        "android_client_info": {
+          "package_name": "ru.magflayer.spectrum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96920062743-qudh8egdkt5ncn0av94vcpgi05384hfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB49MIrXQ7kwFhryw5pJ1CVt6K9czofkMQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
