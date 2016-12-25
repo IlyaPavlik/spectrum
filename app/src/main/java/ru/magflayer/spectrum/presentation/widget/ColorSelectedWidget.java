@@ -161,6 +161,12 @@ public class ColorSelectedWidget extends RelativeLayout {
             }
         }
 
+        @Override
+        public void select(int position) {
+            super.select(position);
+            notifyDataSetChanged();
+        }
+
         static class ColorViewHolder extends BaseViewHolder {
 
             @BindView(R.id.color)
