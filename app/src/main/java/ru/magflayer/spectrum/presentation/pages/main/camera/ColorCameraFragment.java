@@ -51,6 +51,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     protected TextureView cameraView;
     @BindView(R.id.left_menu)
     ViewGroup leftMenuView;
+    @BindView(R.id.right_menu)
+    ViewGroup rightMenuView;
     @BindView(R.id.color_recycler)
     protected RecyclerView colorRecycler;
     @BindView(R.id.toggle_mode)
@@ -106,15 +108,6 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
                 AppUtils.changeViewVisibility(true, colorRecycler);
             }
         });
-
-        int fabColor = ContextCompat.getColor(getContext(), R.color.gray);
-
-        FloatingActionButton fab = getFloatingActionButton();
-        fab.setOnClickListener(v -> {
-            Bitmap bitmap = cameraManager.loadCameraBitmap(cameraView);
-            presenter.saveColorPicture(bitmap, swatches);
-        });
-        fab.setBackgroundTintList(ColorStateList.valueOf(fabColor));
     }
 
     @Override
@@ -123,7 +116,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
             cameraManager.startCamera(surface);
             cameraManager.setCameraDisplayOrientation(getContext());
             hideProgressBar();
-            showLeftMenu();
+            showAnimation();
         } catch (IOException e) {
             logger.error("Error occurred while starting camera ", e);
         }
@@ -178,7 +171,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     @Override
     public PageAppearance getPageAppearance() {
         return PageAppearance.builder()
-                .showFloatingButton(true)
+                .showFloatingButton(false)
                 .build();
     }
 
@@ -199,6 +192,25 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         presenter.openHistory();
     }
 
+    @OnClick(R.id.save)
+    protected void onSaveClick() {
+        Bitmap bitmap = cameraManager.loadCameraBitmap(cameraView);
+        presenter.saveColorPicture(bitmap, swatches);
+    }
+
+    private void showAnimation(){
+        showRightMenu();
+        showLeftMenu();
+    }
+
+    private void showRightMenu() {
+        if (rightMenuView.getVisibility() != View.VISIBLE) {
+            rightMenuView.setVisibility(View.VISIBLE);
+
+            rightMenuView.startAnimation(inFromRightAnimation());
+        }
+    }
+
     private void showLeftMenu() {
         if (leftMenuView.getVisibility() != View.VISIBLE) {
             leftMenuView.setVisibility(View.VISIBLE);
@@ -210,6 +222,17 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     private Animation inFromLeftAnimation() {
         Animation inFromLeft = new TranslateAnimation(
                 Animation.RELATIVE_TO_PARENT, -1.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f);
+        inFromLeft.setDuration(800);
+        inFromLeft.setInterpolator(new AccelerateInterpolator());
+        return inFromLeft;
+    }
+
+    private Animation inFromRightAnimation() {
+        Animation inFromLeft = new TranslateAnimation(
+                Animation.RELATIVE_TO_PARENT, +1.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f);

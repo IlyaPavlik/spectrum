@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextureView
         android:id="@+id/camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:background="@color/white" />
 
     <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/progress_bar"
@@ -21,15 +23,32 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
-    <ImageButton
-        android:id="@+id/menu"
-        android:layout_width="@dimen/button_size"
-        android:layout_height="@dimen/button_size"
+    <RelativeLayout
+        android:id="@+id/right_menu"
+        android:layout_width="@dimen/color_list_width"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/indent_normal"
-        android:gravity="center"
-        android:src="@drawable/ic_menu" />
+        android:background="@color/semi_black"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/menu"
+            android:layout_width="@dimen/camera_menu_size"
+            android:layout_height="@dimen/camera_menu_size"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/indent_normal"
+            android:gravity="center"
+            android:src="@drawable/ic_menu" />
+
+        <ImageView
+            android:id="@+id/save"
+            android:layout_width="@dimen/camera_save_size"
+            android:layout_height="@dimen/camera_save_size"
+            android:layout_centerInParent="true"
+            android:src="@drawable/selector_save_button" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/left_menu"
@@ -37,7 +56,8 @@
         android:layout_height="match_parent"
         android:background="@color/semi_black"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <ru.magflayer.spectrum.presentation.widget.ToggleWidget
             android:id="@+id/toggle_mode"
