@@ -1,9 +1,7 @@
 package ru.magflayer.spectrum.presentation.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
@@ -50,12 +48,6 @@ public class ColorDetailsWidget extends LinearLayout {
 
     public ColorDetailsWidget(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ColorDetailsWidget(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
 

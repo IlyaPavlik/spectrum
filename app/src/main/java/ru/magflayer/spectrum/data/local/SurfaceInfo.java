@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public class SurfaceInfo {
 
     private Type type;
