@@ -12,14 +12,9 @@ public class RxUtils {
     public static final Scheduler ANDROID_THREAD_POOL_EXECUTOR = Schedulers.from(AsyncTask.THREAD_POOL_EXECUTOR);
 
     public static <T> Observable.Transformer<T, T> applySchedulers(final Scheduler worker, final Scheduler main) {
-        return new Observable.Transformer<T, T>() {
-            @Override
-            public Observable<T> call(Observable<T> observable) {
-                return observable
-                        .subscribeOn(worker == null ? ANDROID_THREAD_POOL_EXECUTOR : worker)
-                        .observeOn(main == null ? AndroidSchedulers.mainThread() : main);
-            }
-        };
+        return observable -> observable
+                .subscribeOn(worker == null ? ANDROID_THREAD_POOL_EXECUTOR : worker)
+                .observeOn(main == null ? AndroidSchedulers.mainThread() : main);
     }
 
     public static <T> Observable.Transformer<T, T> applySchedulers() {

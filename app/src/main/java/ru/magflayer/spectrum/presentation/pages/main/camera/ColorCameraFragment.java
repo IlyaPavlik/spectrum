@@ -1,13 +1,9 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera;
 
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.Toast;
 
@@ -198,7 +193,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         presenter.saveColorPicture(bitmap, swatches);
     }
 
-    private void showAnimation(){
+    private void showAnimation() {
         showRightMenu();
         showLeftMenu();
     }

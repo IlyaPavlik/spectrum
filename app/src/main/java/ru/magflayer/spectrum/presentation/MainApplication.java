@@ -2,10 +2,10 @@ package ru.magflayer.spectrum.presentation;
 
 import android.app.Application;
 
-import javax.inject.Inject;
+import com.google.firebase.crash.FirebaseCrash;
 
+import ru.magflayer.spectrum.BuildConfig;
 import ru.magflayer.spectrum.injection.InjectorManager;
-import ru.magflayer.spectrum.presentation.manager.CameraManager;
 
 public class MainApplication extends Application {
 
@@ -17,6 +17,7 @@ public class MainApplication extends Application {
         super.onCreate();
 
         InjectorManager.init(this);
+        FirebaseCrash.setCrashCollectionEnabled(!BuildConfig.DEBUG);
     }
 
 //    private class UnexpectedTerminationHelper {

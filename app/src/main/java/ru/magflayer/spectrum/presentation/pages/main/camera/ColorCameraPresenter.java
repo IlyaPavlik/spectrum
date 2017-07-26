@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -27,7 +28,6 @@ import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.utils.Base64Utils;
 import ru.magflayer.spectrum.utils.ColorUtils;
 import rx.Observable;
-import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
@@ -50,12 +50,9 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
         execute(changeObservable
                         .sample(SURFACE_UPDATE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
-                        .flatMap(new Func1<SurfaceInfo.Type, Observable<SurfaceInfo>>() {
-                            @Override
-                            public Observable<SurfaceInfo> call(SurfaceInfo.Type type) {
-                                Bitmap bitmap = getView().getSurfaceBitmap();
-                                return Observable.just(new SurfaceInfo(type, bitmap));
-                            }
+                        .flatMap(type -> {
+                            Bitmap bitmap = getView().getSurfaceBitmap();
+                            return Observable.just(new SurfaceInfo(type, bitmap));
                         }),
                 surfaceInfo -> {
                     Bitmap bitmap = surfaceInfo.getBitmap();
@@ -64,7 +61,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                     } else {
                         handleColorDetails(bitmap);
                     }
-                });
+                },
+                throwable -> logger.error("Error occurred while listening changing", throwable));
     }
 
     void updateSurface(SurfaceInfo.Type type) {
@@ -75,8 +73,10 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         Gson gson = new Gson();
         List<ColorInfo> colorInfoList = gson.fromJson(colorInfoJson, new TypeToken<List<ColorInfo>>() {
         }.getType());
+
         execute(Observable.from(colorInfoList),
-                colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()));
+                colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()),
+                throwable -> logger.error("Error occurred: ", throwable));
     }
 
     private void handleCameraSurface(final Bitmap bitmap) {
@@ -110,6 +110,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
         execute(Observable.from(colorInfoMap.keySet())
                         .reduce(Pair.create("", Integer.MAX_VALUE), (currentMin, s) -> {
+                            if (TextUtils.isEmpty(s)) s = "#000000";
                             int otherColor = Color.parseColor(s);
 
                             int otherRed = Color.red(otherColor);
@@ -128,7 +129,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                     currentDetailsColor = color.getRgb();
                     getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
                     getView().showColorName(colorInfoMap.get(result.first));
-                });
+                },
+                throwable -> logger.error("Error occurred: ", throwable));
     }
 
     void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
