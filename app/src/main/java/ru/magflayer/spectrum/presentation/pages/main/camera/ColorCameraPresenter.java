@@ -38,6 +38,9 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     private static final int SAVE_IMAGE_WIDTH = 640;
     private static final int SAVE_IMAGE_HEIGHT = 360;
 
+    private static final String TAG_SINGLE_COLOR = "TAG_SINGLE_COLOR";
+    private static final String TAG_MULTIPLE_COLOR = "TAG_MULTIPLE_COLOR";
+
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
     private PublishSubject<SurfaceInfo.Type> changeObservable = PublishSubject.create();
@@ -75,13 +78,12 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         }.getType());
 
         execute(Observable.from(colorInfoList),
-                colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()),
-                throwable -> logger.error("Error occurred: ", throwable));
+                colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()));
     }
 
     private void handleCameraSurface(final Bitmap bitmap) {
-        execute(Observable.just(bitmap)
-                        .flatMap(bitmap1 -> Observable.just(Palette.from(bitmap1).generate()))
+        execute(TAG_MULTIPLE_COLOR, Observable.just(null)
+                        .flatMap(ignore -> Observable.just(Palette.from(bitmap).generate()))
                         .filter(palette ->
                                 (palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK)) != previousColor)
                         .map(palette -> {
@@ -108,7 +110,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         final int green = Color.green(newColor);
         final int blue = Color.blue(newColor);
 
-        execute(Observable.from(colorInfoMap.keySet())
+        execute(TAG_SINGLE_COLOR, Observable.from(colorInfoMap.keySet())
                         .reduce(Pair.create("", Integer.MAX_VALUE), (currentMin, s) -> {
                             if (TextUtils.isEmpty(s)) s = "#000000";
                             int otherColor = Color.parseColor(s);
