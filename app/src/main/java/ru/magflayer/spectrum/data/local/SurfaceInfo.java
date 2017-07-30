@@ -13,7 +13,7 @@ public class SurfaceInfo {
     private Bitmap bitmap;
 
     public enum Type {
-        SINGLE, FULL
+        SINGLE, MULTIPLE
     }
 
 }

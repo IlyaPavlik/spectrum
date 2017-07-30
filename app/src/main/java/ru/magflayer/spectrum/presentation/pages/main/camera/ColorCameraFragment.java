@@ -114,12 +114,13 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
             }
         };
 
-        logger.debug("canDetectOrientation: {}", orientationEventListener.canDetectOrientation());
         if (orientationEventListener.canDetectOrientation()) {
             orientationEventListener.enable();
         } else {
             orientationEventListener.disable();
         }
+
+        updateMode(toggleView.isSingle());
     }
 
     @Override
@@ -141,15 +142,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         colorRecycler.setAdapter(adapter);
         cameraView.setSurfaceTextureListener(this);
         colorRecycler.setVisibility(toggleView.isSingle() ? View.GONE : View.VISIBLE);
-        toggleView.setOnCheckChangedListener(isSingle -> {
-            if (isSingle) {
-                AppUtils.changeViewVisibility(true, colorDetailsWidget, pointView);
-                AppUtils.changeViewVisibility(false, colorRecycler);
-            } else {
-                AppUtils.changeViewVisibility(false, colorDetailsWidget, pointView);
-                AppUtils.changeViewVisibility(true, colorRecycler);
-            }
-        });
+        toggleView.setOnCheckChangedListener(this::updateMode);
     }
 
     @Override
@@ -179,8 +172,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        boolean isMultiColor = colorRecycler.getVisibility() == View.VISIBLE;
-        presenter.updateSurface(isMultiColor ? SurfaceInfo.Type.FULL : SurfaceInfo.Type.SINGLE);
+        presenter.updateSurface(toggleView.isSingle() ? SurfaceInfo.Type.SINGLE : SurfaceInfo.Type.MULTIPLE);
     }
 
     @Override
@@ -290,7 +282,6 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         ViewUtils.rotateView(menuButton, orientation.getDegree());
         toggleView.rotateIcons(orientation.getDegree());
         colorDetailsWidget.rotate(orientation.getDegree());
-        adapter.updateRotateDegree(orientation.getDegree());
     }
 
     private boolean isPortrait(final int orientation) {
@@ -301,6 +292,16 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     private boolean isLandscape(final int orientation) {
         return (orientation <= 90 + ROTATION_INTERVAL && orientation >= 90 - ROTATION_INTERVAL) // [100 : 80]
                 || (orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL); // [280 : 260]
+    }
+
+    private void updateMode(final boolean single) {
+        if (single) {
+            AppUtils.changeViewVisibility(true, colorDetailsWidget, pointView);
+            AppUtils.changeViewVisibility(false, colorRecycler);
+        } else {
+            AppUtils.changeViewVisibility(false, colorDetailsWidget, pointView);
+            AppUtils.changeViewVisibility(true, colorRecycler);
+        }
     }
 
     @Getter
