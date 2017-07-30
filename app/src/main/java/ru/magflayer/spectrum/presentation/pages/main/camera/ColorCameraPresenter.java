@@ -59,7 +59,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                         }),
                 surfaceInfo -> {
                     Bitmap bitmap = surfaceInfo.getBitmap();
-                    if (surfaceInfo.getType() == SurfaceInfo.Type.FULL) {
+                    if (surfaceInfo.getType() == SurfaceInfo.Type.MULTIPLE) {
                         handleCameraSurface(bitmap);
                     } else {
                         handleColorDetails(bitmap);
@@ -82,17 +82,25 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     }
 
     private void handleCameraSurface(final Bitmap bitmap) {
-        execute(TAG_MULTIPLE_COLOR, Observable.just(null)
-                        .flatMap(ignore -> Observable.just(Palette.from(bitmap).generate()))
-                        .filter(palette ->
-                                (palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK)) != previousColor)
+        execute(TAG_MULTIPLE_COLOR, Observable.just(bitmap)
+                        .flatMap(bitmap1 -> Observable.just(Palette.from(bitmap1).generate()))
+                        .filter(palette -> {
+                            //to reduce times of updating
+                            Palette.Swatch dominantSwatch = palette.getDominantSwatch();
+                            if (dominantSwatch == null) return true;
+                            int currentColor = dominantSwatch.getRgb();
+
+                            boolean needRefresh = currentColor != previousColor;
+                            if (currentColor != previousColor) {
+                                previousColor = currentColor;
+                            }
+                            return needRefresh;
+                        })
                         .map(palette -> {
                             List<Palette.Swatch> colors = new ArrayList<>(palette.getSwatches());
-                            previousColor = palette.getVibrantColor(Color.BLACK) & palette.getMutedColor(Color.BLACK);
-
+                            //filtered by brightness
                             Collections.sort(colors,
                                     (lhs, rhs) -> Float.compare(lhs.getHsl()[2], rhs.getHsl()[2]));
-
                             return colors;
                         }),
                 colors -> getView().showColors(colors));
