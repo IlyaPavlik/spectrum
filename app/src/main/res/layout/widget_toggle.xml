@@ -2,21 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/toggle_single"
+    <FrameLayout
+        android:id="@+id/toggle_single_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_toggle_left"
-        android:padding="@dimen/indent_small"
-        android:src="@drawable/single" />
+        android:background="@drawable/bg_toggle_top">
 
-    <ImageView
-        android:id="@+id/toggle_multiple"
+        <ImageView
+            android:id="@+id/toggle_single"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/indent_small"
+            android:src="@drawable/single" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/toggle_multiple_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_toggle_right"
-        android:padding="@dimen/indent_small"
-        android:src="@drawable/multiple" />
+        android:background="@drawable/bg_toggle_bottom">
+
+        <ImageView
+            android:id="@+id/toggle_multiple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/indent_small"
+            android:src="@drawable/multiple" />
+    </FrameLayout>
 </LinearLayout>

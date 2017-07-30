@@ -4,7 +4,6 @@ package ru.magflayer.spectrum.presentation.common;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -12,9 +11,8 @@ import com.bumptech.glide.RequestManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Setter;
-
-public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends RecyclerView.Adapter<VH> {
+@SuppressWarnings("WeakerAccess")
+public abstract class BaseRecyclerAdapter<VH extends BaseViewHolder, T> extends RecyclerView.Adapter<VH> {
 
     public interface OnItemLongClickListener {
         void onItemLongClick(int position);
@@ -32,7 +30,7 @@ public abstract class BaseRecyclerView<VH extends BaseViewHolder, T> extends Rec
     protected LayoutInflater inflater;
     protected RequestManager glide;
 
-    public BaseRecyclerView(Context context) {
+    public BaseRecyclerAdapter(Context context) {
         glide = Glide.with(context);
         inflater = LayoutInflater.from(context);
     }

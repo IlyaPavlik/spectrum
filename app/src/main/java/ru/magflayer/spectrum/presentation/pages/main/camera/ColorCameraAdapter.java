@@ -1,64 +1,59 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera;
 
+import android.content.Context;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
+import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
+import ru.magflayer.spectrum.utils.ViewUtils;
 
-public class ColorCameraAdapter extends RecyclerView.Adapter<ColorCameraAdapter.ColorViewHolder> {
+public class ColorCameraAdapter extends BaseRecyclerAdapter<ColorCameraAdapter.ColorViewHolder, Palette.Swatch> {
 
-    private List<Palette.Swatch> colors = new ArrayList<>();
+    private int rotateDegree;
+
+    public ColorCameraAdapter(Context context) {
+        super(context);
+    }
 
     @Override
     public ColorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ColorViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_color_camera, parent, false));
-    }
-
-    @SuppressWarnings("SuspiciousMethodCalls")
-    public void setColors(List<Palette.Swatch> colors) {
-        if (colors != null) {
-            this.colors = new ArrayList<>(colors);
-            this.colors.removeAll(Collections.singleton(null));
-            notifyDataSetChanged();
-        }
+        final View view = inflater.inflate(R.layout.item_color_camera, parent, false);
+        return new ColorViewHolder(view, rotateDegree);
     }
 
     @Override
     public void onBindViewHolder(ColorViewHolder holder, int position) {
-        Palette.Swatch swatch = colors.get(position);
+        Palette.Swatch swatch = getItem(position);
         int color = swatch.getRgb();
 
         holder.colorContainer.setBackgroundColor(color);
         holder.colorTextView.setTextColor(swatch.getTitleTextColor());
 
         holder.colorTextView.setText(String.format("#%06X", (0xFFFFFF & color)));
+
+        ViewUtils.rotateView(holder.itemView, rotateDegree);
     }
 
-    @Override
-    public int getItemCount() {
-        return colors.size();
+    public void updateRotateDegree(final int rotateDegree) {
+        this.rotateDegree = rotateDegree;
+        notifyDataSetChanged();
     }
 
-    class ColorViewHolder extends RecyclerView.ViewHolder {
+    static class ColorViewHolder extends BaseViewHolder {
 
         @BindView(R.id.color_container)
         ViewGroup colorContainer;
         @BindView(R.id.color_text)
         TextView colorTextView;
 
-        public ColorViewHolder(View itemView) {
+        ColorViewHolder(View itemView, int rotateDegree) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            itemView.setRotation(rotateDegree);
         }
     }
 }

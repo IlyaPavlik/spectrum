@@ -21,7 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.presentation.common.BaseRecyclerView;
+import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
 import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
 import ru.magflayer.spectrum.utils.ColorUtils;
 import ru.magflayer.spectrum.utils.DialogUtils;
@@ -138,7 +138,7 @@ public class ColorSelectedWidget extends RelativeLayout {
         keyView.setText(context.getString(R.string.key_color_format, k));
     }
 
-    static class ColorAdapter extends BaseRecyclerView<ColorAdapter.ColorViewHolder, Palette.Swatch> {
+    static class ColorAdapter extends BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Palette.Swatch> {
 
         ColorAdapter(Context context) {
             super(context);

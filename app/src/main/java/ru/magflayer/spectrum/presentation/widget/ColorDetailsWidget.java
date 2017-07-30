@@ -12,9 +12,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.utils.ColorUtils;
+import ru.magflayer.spectrum.utils.ViewUtils;
 
 public class ColorDetailsWidget extends LinearLayout {
 
+    @BindView(R.id.color_container)
+    protected View colorContainer;
     @BindView(R.id.color)
     protected View colorView;
     @BindView(R.id.color_id)
@@ -22,6 +25,8 @@ public class ColorDetailsWidget extends LinearLayout {
     @BindView(R.id.color_name)
     protected TextView colorNameView;
 
+    @BindView(R.id.color_rgb)
+    protected View colorRGB;
     @BindView(R.id.red)
     protected TextSeekBarView redView;
     @BindView(R.id.green)
@@ -29,6 +34,8 @@ public class ColorDetailsWidget extends LinearLayout {
     @BindView(R.id.blue)
     protected TextSeekBarView blueView;
 
+    @BindView(R.id.color_hsv)
+    protected View colorHSV;
     @BindView(R.id.hue)
     protected TextView hueView;
     @BindView(R.id.saturation)
@@ -37,13 +44,11 @@ public class ColorDetailsWidget extends LinearLayout {
     protected TextView valueView;
 
     public ColorDetailsWidget(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public ColorDetailsWidget(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context, attrs, -1);
     }
 
     public ColorDetailsWidget(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -61,6 +66,13 @@ public class ColorDetailsWidget extends LinearLayout {
 
     public void setColorName(String colorName) {
         colorNameView.setText(colorName);
+    }
+
+    public void rotate(final int toDegree) {
+        ViewUtils.rotateView(colorContainer, toDegree);
+        ViewUtils.rotateView(colorNameView, toDegree);
+        ViewUtils.rotateView(colorRGB, toDegree);
+        ViewUtils.rotateView(colorHSV, toDegree);
     }
 
     private void init(Context context) {
@@ -103,5 +115,4 @@ public class ColorDetailsWidget extends LinearLayout {
         saturationView.setText(context.getString(R.string.saturation_format, saturation));
         valueView.setText(context.getString(R.string.value_format, value));
     }
-
 }

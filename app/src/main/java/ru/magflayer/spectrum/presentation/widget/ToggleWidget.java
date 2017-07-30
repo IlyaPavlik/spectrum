@@ -1,8 +1,6 @@
 package ru.magflayer.spectrum.presentation.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -11,6 +9,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.utils.ViewUtils;
 
 public class ToggleWidget extends LinearLayout {
 
@@ -19,6 +18,11 @@ public class ToggleWidget extends LinearLayout {
     public interface OnCheckChangedListener {
         void checkChanged(boolean isSingle);
     }
+
+    @BindView(R.id.toggle_single_container)
+    protected View singleContainerView;
+    @BindView(R.id.toggle_multiple_container)
+    protected View multipleContainerView;
 
     @BindView(R.id.toggle_single)
     protected View singleView;
@@ -29,23 +33,15 @@ public class ToggleWidget extends LinearLayout {
     private OnCheckChangedListener onCheckChangedListener;
 
     public ToggleWidget(Context context) {
-        super(context);
-        init();
+        this(context, null);
     }
 
     public ToggleWidget(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+        this(context, attrs, -1);
     }
 
     public ToggleWidget(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ToggleWidget(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 
@@ -67,6 +63,11 @@ public class ToggleWidget extends LinearLayout {
         return currentType == ModeType.SINGLE;
     }
 
+    public void rotateIcons(final int toDegrees) {
+        ViewUtils.rotateView(singleView, toDegrees);
+        ViewUtils.rotateView(multipleView, toDegrees);
+    }
+
     private void init() {
         View view = inflate(getContext(), R.layout.widget_toggle, this);
         ButterKnife.bind(view);
@@ -76,11 +77,11 @@ public class ToggleWidget extends LinearLayout {
     private void changeType(ModeType modeType) {
         currentType = modeType;
         if (modeType == ModeType.SINGLE) {
-            multipleView.setActivated(false);
-            singleView.setActivated(true);
+            multipleContainerView.setActivated(false);
+            singleContainerView.setActivated(true);
         } else {
-            singleView.setActivated(false);
-            multipleView.setActivated(true);
+            singleContainerView.setActivated(false);
+            multipleContainerView.setActivated(true);
         }
 
         if (onCheckChangedListener != null) {

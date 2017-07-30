@@ -17,7 +17,6 @@
     <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
         android:id="@+id/blue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
