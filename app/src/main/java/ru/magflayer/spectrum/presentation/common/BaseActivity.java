@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -16,6 +19,8 @@ import ru.magflayer.spectrum.utils.AppUtils;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseActivity<Presenter extends BasePresenter> extends AppCompatActivity implements PageView {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @BindView(R.id.progress_bar)
     @Nullable

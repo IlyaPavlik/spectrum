@@ -10,12 +10,12 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.presentation.common.BaseRecyclerView;
+import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
 import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
 import ru.magflayer.spectrum.utils.Base64Utils;
 import ru.magflayer.spectrum.utils.BitmapUtils;
 
-class HistoryAdapter extends BaseRecyclerView<HistoryAdapter.HistoryViewHolder, ColorPicture> {
+class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPicture> {
 
     HistoryAdapter(Context context) {
         super(context);

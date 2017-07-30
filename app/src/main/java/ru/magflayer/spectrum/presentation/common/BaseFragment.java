@@ -53,6 +53,12 @@ public abstract class BaseFragment extends Fragment implements PageView {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        logger.debug("onViewCreated");
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         inject();
@@ -80,6 +86,7 @@ public abstract class BaseFragment extends Fragment implements PageView {
 
     @Override
     public void onDestroyView() {
+        logger.debug("onDestroyView");
         unbinder.unbind();
         getPresenter().unsubscribe();
         super.onDestroyView();

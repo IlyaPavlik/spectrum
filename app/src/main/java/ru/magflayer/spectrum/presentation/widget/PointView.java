@@ -1,22 +1,22 @@
 package ru.magflayer.spectrum.presentation.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import ru.magflayer.spectrum.utils.AppUtils;
 
+@SuppressWarnings("unused")
 public class PointView extends View {
 
     private static final float RADIUS_DP = 4;
     private static final float STROKE_WIDTH_DP = 2;
 
+    @SuppressWarnings("WeakerAccess")
     public interface OnPointChangeListener {
         void onPointChanged(float x, float y, int radius);
     }
@@ -36,23 +36,15 @@ public class PointView extends View {
     private boolean moveActive;
 
     public PointView(Context context) {
-        super(context);
-        init();
+        this(context, null);
     }
 
     public PointView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+        this(context, attrs, -1);
     }
 
     public PointView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PointView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 
@@ -65,18 +57,10 @@ public class PointView extends View {
         aimPaint.setStrokeWidth(circleStrokeWidth);
         aimPaint.setStyle(Paint.Style.STROKE);
 
-        post(new Runnable() {
-            @Override
-            public void run() {
-                currentX = getWidth() / 2;
-                currentY = getHeight() / 2;
-
-                leftTopArc = new RectF(currentX - 50, currentY - 50, currentX, currentY);
-                leftBottomArc = new RectF(currentX - 50, currentY, currentX, currentY + 50);
-                rightTopArc = new RectF(currentX, currentY - 50, currentX + 50, currentY);
-                rightBottomArc = new RectF(currentX, currentY, currentX + 50, currentY + 50);
-            }
-        });
+        leftTopArc = new RectF();
+        leftBottomArc = new RectF();
+        rightTopArc = new RectF();
+        rightBottomArc = new RectF();
     }
 
     public void setOnPointChangeListener(OnPointChangeListener onPointChangeListener) {
@@ -102,6 +86,21 @@ public class PointView extends View {
     public void setAimColor(int color) {
         aimPaint.setColor(color);
         invalidate();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+        currentX = parentWidth / 2;
+        currentY = parentHeight / 2;
+
+        leftTopArc.set(currentX - 50, currentY - 50, currentX, currentY);
+        leftBottomArc.set(currentX - 50, currentY, currentX, currentY + 50);
+        rightTopArc.set(currentX, currentY - 50, currentX + 50, currentY);
+        rightBottomArc.set(currentX, currentY, currentX + 50, currentY + 50);
     }
 
     @Override

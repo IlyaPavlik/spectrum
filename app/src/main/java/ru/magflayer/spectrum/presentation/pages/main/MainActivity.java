@@ -60,7 +60,11 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     protected void onResume() {
         super.onResume();
-        cameraManager.open();
+        try {
+            cameraManager.open();
+        } catch (RuntimeException e) {
+            logger.error("Camera not available:", e);
+        }
         toolbarViewHolder.onRegisterBus();
     }
 
