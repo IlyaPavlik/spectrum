@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/indent_normal">
+    android:paddingBottom="@dimen/indent_small">
 
     <ImageView
         android:id="@+id/picture"
@@ -17,5 +17,5 @@
         android:id="@+id/color_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/indent_small" />
+        android:layout_marginLeft="@dimen/indent_little" />
 </LinearLayout>

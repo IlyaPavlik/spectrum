@@ -20,7 +20,7 @@ import ru.magflayer.spectrum.presentation.pages.main.router.MainRouterImpl;
 import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarViewHolder;
 
-@Layout(id = R.layout.activity_main)
+@Layout(R.layout.activity_main)
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
     @BindView(R.id.toolbar)

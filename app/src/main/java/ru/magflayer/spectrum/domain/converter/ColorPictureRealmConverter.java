@@ -12,17 +12,17 @@ public class ColorPictureRealmConverter {
 
         colorPicture.setDateInMillis(realm.getDate());
         colorPicture.setPictureBase64(realm.getPictureBase64());
-        colorPicture.setSwatches(swatchRealmConverter.fromRealm(realm.getSwatches()));
+        colorPicture.setRgbColors(swatchRealmConverter.fromRealm(realm.getSwatches()));
 
         return colorPicture;
     }
 
     public ColorPictureRealm toRealm(ColorPicture colorPicture) {
-        ColorPictureRealm  pictureRealm = new ColorPictureRealm();
+        ColorPictureRealm pictureRealm = new ColorPictureRealm();
 
         pictureRealm.setDate(colorPicture.getDateInMillis());
         pictureRealm.setPictureBase64(colorPicture.getPictureBase64());
-        pictureRealm.setSwatches(swatchRealmConverter.toRealm(colorPicture.getSwatches()));
+        pictureRealm.setSwatches(swatchRealmConverter.toRealm(colorPicture.getRgbColors()));
 
         return pictureRealm;
     }

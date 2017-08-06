@@ -45,7 +45,7 @@ import ru.magflayer.spectrum.presentation.widget.ToggleWidget;
 import ru.magflayer.spectrum.utils.AppUtils;
 import ru.magflayer.spectrum.utils.ViewUtils;
 
-@Layout(id = R.layout.fragment_color_camera)
+@Layout(R.layout.fragment_color_camera)
 public class ColorCameraFragment extends BaseFragment implements TextureView.SurfaceTextureListener, ColorCameraView {
 
     private final static int ROTATION_INTERVAL = 5;

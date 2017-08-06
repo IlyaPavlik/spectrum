@@ -9,6 +9,14 @@
     <string name="saturation_format">S: %d%%</string>
     <string name="value_format">V: %d%%</string>
 
+    <string name="hue_long_format">"Hue: %d°"</string>
+    <string name="saturation_long_format">Saturation: %d%%</string>
+    <string name="value_long_format">Value: %d%%</string>
+
+    <string name="x_format">X: %.2f</string>
+    <string name="y_format">Y: %.2f</string>
+    <string name="z_format">Z: %.2f</string>
+
     <string name="cyan_format">C: %d%%</string>
     <string name="magenta_format">M: %d%%</string>
     <string name="yellow_format">Y: %d%%</string>
@@ -19,6 +27,11 @@
     <string name="history_toolbar_title">История</string>
     <string name="history_empty">Здесь будут храниться сохраненные цвета/наборы цветов</string>
 
+    <plurals name="history_details_title">
+        <item quantity="one">Цвет</item>
+        <item quantity="many">Цвета</item>
+    </plurals>
+
     <string name="history_dialog_title">Цвет</string>
     <string name="history_dialog_copy_label">Цвет hex</string>
     <string name="history_dialog_copy">Цвет скопирован</string>
@@ -28,4 +41,8 @@
 
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Отмена</string>
+
+    <string name="history_details_rgb">RGB</string>
+    <string name="history_details_cmyk">CMYK</string>
+    <string name="history_details_hsv">HSV</string>
 </resources>

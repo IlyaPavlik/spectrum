@@ -1,45 +1,65 @@
 package ru.magflayer.spectrum.domain.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.graphics.Palette;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ColorPicture {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class ColorPicture implements Parcelable {
 
     private long dateInMillis;
     private String pictureBase64;
-    private List<Palette.Swatch> swatches;
+    private List<Integer> rgbColors;
 
-    public long getDateInMillis() {
-        return dateInMillis;
+    private ColorPicture(Parcel in) {
+        dateInMillis = in.readLong();
+        pictureBase64 = in.readString();
     }
 
-    public void setDateInMillis(long dateInMillis) {
-        this.dateInMillis = dateInMillis;
-    }
+    public static final Creator<ColorPicture> CREATOR = new Creator<ColorPicture>() {
+        @Override
+        public ColorPicture createFromParcel(Parcel in) {
+            return new ColorPicture(in);
+        }
 
-    public String getPictureBase64() {
-        return pictureBase64;
-    }
-
-    public void setPictureBase64(String pictureBase64) {
-        this.pictureBase64 = pictureBase64;
-    }
-
-    public List<Palette.Swatch> getSwatches() {
-        return swatches;
-    }
-
-    public void setSwatches(List<Palette.Swatch> swatches) {
-        this.swatches = swatches;
-    }
+        @Override
+        public ColorPicture[] newArray(int size) {
+            return new ColorPicture[size];
+        }
+    };
 
     public static ColorPicture fromBase64(String pictureBase64, List<Palette.Swatch> swatches) {
         ColorPicture colorPicture = new ColorPicture();
         colorPicture.setDateInMillis(new Date().getTime());
         colorPicture.setPictureBase64(pictureBase64);
-        colorPicture.setSwatches(swatches);
+
+        final List<Integer> colors = new ArrayList<>();
+        for (Palette.Swatch swatch : swatches) {
+            colors.add(swatch.getRgb());
+        }
+        colorPicture.setRgbColors(colors);
+
         return colorPicture;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(dateInMillis);
+        dest.writeString(pictureBase64);
     }
 }

@@ -3,6 +3,7 @@ package ru.magflayer.spectrum.presentation.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -89,17 +90,17 @@ public class ColorDetailsWidget extends LinearLayout {
         redView.setText(String.valueOf(red));
         redView.setMaxValue(maxValue);
         redView.setValue(red);
-        redView.setColor(Color.RED);
+        redView.setColor(ContextCompat.getColor(getContext(), R.color.red));
 
         greenView.setText(String.valueOf(green));
         greenView.setMaxValue(maxValue);
         greenView.setValue(green);
-        greenView.setColor(Color.GREEN);
+        greenView.setColor(ContextCompat.getColor(getContext(), R.color.green));
 
         blueView.setText(String.valueOf(blue));
         blueView.setMaxValue(maxValue);
         blueView.setValue(blue);
-        blueView.setColor(Color.BLUE);
+        blueView.setColor(ContextCompat.getColor(getContext(), R.color.blue));
     }
 
     private void initHsvColor(int color) {

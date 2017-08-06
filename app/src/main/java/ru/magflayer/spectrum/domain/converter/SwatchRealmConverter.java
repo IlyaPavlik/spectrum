@@ -1,7 +1,5 @@
 package ru.magflayer.spectrum.domain.converter;
 
-import android.support.v7.graphics.Palette;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,23 +8,23 @@ import ru.magflayer.spectrum.data.database.model.SwatchRealm;
 
 class SwatchRealmConverter {
 
-    List<Palette.Swatch> fromRealm(List<SwatchRealm> swatchRealms) {
-        List<Palette.Swatch> swatches = new ArrayList<>();
+    List<Integer> fromRealm(List<SwatchRealm> swatchRealms) {
+        List<Integer> swatches = new ArrayList<>();
 
         for (SwatchRealm swatchRealm : swatchRealms) {
-            swatches.add(new Palette.Swatch(swatchRealm.getColor(), Integer.MAX_VALUE));
+            swatches.add(swatchRealm.getColor());
         }
 
         return swatches;
 
     }
 
-    RealmList<SwatchRealm> toRealm(List<Palette.Swatch> swatches) {
+    RealmList<SwatchRealm> toRealm(List<Integer> colors) {
         RealmList<SwatchRealm> swatchRealmList = new RealmList<>();
 
-        if (swatches != null) {
-            for (Palette.Swatch swatch : swatches) {
-                swatchRealmList.add(new SwatchRealm(swatch.getRgb()));
+        if (colors != null) {
+            for (Integer color : colors) {
+                swatchRealmList.add(new SwatchRealm(color));
             }
         }
 

@@ -23,7 +23,7 @@ public class AppUtils {
         if (!cls.isAnnotationPresent(Layout.class)) return;
         Annotation annotation = cls.getAnnotation(Layout.class);
         Layout layout = (Layout) annotation;
-        activity.setContentView(layout.id());
+        activity.setContentView(layout.value());
     }
 
     /**

@@ -47,7 +47,7 @@ public abstract class BaseFragment extends Fragment implements PageView {
         if (!cls.isAnnotationPresent(Layout.class)) return null;
         Annotation annotation = cls.getAnnotation(Layout.class);
         Layout layout = (Layout) annotation;
-        View view = inflater.inflate(layout.id(), null);
+        View view = inflater.inflate(layout.value(), null);
         unbinder = ButterKnife.bind(this, view);
         return view;
     }
@@ -56,6 +56,10 @@ public abstract class BaseFragment extends Fragment implements PageView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logger.debug("onViewCreated");
+        final Bundle arguments = getArguments();
+        if (arguments != null) {
+            handleArguments(arguments);
+        }
     }
 
     @Override
@@ -131,7 +135,6 @@ public abstract class BaseFragment extends Fragment implements PageView {
         return null;
     }
 
-
     @Override
     public void showProgressBar() {
         if (progressBar != null) {
@@ -144,5 +147,9 @@ public abstract class BaseFragment extends Fragment implements PageView {
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }
+    }
+
+    protected void handleArguments(@NonNull final Bundle arguments) {
+        //do nothing
     }
 }

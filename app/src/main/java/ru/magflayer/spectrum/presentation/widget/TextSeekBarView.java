@@ -1,10 +1,8 @@
 package ru.magflayer.spectrum.presentation.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
@@ -25,23 +23,15 @@ public class TextSeekBarView extends FrameLayout {
     protected TextView textView;
 
     public TextSeekBarView(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public TextSeekBarView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context, attrs, -1);
     }
 
     public TextSeekBarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TextSeekBarView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
 
@@ -67,5 +57,6 @@ public class TextSeekBarView extends FrameLayout {
     private void init(Context context) {
         View view = View.inflate(context, R.layout.widget_text_seek_bar, this);
         ButterKnife.bind(this, view);
+        seekBar.setOnTouchListener((v, event) -> true);
     }
 }
