@@ -7,7 +7,7 @@
     <SeekBar
         android:id="@+id/seek_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:progressDrawable="@drawable/bg_seek_bar"
         android:thumb="@null" />
@@ -17,6 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:shadowColor="@color/key"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="4"
         android:textColor="@android:color/white"
         tools:text="Text" />
 

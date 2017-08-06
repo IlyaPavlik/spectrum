@@ -3,11 +3,21 @@
     <color name="colorPrimary">#f5f5f5</color>
     <color name="colorPrimaryDark">#e0e0e0</color>
     <color name="colorAccent">#009688</color>
-    <color name="colorBackground">#FAFAFA</color>
+    <color name="colorBackground">#EEEEEE</color>
     <color name="primaryTextColor">#212121</color>
 
     <color name="gray">#c8c8c8</color>
     <color name="semi_black">#77000000</color>
 
     <color name="white">#ffffff</color>
+
+    <!--Material 500-->
+    <color name="red">#F44336</color>
+    <color name="green">#4CAF50</color>
+    <color name="blue">#2196F3</color>
+
+    <color name="cyan">#00BCD4</color>
+    <color name="magenta">#9C27B0</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="key">#000000</color>
 </resources>

@@ -67,7 +67,7 @@ public class BitmapUtils {
         return popularColor;
     }
 
-    public static Bitmap createMultiColorHorizontalBitmap(int width, int height, List<Palette.Swatch> colors) {
+    public static Bitmap createMultiColorHorizontalBitmap(int width, int height, List<Integer> colors) {
         Bitmap resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
 
         Canvas canvas = new Canvas(resultBitmap);
@@ -76,8 +76,8 @@ public class BitmapUtils {
         int colorWidth = width / colorSize;
         int startX = 0;
 
-        for (Palette.Swatch swatch : colors) {
-            paint.setColor(swatch.getRgb());
+        for (Integer color : colors) {
+            paint.setColor(color);
             RectF rect = new RectF(startX, 0, startX + colorWidth, height);
             canvas.drawRect(rect, paint);
             startX += colorWidth;

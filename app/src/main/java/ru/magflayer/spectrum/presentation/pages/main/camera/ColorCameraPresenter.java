@@ -33,7 +33,6 @@ import rx.subjects.PublishSubject;
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
 
     private static final int SURFACE_UPDATE_DELAY_MILLIS = 300;
-    private static final int COLOR_ERROR = 5;
 
     private static final int SAVE_IMAGE_WIDTH = 640;
     private static final int SAVE_IMAGE_HEIGHT = 360;
@@ -134,7 +133,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                             String color1 = currentMin.second > newFi ? s : currentMin.first;
                             return Pair.create(color1, result);
                         })
-                        .filter(aDouble -> aDouble.second != Integer.MAX_VALUE && isSameColor(currentDetailsColor, newColor)),
+                        .filter(aDouble -> aDouble.second != Integer.MAX_VALUE
+                                && ColorUtils.isSameColor(currentDetailsColor, newColor)),
                 result -> {
                     currentDetailsColor = color.getRgb();
                     getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
@@ -165,14 +165,5 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     @Subscribe
     public void onPictureSaved(PictureSavedEvent event) {
         getView().showPictureSaved();
-    }
-
-    private boolean isSameColor(int previousColor, int newColor) {
-        int[] previousRgb = {Color.red(previousColor), Color.green(previousColor), Color.blue(previousColor)};
-        int[] newRgb = {Color.red(newColor), Color.green(newColor), Color.blue(newColor)};
-
-        return Math.abs(previousRgb[0] - newRgb[0]) >= COLOR_ERROR
-                || Math.abs(previousRgb[1] - newRgb[1]) >= COLOR_ERROR
-                || Math.abs(previousRgb[2] - newRgb[2]) >= COLOR_ERROR;
     }
 }

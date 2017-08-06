@@ -11,7 +11,7 @@ import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
 
-@Layout(id = R.layout.fragment_splash)
+@Layout(R.layout.fragment_splash)
 public class SplashFragment extends BaseFragment implements SplashView {
 
     @Inject

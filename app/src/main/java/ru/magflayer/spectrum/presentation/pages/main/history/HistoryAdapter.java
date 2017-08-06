@@ -41,7 +41,7 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
             int height = holder.colorContainer.getMeasuredHeight();
 
             if (width > 0 && height > 0) {
-                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getSwatches());
+                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getRgbColors());
                 holder.colorContainer.setImageBitmap(colorsBitmap);
             }
         });

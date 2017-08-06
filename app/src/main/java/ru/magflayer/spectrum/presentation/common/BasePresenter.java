@@ -16,6 +16,7 @@ import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.utils.RxUtils;
 import rx.Observable;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 @SuppressWarnings("WeakerAccess")
@@ -74,19 +75,31 @@ public abstract class BasePresenter<View, Router> {
     }
 
     protected <T> void execute(Observable<T> observable, Action1<T> action1) {
-        execute(String.valueOf(observable.hashCode()), observable, action1, throwable -> logger.error("Error occurred: ", throwable));
+        execute(String.valueOf(observable.hashCode()), observable, action1, throwable -> logger.error("Error occurred: ", throwable), () -> {
+        });
     }
 
     protected <T> void execute(Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction) {
-        execute(String.valueOf(observable.hashCode()), observable, action1, throwable -> logger.error("Error occurred: ", throwable));
+        execute(String.valueOf(observable.hashCode()), observable, action1, errorAction, () -> {
+        });
+    }
+
+    protected <T> void execute(Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction, Action0 completeAction) {
+        execute(String.valueOf(observable.hashCode()), observable, action1, errorAction, completeAction);
     }
 
     protected <T> void execute(String tag, Observable<T> observable, Action1<T> action1) {
-        execute(tag, observable, action1, throwable -> logger.error("Error occurred: ", throwable));
+        execute(tag, observable, action1, throwable -> logger.error("Error occurred: ", throwable), () -> {
+        });
+    }
+
+    protected <T> void execute(String tag, Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction) {
+        execute(tag, observable, action1, errorAction, () -> {
+        });
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> void execute(String tag, Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction) {
+    protected <T> void execute(String tag, Observable<T> observable, Action1<T> action1, Action1<Throwable> errorAction, Action0 completeAction) {
         if (subscriptionMap.containsKey(tag)) {
             Subscription subscription = subscriptionMap.get(tag);
             if (!subscription.isUnsubscribed()) {
@@ -96,7 +109,7 @@ public abstract class BasePresenter<View, Router> {
 
         subscriptionMap.put(tag, observable
                 .compose(RxUtils.applySchedulers())
-                .subscribe(action1, errorAction));
+                .subscribe(action1, errorAction, completeAction));
     }
 
     public void unsubscribe() {
