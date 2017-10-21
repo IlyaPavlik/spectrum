@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.injection;
+package ru.magflayer.spectrum.domain.injection;
 
 import android.content.Context;
 
@@ -16,19 +16,19 @@ class AppModule {
 
     private Context context;
 
-    public AppModule(Context context) {
+    AppModule(Context context) {
         this.context = context;
     }
 
     @Singleton
     @Provides
-    public Bus provideBus() {
+    Bus provideBus() {
         return new Bus(ThreadEnforcer.ANY);
     }
 
     @Singleton
     @Provides
-    public AppRealm provideAppRealm(Bus bus) {
+    AppRealm provideAppRealm(Bus bus) {
         return new AppRealm(context, bus);
     }
 }

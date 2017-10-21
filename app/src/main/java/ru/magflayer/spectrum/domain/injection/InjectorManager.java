@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.injection;
+package ru.magflayer.spectrum.domain.injection;
 
 import android.app.Application;
 

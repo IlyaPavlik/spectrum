@@ -5,7 +5,7 @@ import android.app.Application;
 import com.google.firebase.crash.FirebaseCrash;
 
 import ru.magflayer.spectrum.BuildConfig;
-import ru.magflayer.spectrum.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 
 public class MainApplication extends Application {
 
