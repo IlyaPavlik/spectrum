@@ -99,7 +99,9 @@ public class ColorSelectedWidget extends RelativeLayout {
         colorAdapter = new ColorAdapter(getContext());
         colorAdapter.setItemSelectListener(position -> {
             Palette.Swatch swatch = colorAdapter.getItem(position);
-            selectColor(swatch.getRgb());
+            if (swatch != null) {
+                selectColor(swatch.getRgb());
+            }
         });
         colorRecyclerView.setAdapter(colorAdapter);
     }

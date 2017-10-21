@@ -58,7 +58,9 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         historyRecycler.setAdapter(adapter);
         adapter.setItemSelectListener(position -> {
             ColorPicture colorPicture = adapter.getItem(position);
-            openHistoryDetails(colorPicture);
+            if (colorPicture != null) {
+                openHistoryDetails(colorPicture);
+            }
         });
         adapter.setItemLongClickListener(this::openAcceptDeleteColor);
     }
