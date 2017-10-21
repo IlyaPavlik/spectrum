@@ -16,9 +16,9 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +32,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.data.local.SurfaceInfo;
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
 import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
-import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
@@ -67,6 +67,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     PointView pointView;
     @BindView(R.id.color_details)
     ColorDetailsWidget colorDetailsWidget;
+    @BindView(R.id.message)
+    TextView messageView;
 
     @Inject
     protected ColorCameraPresenter presenter;
@@ -147,15 +149,18 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        logger.debug("onSurfaceTextureAvailable");
+        hideProgressBar();
         try {
+            messageView.setVisibility(View.GONE);
+            pointView.setVisibility(View.VISIBLE);
             cameraManager.startCamera(surface);
             cameraManager.setCameraDisplayOrientation(getContext());
-            hideProgressBar();
             showAnimation();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Error occurred while starting camera ", e);
-        } catch (IllegalStateException e) {
-            logger.error("Camera not available: ", e);
+            messageView.setVisibility(View.VISIBLE);
+            pointView.setVisibility(View.GONE);
         }
     }
 
@@ -166,6 +171,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        logger.debug("onSurfaceTextureDestroyed");
         cameraManager.stopPreview();
         return true;
     }
