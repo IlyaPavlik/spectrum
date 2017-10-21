@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.injection;
+package ru.magflayer.spectrum.domain.injection;
 
 import javax.inject.Singleton;
 
@@ -13,6 +13,7 @@ import ru.magflayer.spectrum.presentation.pages.splash.SplashActivity;
 
 @Singleton
 @Component(modules = AppModule.class)
+@SuppressWarnings("WeakerAccess")
 public interface AppComponent {
 
     //ACTIVITY

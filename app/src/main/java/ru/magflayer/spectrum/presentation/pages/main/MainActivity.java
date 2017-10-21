@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseActivity;
 import ru.magflayer.spectrum.presentation.common.Layout;
 import ru.magflayer.spectrum.presentation.manager.CameraManager;

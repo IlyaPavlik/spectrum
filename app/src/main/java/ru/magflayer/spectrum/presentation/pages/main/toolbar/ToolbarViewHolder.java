@@ -7,8 +7,8 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
-import ru.magflayer.spectrum.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouterImpl;
 
@@ -36,18 +36,18 @@ public class ToolbarViewHolder implements ToolbarView {
         }
     }
 
-    public void onRegisterBus(){
+    public void onRegisterBus() {
         presenter.registerBus();
     }
 
-    public void onUnregisterBus(){
+    public void onUnregisterBus() {
         presenter.unregisterBus();
     }
 
     @Override
     public void setupToolbarAppearance(ToolbarAppearance toolbarAppearance) {
 
-        ToolbarAppearance.Visibility visibility = toolbarAppearance.getVisibility();
+        ToolbarAppearance.Visibility visibility = toolbarAppearance.getVisible();
         switch (visibility) {
             case VISIBLE:
                 toolbar.setVisibility(View.VISIBLE);

@@ -34,7 +34,7 @@ import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.data.local.SurfaceInfo;
 import ru.magflayer.spectrum.domain.model.PageAppearance;
 import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
-import ru.magflayer.spectrum.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
