@@ -3,34 +3,38 @@ package ru.magflayer.spectrum.presentation.widget;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.utils.ViewUtils;
 
 public class ToggleWidget extends LinearLayout {
 
-    private enum ModeType {SINGLE, MULTIPLE}
+    @Getter
+    @AllArgsConstructor
+    private enum ModeType {
+        SINGLE(R.drawable.ic_toggle_single),
+        MULTIPLE(R.drawable.ic_toggle_multiple);
+
+        @DrawableRes
+        private int iconId;
+    }
 
     public interface OnCheckChangedListener {
         void checkChanged(boolean isSingle);
     }
 
-    @BindView(R.id.toggle_single_container)
-    protected View singleContainerView;
-    @BindView(R.id.toggle_multiple_container)
-    protected View multipleContainerView;
-
-    @BindView(R.id.toggle_single)
-    protected View singleView;
-    @BindView(R.id.toggle_multiple)
-    protected View multipleView;
+    @BindView(R.id.toggle)
+    protected ImageView toggleView;
 
     private ModeType currentType = ModeType.SINGLE;
     private OnCheckChangedListener onCheckChangedListener;
@@ -77,14 +81,13 @@ public class ToggleWidget extends LinearLayout {
         super.onRestoreInstanceState(BaseSavedState.EMPTY_STATE);
     }
 
-    @OnClick(R.id.toggle_single)
-    public void onSingleClick() {
-        changeType(ModeType.SINGLE);
-    }
-
-    @OnClick(R.id.toggle_multiple)
-    public void onMultipleClick() {
-        changeType(ModeType.MULTIPLE);
+    @OnClick(R.id.toggle)
+    public void onToggleClick() {
+        if (currentType == ModeType.SINGLE) {
+            changeType(ModeType.MULTIPLE);
+        } else {
+            changeType(ModeType.SINGLE);
+        }
     }
 
     public void setOnCheckChangedListener(OnCheckChangedListener onCheckChangedListener) {
@@ -96,8 +99,7 @@ public class ToggleWidget extends LinearLayout {
     }
 
     public void rotateIcons(final int toDegrees) {
-        ViewUtils.rotateView(singleView, toDegrees);
-        ViewUtils.rotateView(multipleView, toDegrees);
+        ViewUtils.rotateView(toggleView, toDegrees);
     }
 
     private void init() {
@@ -108,12 +110,11 @@ public class ToggleWidget extends LinearLayout {
 
     private void changeType(ModeType modeType) {
         currentType = modeType;
+
         if (modeType == ModeType.SINGLE) {
-            multipleContainerView.setActivated(false);
-            singleContainerView.setActivated(true);
+            toggleView.setImageResource(ModeType.MULTIPLE.getIconId());
         } else {
-            singleContainerView.setActivated(false);
-            multipleContainerView.setActivated(true);
+            toggleView.setImageResource(ModeType.SINGLE.getIconId());
         }
 
         if (onCheckChangedListener != null) {
@@ -121,14 +122,14 @@ public class ToggleWidget extends LinearLayout {
         }
     }
 
-    protected static class State extends BaseSavedState {
+    private static class State extends BaseSavedState {
 
         private static final String STATE = "toggle.state";
 
         @Getter
         private final int modeType;
 
-        public State(Parcelable superState, int modeType) {
+        State(Parcelable superState, int modeType) {
             super(superState);
             this.modeType = modeType;
         }

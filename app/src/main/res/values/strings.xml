@@ -45,4 +45,6 @@
     <string name="history_details_rgb">RGB</string>
     <string name="history_details_cmyk">CMYK</string>
     <string name="history_details_hsv">HSV</string>
+
+    <string name="camera_not_available">Камера не доступна.\nВероятно она используется другим приложением</string>
 </resources>
