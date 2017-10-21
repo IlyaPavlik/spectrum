@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         try {
             cameraManager.open();
         } catch (RuntimeException e) {
-            logger.error("Camera not available:", e);
+            logger.error("Camera not available: ", e);
         }
         toolbarViewHolder.onRegisterBus();
     }

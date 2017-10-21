@@ -30,6 +30,7 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
     @Override
     public void onBindViewHolder(final HistoryViewHolder holder, int position) {
         final ColorPicture colorPicture = getItem(position);
+        if (colorPicture == null) return;
 
         glide.load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
                 .asBitmap()

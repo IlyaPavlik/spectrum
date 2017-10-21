@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.presentation.common;
 
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 
@@ -61,8 +62,12 @@ public abstract class BaseRecyclerAdapter<VH extends BaseViewHolder, T> extends 
         this.itemLongClickListener = itemLongClickListener;
     }
 
+    @Nullable
     public T getItem(int position) {
-        return data.get(position);
+        if (position >= 0 && position < data.size()) {
+            return data.get(position);
+        }
+        return null;
     }
 
     @Override
