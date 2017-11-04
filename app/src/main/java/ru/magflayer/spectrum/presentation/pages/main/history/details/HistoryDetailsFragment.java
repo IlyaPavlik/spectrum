@@ -22,9 +22,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
-import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
@@ -192,7 +192,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         int green = Color.green(color);
         int blue = Color.blue(color);
 
-        float[] cmyk = ColorUtils.rgbToCmyk(red, green, blue);
+        float[] cmyk = ColorUtils.rgb2Cmyk(red, green, blue);
         int cmykMaxValue = 100;
 
         cyanView.setColor(ContextCompat.getColor(getContext(), R.color.cyan));
@@ -231,11 +231,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     private void initXYZ(final int color) {
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-
-        final double[] xyz = ColorUtils.rgbToXYZ(red, green, blue);
+        final double[] xyz = ColorUtils.dec2Xyz(color);
 
         xView.setText(getString(R.string.x_format, xyz[0]));
         yView.setText(getString(R.string.y_format, xyz[1]));

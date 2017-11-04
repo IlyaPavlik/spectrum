@@ -108,7 +108,7 @@ public class ColorSelectedWidget extends RelativeLayout {
 
     private void selectColor(int color) {
         Context context = getContext();
-        hexView.setText(ColorUtils.colorToHex(color));
+        hexView.setText(ColorUtils.dec2Hex(color));
 
         int red = Color.red(color);
         int green = Color.green(color);
@@ -128,7 +128,7 @@ public class ColorSelectedWidget extends RelativeLayout {
         saturationView.setText(context.getString(R.string.saturation_format, saturation));
         valueView.setText(context.getString(R.string.value_format, value));
 
-        float[] cmyk = ColorUtils.rgbToCmyk(red, green, blue);
+        float[] cmyk = ColorUtils.rgb2Cmyk(red, green, blue);
         int c = (int) (cmyk[0] * 100);
         int m = (int) (cmyk[1] * 100);
         int y = (int) (cmyk[2] * 100);

@@ -111,7 +111,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
         Palette.Swatch color = new Palette.Swatch(bmp.getPixel(centerX, centerY), 1);
 
-        final String hexColor = ColorUtils.colorToHex(color.getRgb());
+        final String hexColor = ColorUtils.dec2Hex(color.getRgb());
         int newColor = Color.parseColor(hexColor);
         final int red = Color.red(newColor);
         final int green = Color.green(newColor);
