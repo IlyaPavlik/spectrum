@@ -59,7 +59,7 @@ public class ColorDetailsWidget extends LinearLayout {
 
     public void setColor(@ColorInt int color) {
         colorView.setBackgroundColor(color);
-        colorHexView.setText(ColorUtils.colorToHex(color));
+        colorHexView.setText(ColorUtils.dec2Hex(color));
 
         initRgbColor(color);
         initHsvColor(color);

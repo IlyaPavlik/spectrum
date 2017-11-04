@@ -1,7 +1,14 @@
 package ru.magflayer.spectrum.utils;
 
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
+import android.support.annotation.IntRange;
+import android.support.annotation.Size;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+@SuppressWarnings("WeakerAccess")
 public class ColorUtils {
 
     private ColorUtils() {
@@ -13,22 +20,6 @@ public class ColorUtils {
         return (0x00FFFFFF - (color | 0xFF000000)) | (color & 0xFF000000);
     }
 
-    public static int[] hexToRgb(String hex) {
-        int[] rgb = new int[3];
-        int color = Color.parseColor(hex);
-        rgb[0] = Color.red(color);
-        rgb[1] = Color.green(color);
-        rgb[2] = Color.blue(color);
-        return rgb;
-    }
-
-    public static float[] hexToHsl(String hex) {
-        float[] hsl = new float[3];
-        int color = Color.parseColor(hex);
-        android.support.v4.graphics.ColorUtils.colorToHSL(color, hsl);
-        return hsl;
-    }
-
     public static boolean isSameColor(int previousColor, int newColor) {
         int[] previousRgb = {Color.red(previousColor), Color.green(previousColor), Color.blue(previousColor)};
         int[] newRgb = {Color.red(newColor), Color.green(newColor), Color.blue(newColor)};
@@ -38,15 +29,88 @@ public class ColorUtils {
                 || Math.abs(previousRgb[2] - newRgb[2]) >= COLOR_ERROR;
     }
 
-    public static String colorToHex(int color) {
+    public static int[] dec2Rgb(final int color) {
+        int[] rgba = dec2Rgba(color);
+
+        return new int[]{rgba[0], rgba[1], rgba[2]};
+    }
+
+    public static int[] dec2Rgba(final int color) {
+        int[] rgba = new int[4];
+        rgba[0] = (color >> 16) & 0xFF; //red
+        rgba[1] = (color >> 8) & 0xFF; //green
+        rgba[2] = color & 0xFF; //blue
+        rgba[3] = color >>> 24; //alpha
+        return rgba;
+    }
+
+    public static float[] dec2Hsl(@ColorInt final int color) {
+        int rgb[] = dec2Rgb(color);
+        return rgb2Hsl(rgb[0], rgb[1], rgb[2]);
+    }
+
+    public static float[] rgb2Hsl(@IntRange(from = 0x0, to = 0xFF) int r,
+                                  @IntRange(from = 0x0, to = 0xFF) int g,
+                                  @IntRange(from = 0x0, to = 0xFF) int b) {
+        float[] outHsl = new float[3];
+
+        final float rf = r / 255f;
+        final float gf = g / 255f;
+        final float bf = b / 255f;
+
+        final float max = Math.max(rf, Math.max(gf, bf));
+        final float min = Math.min(rf, Math.min(gf, bf));
+        final float deltaMaxMin = max - min;
+
+        float h, s;
+        float l = (max + min) / 2f;
+
+        if (max == min) {
+            // Monochromatic
+            h = s = 0f;
+        } else {
+            if (max == rf) {
+                h = ((gf - bf) / deltaMaxMin) % 6f;
+            } else if (max == gf) {
+                h = ((bf - rf) / deltaMaxMin) + 2f;
+            } else {
+                h = ((rf - gf) / deltaMaxMin) + 4f;
+            }
+
+            s = deltaMaxMin / (1f - Math.abs(2f * l - 1f));
+        }
+
+        h = (h * 60f) % 360f;
+        if (h < 0) {
+            h += 360f;
+        }
+
+        outHsl[0] = constrain(h, 0f, 360f);
+        outHsl[1] = constrain(s, 0f, 1f);
+        outHsl[2] = constrain(l, 0f, 1f);
+        return outHsl;
+    }
+
+    public static String dec2Hex(@ColorInt final int color) {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
-    public static float[] rgbToCmyk(float... rgb) {
-        float c = 0;
-        float m = 0;
-        float y = 0;
-        float k = 0;
+    public static int hex2Dec(final String hex) {
+        return Integer.parseInt(hex.substring(1), 16);
+    }
+
+    public static int[] dec2Cmyk(final int color) {
+        int[] rgb = dec2Rgb(color);
+        float[] cmyk = rgb2Cmyk(rgb);
+        return new int[]{Math.round(cmyk[0]) * 100, Math.round(cmyk[1]) * 100,
+                Math.round(cmyk[2]) * 100, Math.round(cmyk[3]) * 100};
+    }
+
+    public static float[] rgb2Cmyk(@Size(3) final int... rgb) {
+        float c;
+        float m;
+        float y;
+        float k;
 
         float r = rgb[0];
         float g = rgb[1];
@@ -73,20 +137,18 @@ public class ColorUtils {
         return new float[]{c, m, y, k};
     }
 
-    public static double[] rgbToXYZ(int R, int G, int B) {
+    public static double[] dec2Xyz(@ColorInt final int color) {
+        double[] xyz = new double[3];
+        int[] rgba = dec2Rgba(color);
+        float[] coef = new float[]{
+                0.4124f, 0.3576f, 0.1805f,
+                0.2126f, 0.7152f, 0.0722f,
+                0.0193f, 0.1192f, 0.9505f,
+        };
 
-        double r, g, b, X, Y, Z, xr, yr, zr;
-
-        // D65/2°
-        double Xr = 95.047;
-        double Yr = 100.0;
-        double Zr = 108.883;
-
-        // --------- RGB to XYZ ---------//
-
-        r = R / 255.0;
-        g = G / 255.0;
-        b = B / 255.0;
+        double r = rgba[0] / 255.0D;
+        double g = rgba[1] / 255.0D;
+        double b = rgba[2] / 255.0D;
 
         if (r > 0.04045)
             r = Math.pow((r + 0.055) / 1.055, 2.4);
@@ -107,37 +169,85 @@ public class ColorUtils {
         g *= 100;
         b *= 100;
 
-        X = 0.4124 * r + 0.3576 * g + 0.1805 * b;
-        Y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        Z = 0.0193 * r + 0.1192 * g + 0.9505 * b;
+        xyz[0] = coef[0] * r + coef[1] * g + coef[2] * b;
+        xyz[1] = coef[3] * r + coef[4] * g + coef[5] * b;
+        xyz[2] = coef[6] * r + coef[7] * g + coef[8] * b;
 
-        // --------- XYZ to Lab --------- //
+        //round values
+        xyz[0] = new BigDecimal(xyz[0]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        xyz[1] = new BigDecimal(xyz[1]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        xyz[2] = new BigDecimal(xyz[2]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-        xr = X / Xr;
-        yr = Y / Yr;
-        zr = Z / Zr;
+        return xyz;
+    }
 
-        if (xr > 0.008856)
-            xr = (float) Math.pow(xr, 1 / 3.);
+    public static double[] dec2Lab(@ColorInt final int color) {
+        double[] xyz = dec2Xyz(color);
+        double xr, yr, zr;
+        double eps = 0.008856;
+        double k = 7.787D;
+
+        // D65
+        double Xr = 95.047;
+        double Yr = 100.0;
+        double Zr = 108.883;
+
+        xr = xyz[0] / Xr;
+        yr = xyz[1] / Yr;
+        zr = xyz[2] / Zr;
+
+        if (xr > eps)
+            xr = Math.pow(xr, 1 / 3.);
         else
-            xr = (float) ((7.787 * xr) + 16 / 116.0);
+            xr = ((k * xr) + 16 / 116.0);
 
-        if (yr > 0.008856)
-            yr = (float) Math.pow(yr, 1 / 3.);
+        if (yr > eps)
+            yr = Math.pow(yr, 1 / 3.);
         else
-            yr = (float) ((7.787 * yr) + 16 / 116.0);
+            yr = ((k * yr) + 16 / 116.0);
 
-        if (zr > 0.008856)
-            zr = (float) Math.pow(zr, 1 / 3.);
+        if (zr > eps)
+            zr = Math.pow(zr, 1 / 3.);
         else
-            zr = (float) ((7.787 * zr) + 16 / 116.0);
+            zr = ((k * zr) + 16 / 116.0);
 
         double[] lab = new double[3];
 
-        lab[0] = (116 * yr) - 16;
-        lab[1] = 500 * (xr - yr);
-        lab[2] = 200 * (yr - zr);
+        lab[0] = new BigDecimal((116 * yr) - 16).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        lab[1] = new BigDecimal(500 * (xr - yr)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        lab[2] = new BigDecimal(200 * (yr - zr)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
 
         return lab;
+    }
+
+    public static String dec2Ncs(final List<NcsColor> colors, @ColorInt final int color) {
+        final int[] rgb = dec2Rgb(color);
+
+        String name = null;
+        double minError = Double.MAX_VALUE;
+        if (colors != null) {
+            for (NcsColor ncsColor : colors) {
+                final int[] ncsRgb = dec2Rgb(hex2Dec(ncsColor.value));
+                double error = Math.pow(ncsRgb[0] - rgb[0], 2)
+                        + Math.pow(ncsRgb[1] - rgb[1], 2)
+                        + Math.pow(ncsRgb[2] - rgb[2], 2);
+                error = Math.sqrt(error);
+                if (error < minError) {
+                    minError = error;
+                    name = ncsColor.name;
+                }
+            }
+        }
+
+        return name;
+    }
+
+    private static float constrain(float amount, float low, float high) {
+        return amount < low ? low : (amount > high ? high : amount);
+    }
+
+    public static class NcsColor {
+        private String name;
+        private String value;
     }
 }
