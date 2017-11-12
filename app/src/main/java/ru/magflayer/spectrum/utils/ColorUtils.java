@@ -174,9 +174,9 @@ public class ColorUtils {
         xyz[2] = coef[6] * r + coef[7] * g + coef[8] * b;
 
         //round values
-        xyz[0] = new BigDecimal(xyz[0]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        xyz[1] = new BigDecimal(xyz[1]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        xyz[2] = new BigDecimal(xyz[2]).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        xyz[0] = new BigDecimal(xyz[0]).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        xyz[1] = new BigDecimal(xyz[1]).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        xyz[2] = new BigDecimal(xyz[2]).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
 
         return xyz;
     }
@@ -240,6 +240,53 @@ public class ColorUtils {
         }
 
         return name;
+    }
+
+    public static float[] dec2Ryb(@ColorInt final int color) {
+        final int[] rgb = dec2Rgb(color);
+
+        float r = rgb[0];
+        float g = rgb[1];
+        float b = rgb[2];
+
+        float w = Math.min(Math.min(r, g), b);
+
+        r -= w;
+        g -= w;
+        b -= w;
+
+        float mg = Math.max(Math.max(r, g), b);
+
+        float y = Math.min(r, g);
+        r -= y;
+        g -= y;
+
+        // If this unfortunate conversion combines blue and green, then cut each in
+        // half to preserve the value's maximum range.
+        if (b != 0 && g != 0) {
+            b /= 2.0;
+            g /= 2.0;
+        }
+
+        // Redistribute the remaining green.
+        y += g;
+        b += g;
+
+        // Normalize to values.
+        float my = Math.max(Math.max(r, y), b);
+        if (my != 0) {
+            float n = mg / my;
+            r *= n;
+            y *= n;
+            b *= n;
+        }
+
+        // Add the white back in.
+        r += w;
+        y += w;
+        b += w;
+
+        return new float[]{r, y, b};
     }
 
     private static float constrain(float amount, float low, float high) {

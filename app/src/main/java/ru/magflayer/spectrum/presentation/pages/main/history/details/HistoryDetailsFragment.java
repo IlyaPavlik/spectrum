@@ -15,7 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,6 +34,7 @@ import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
 import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
 import ru.magflayer.spectrum.presentation.common.Layout;
+import ru.magflayer.spectrum.presentation.widget.ColorInfoWidget;
 import ru.magflayer.spectrum.presentation.widget.TextSeekBarView;
 import ru.magflayer.spectrum.utils.AppUtils;
 import ru.magflayer.spectrum.utils.Base64Utils;
@@ -65,25 +70,23 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     @BindView(R.id.key)
     TextSeekBarView keyView;
 
-    @BindView(R.id.hue)
-    TextView hueView;
-    @BindView(R.id.saturation)
-    TextView saturationView;
-    @BindView(R.id.value)
-    TextView valueView;
-
-    @BindView(R.id.color_x)
-    TextView xView;
-    @BindView(R.id.color_y)
-    TextView yView;
-    @BindView(R.id.color_z)
-    TextView zView;
+    @BindView(R.id.color_info_ryb)
+    ColorInfoWidget rybInfo;
+    @BindView(R.id.color_info_hsv)
+    ColorInfoWidget hsvInfo;
+    @BindView(R.id.color_info_xyz)
+    ColorInfoWidget xyzInfo;
+    @BindView(R.id.color_info_lab)
+    ColorInfoWidget labInfo;
+    @BindView(R.id.color_info_ncs)
+    ColorInfoWidget ncsInfo;
 
     @Inject
     HistoryDetailsPresenter presenter;
 
     private ColorPicture colorPicture;
     private ColorAdapter adapter;
+    private List<ColorUtils.NcsColor> ncsColors;
 
     public static HistoryDetailsFragment newInstance(final ColorPicture colorPicture) {
 
@@ -156,14 +159,17 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     @SuppressLint("DefaultLocale")
     private void selectColor(final int color) {
-        initRGB(color);
-        initCMYK(color);
-        initHSV(color);
-        initXYZ(color);
+        initRgb(color);
+        initRyb(color);
+        initCmyk(color);
+        initHsv(color);
+        initXyz(color);
+        initLab(color);
+        initNcs(color);
         presenter.handleColorDetails(color);
     }
 
-    private void initRGB(final int color) {
+    private void initRgb(final int color) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -187,7 +193,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @SuppressLint("DefaultLocale")
-    private void initCMYK(final int color) {
+    private void initCmyk(final int color) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -216,7 +222,18 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         keyView.setText(String.format("%.2f", cmyk[3]));
     }
 
-    private void initHSV(final int color) {
+    private void initRyb(final int color) {
+        final float[] ryb = ColorUtils.dec2Ryb(color);
+
+        rybInfo.setTitle(getString(R.string.history_details_ryb));
+        rybInfo.setParams(Arrays.asList(
+                getString(R.string.ryb_r_format, ryb[0]),
+                getString(R.string.ryb_y_format, ryb[1]),
+                getString(R.string.ryb_b_format, ryb[2])
+        ));
+    }
+
+    private void initHsv(final int color) {
         final float[] hsv = new float[3];
 
         Color.colorToHSV(color, hsv);
@@ -225,17 +242,50 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         int saturation = (int) (hsv[1] * 100);
         int value = (int) (hsv[2] * 100);
 
-        hueView.setText(getString(R.string.hue_long_format, hue));
-        saturationView.setText(getString(R.string.saturation_long_format, saturation));
-        valueView.setText(getString(R.string.value_long_format, value));
+        hsvInfo.setTitle(getString(R.string.history_details_hsv));
+        hsvInfo.setParams(Arrays.asList(
+                getString(R.string.hue_long_format, hue),
+                getString(R.string.saturation_long_format, saturation),
+                getString(R.string.value_long_format, value)
+        ));
     }
 
-    private void initXYZ(final int color) {
+    private void initXyz(final int color) {
         final double[] xyz = ColorUtils.dec2Xyz(color);
 
-        xView.setText(getString(R.string.x_format, xyz[0]));
-        yView.setText(getString(R.string.y_format, xyz[1]));
-        zView.setText(getString(R.string.z_format, xyz[2]));
+        xyzInfo.setTitle(getString(R.string.history_details_xyz));
+        xyzInfo.setParams(Arrays.asList(
+                getString(R.string.x_format, xyz[0]),
+                getString(R.string.y_format, xyz[1]),
+                getString(R.string.z_format, xyz[2])
+        ));
+    }
+
+    private void initLab(final int color) {
+        final double[] lab = ColorUtils.dec2Lab(color);
+
+        labInfo.setTitle(getString(R.string.history_details_lab));
+        labInfo.setParams(Arrays.asList(
+                getString(R.string.l_format, lab[0]),
+                getString(R.string.a_format, lab[1]),
+                getString(R.string.b_format, lab[2])
+        ));
+    }
+
+    private void initNcs(final int color) {
+        if (ncsColors == null) {
+            loadNcsColors();
+        }
+
+        final String ncsColor = ColorUtils.dec2Ncs(ncsColors, color);
+        ncsInfo.setTitle(getString(R.string.history_details_ncs));
+        ncsInfo.setParams(Collections.singletonList(ncsColor));
+    }
+
+    private void loadNcsColors() {
+        String ncsJson = AppUtils.loadJSONFromAsset(getResources().getAssets(), "ncs.json");
+        ncsColors = new Gson().fromJson(ncsJson, new TypeToken<List<ColorUtils.NcsColor>>() {
+        }.getType());
     }
 
     static class ColorAdapter extends BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Integer> {
