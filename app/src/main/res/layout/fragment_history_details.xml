@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -131,125 +130,44 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+            android:id="@+id/color_info_ryb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small">
+            android:layout_marginRight="@dimen/indent_small" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/indent_small">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/indent_normal"
-                    android:layout_marginLeft="@dimen/indent_normal"
-                    android:text="@string/history_details_hsv"
-                    android:textSize="@dimen/history_details_title_text_size"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/hue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/indent_normal"
-                        android:layout_marginLeft="@dimen/indent_normal"
-                        android:layout_weight="0.3"
-                        android:textSize="@dimen/history_details_title_text_size"
-                        tools:text="Hue: 12" />
-
-                    <TextView
-                        android:id="@+id/saturation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/indent_normal"
-                        android:layout_marginLeft="@dimen/indent_normal"
-                        android:layout_weight="0.3"
-                        android:textSize="@dimen/history_details_title_text_size"
-                        tools:text="Saturation: 90" />
-
-                    <TextView
-                        android:id="@+id/value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/indent_normal"
-                        android:layout_marginLeft="@dimen/indent_normal"
-                        android:layout_weight="0.3"
-                        android:textSize="@dimen/history_details_title_text_size"
-                        tools:text="Value: 60" />
-                </LinearLayout>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
+        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+            android:id="@+id/color_info_hsv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small"
-            android:visibility="gone">
+            android:layout_marginRight="@dimen/indent_small" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/indent_small">
+        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+            android:id="@+id/color_info_xyz"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/indent_small"
+            android:layout_marginLeft="@dimen/indent_small"
+            android:layout_marginRight="@dimen/indent_small" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/indent_normal"
-                    android:layout_marginLeft="@dimen/indent_normal"
-                    android:text="@string/history_details_hsv"
-                    android:textSize="@dimen/history_details_title_text_size"
-                    android:textStyle="bold" />
+        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+            android:id="@+id/color_info_lab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/indent_small"
+            android:layout_marginLeft="@dimen/indent_small"
+            android:layout_marginRight="@dimen/indent_small" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/color_x"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/indent_normal"
-                        android:layout_marginLeft="@dimen/indent_normal"
-                        android:layout_weight="0.3"
-                        android:textSize="@dimen/history_details_title_text_size"
-                        tools:text="X: 12" />
-
-                    <TextView
-                        android:id="@+id/color_y"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/indent_normal"
-                        android:layout_marginLeft="@dimen/indent_normal"
-                        android:layout_weight="0.3"
-                        android:textSize="@dimen/history_details_title_text_size"
-                        tools:text="Y: 90" />
-
-                    <TextView
-                        android:id="@+id/color_z"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/indent_normal"
-                        android:layout_marginLeft="@dimen/indent_normal"
-                        android:layout_weight="0.3"
-                        android:textSize="@dimen/history_details_title_text_size"
-                        tools:text="Z: 60" />
-                </LinearLayout>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+            android:id="@+id/color_info_ncs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/indent_small"
+            android:layout_marginLeft="@dimen/indent_small"
+            android:layout_marginRight="@dimen/indent_small" />
     </LinearLayout>
 </ScrollView>

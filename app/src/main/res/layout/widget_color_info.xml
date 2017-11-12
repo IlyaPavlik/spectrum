@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/indent_small">
+
+        <TextView
+            android:id="@+id/color_info_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/indent_normal"
+            android:layout_marginLeft="@dimen/indent_normal"
+            android:textSize="@dimen/history_details_title_text_size"
+            android:textStyle="bold" />
+
+        <TableLayout
+            android:id="@+id/color_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>

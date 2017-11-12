@@ -13,14 +13,22 @@
     <string name="saturation_long_format">Saturation: %d%%</string>
     <string name="value_long_format">Value: %d%%</string>
 
-    <string name="x_format">X: %.2f</string>
-    <string name="y_format">Y: %.2f</string>
-    <string name="z_format">Z: %.2f</string>
+    <string name="x_format">X: %.4f</string>
+    <string name="y_format">Y: %.4f</string>
+    <string name="z_format">Z: %.4f</string>
 
-    <string name="cyan_format">C: %d%%</string>
-    <string name="magenta_format">M: %d%%</string>
-    <string name="yellow_format">Y: %d%%</string>
-    <string name="key_color_format">K: %d%%</string>
+    <string name="cyan_format">C: %1$d</string>
+    <string name="magenta_format">M: %1$d</string>
+    <string name="yellow_format">Y: %1$d</string>
+    <string name="key_color_format">K: %1$d</string>
+
+    <string name="l_format">L: %1$.3f</string>
+    <string name="a_format">a: %1$.4f</string>
+    <string name="b_format">b: %1$.4f</string>
+
+    <string name="ryb_r_format">R: %1$d</string>
+    <string name="ryb_y_format">Y: %1$d</string>
+    <string name="ryb_b_format">B: %1$d</string>
 
     <string name="camera_image_saved">Изображение сохранено!</string>
 
@@ -29,7 +37,7 @@
 
     <plurals name="history_details_title">
         <item quantity="one">Цвет</item>
-        <item quantity="many">Цвета</item>
+        <item quantity="other">Цвета</item>
     </plurals>
 
     <string name="history_dialog_title">Цвет</string>
@@ -43,8 +51,12 @@
     <string name="dialog_cancel">Отмена</string>
 
     <string name="history_details_rgb">RGB</string>
+    <string name="history_details_ryb">RYB</string>
     <string name="history_details_cmyk">CMYK</string>
     <string name="history_details_hsv">HSV</string>
+    <string name="history_details_xyz">XYZ</string>
+    <string name="history_details_lab">CIA Lab</string>
+    <string name="history_details_ncs">NCS</string>
 
     <string name="camera_not_available">Камера не доступна.\nВероятно она используется другим приложением</string>
 </resources>
