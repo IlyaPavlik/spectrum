@@ -223,7 +223,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     private void initRyb(final int color) {
-        final float[] ryb = ColorUtils.dec2Ryb(color);
+        final int[] ryb = ColorUtils.dec2Ryb(color);
 
         rybInfo.setTitle(getString(R.string.history_details_ryb));
         rybInfo.setParams(Arrays.asList(
