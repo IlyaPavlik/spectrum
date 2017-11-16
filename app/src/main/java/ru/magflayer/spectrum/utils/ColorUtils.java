@@ -242,7 +242,7 @@ public class ColorUtils {
         return name;
     }
 
-    public static float[] dec2Ryb(@ColorInt final int color) {
+    public static int[] dec2Ryb(@ColorInt final int color) {
         final int[] rgb = dec2Rgb(color);
 
         float r = rgb[0];
@@ -286,7 +286,7 @@ public class ColorUtils {
         y += w;
         b += w;
 
-        return new float[]{r, y, b};
+        return new int[]{Math.round(r), Math.round(y), Math.round(b)};
     }
 
     private static float constrain(float amount, float low, float high) {

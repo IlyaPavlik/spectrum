@@ -22,8 +22,9 @@ public class AppRealm {
 
     private ColorPictureRealmConverter colorPictureRealmConverter = new ColorPictureRealmConverter();
 
-    public AppRealm(Context context, Bus bus) {
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
+    public AppRealm(final Context context, final Bus bus) {
+        Realm.init(context);
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name("realm")
                 .build();
         Realm.setDefaultConfiguration(realmConfig);
@@ -39,9 +40,7 @@ public class AppRealm {
         realm.executeTransactionAsync(realm1 -> {
             ColorPictureRealm colorPictureRealm = colorPictureRealmConverter.toRealm(colorPicture);
             realm1.copyToRealmOrUpdate(colorPictureRealm);
-        }, () -> {
-            bus.post(new PictureSavedEvent());
-        });
+        }, () -> bus.post(new PictureSavedEvent()));
     }
 
     public List<ColorPicture> loadPictures() {
