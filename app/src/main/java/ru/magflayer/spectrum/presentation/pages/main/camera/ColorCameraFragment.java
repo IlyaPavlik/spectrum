@@ -38,7 +38,7 @@ import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
-import ru.magflayer.spectrum.presentation.manager.CameraManager;
+import ru.magflayer.spectrum.domain.manager.CameraManager;
 import ru.magflayer.spectrum.presentation.widget.ColorDetailsWidget;
 import ru.magflayer.spectrum.presentation.widget.PointView;
 import ru.magflayer.spectrum.presentation.widget.ToggleWidget;

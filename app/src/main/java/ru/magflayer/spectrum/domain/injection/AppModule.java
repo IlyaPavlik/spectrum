@@ -20,6 +20,11 @@ class AppModule {
         this.context = context;
     }
 
+    @Provides
+    Context provideContext() {
+        return context;
+    }
+
     @Singleton
     @Provides
     Bus provideBus() {

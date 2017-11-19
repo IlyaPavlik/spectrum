@@ -14,12 +14,17 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.data.local.ColorInfo;
+import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
+import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import rx.Observable;
 
 
 public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, MainRouter> {
+
+    @Inject
+    AnalyticsManager analyticsManager;
 
     private Map<String, String> colorInfoMap = new HashMap<>();
 
@@ -62,6 +67,10 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, M
                         .filter(aDouble -> aDouble.second != Integer.MAX_VALUE),
                 result -> getView().showColorName(colorInfoMap.get(result.first)),
                 throwable -> logger.error("Error occurred: ", throwable));
+    }
+
+    void sendAnalytics() {
+        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS);
     }
 
 }
