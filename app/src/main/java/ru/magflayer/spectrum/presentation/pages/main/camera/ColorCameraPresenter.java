@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.presentation.pages.main.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
@@ -22,13 +23,15 @@ import javax.inject.Inject;
 import ru.magflayer.spectrum.data.local.ColorInfo;
 import ru.magflayer.spectrum.data.local.SurfaceInfo;
 import ru.magflayer.spectrum.domain.event.PictureSavedEvent;
+import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
+import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.utils.Base64Utils;
 import ru.magflayer.spectrum.utils.ColorUtils;
 import rx.Observable;
-import rx.subjects.PublishSubject;
+import rx.subjects.BehaviorSubject;
 
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
 
@@ -40,9 +43,12 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     private static final String TAG_SINGLE_COLOR = "TAG_SINGLE_COLOR";
     private static final String TAG_MULTIPLE_COLOR = "TAG_MULTIPLE_COLOR";
 
+    @Inject
+    AnalyticsManager analyticsManager;
+
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
-    private PublishSubject<SurfaceInfo.Type> changeObservable = PublishSubject.create();
+    private BehaviorSubject<SurfaceInfo.Type> changeObservable = BehaviorSubject.create();
 
     private int currentDetailsColor;
 
@@ -145,6 +151,9 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
     void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
         getView().showProgressBar();
+
+        sendTakePhotoAnalytics();
+
         execute(Observable.just(bitmap)
                         .flatMap(bitmap1 ->
                                 Observable.just(Bitmap.createScaledBitmap(bitmap1, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false)))
@@ -165,5 +174,13 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     @Subscribe
     public void onPictureSaved(PictureSavedEvent event) {
         getView().showPictureSaved();
+    }
+
+    private void sendTakePhotoAnalytics() {
+        Bundle bundle = new Bundle();
+        String mode = changeObservable.hasValue() && changeObservable.getValue() == SurfaceInfo.Type.MULTIPLE
+                ? AnalyticsEvent.TAKE_PHOTO_MODE_MULTIPLE : AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE;
+        bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode);
+        analyticsManager.logEvent(AnalyticsEvent.TAKE_PHOTO, bundle);
     }
 }

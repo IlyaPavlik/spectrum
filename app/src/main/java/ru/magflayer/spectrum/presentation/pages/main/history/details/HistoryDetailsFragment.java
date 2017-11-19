@@ -148,6 +148,12 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.sendAnalytics();
+    }
+
+    @Override
     public void colorLoaded() {
         adapter.select(0);
     }

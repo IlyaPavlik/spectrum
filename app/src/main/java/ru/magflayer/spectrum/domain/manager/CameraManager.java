@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.presentation.manager;
+package ru.magflayer.spectrum.domain.manager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
