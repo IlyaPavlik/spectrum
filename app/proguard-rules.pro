@@ -7,6 +7,11 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
+#Crashlytics
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+
 #Butterknife
 -keep public class * implements butterknife.Unbinder { public <init>(**, android.view.View); }
 -keep class butterknife.*

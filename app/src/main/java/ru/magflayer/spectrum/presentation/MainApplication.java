@@ -2,9 +2,9 @@ package ru.magflayer.spectrum.presentation;
 
 import android.app.Application;
 
-import com.google.firebase.crash.FirebaseCrash;
+import com.crashlytics.android.Crashlytics;
 
-import ru.magflayer.spectrum.BuildConfig;
+import io.fabric.sdk.android.Fabric;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 
 public class MainApplication extends Application {
@@ -17,7 +17,7 @@ public class MainApplication extends Application {
         super.onCreate();
 
         InjectorManager.init(this);
-        FirebaseCrash.setCrashCollectionEnabled(!BuildConfig.DEBUG);
+        Fabric.with(this, new Crashlytics());
     }
 
 //    private class UnexpectedTerminationHelper {
