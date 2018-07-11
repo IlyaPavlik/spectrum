@@ -2,10 +2,13 @@ package ru.magflayer.spectrum.presentation.pages.main.history;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
@@ -21,20 +24,20 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
         super(context);
     }
 
+    @NonNull
     @Override
-    public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new HistoryViewHolder(inflater.inflate(R.layout.item_history, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final HistoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final HistoryViewHolder holder, int position) {
         final ColorPicture colorPicture = getItem(position);
         if (colorPicture == null) return;
 
         glide.load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
-                .asBitmap()
-                .fitCenter()
+                .apply(RequestOptions.fitCenterTransform())
                 .into(holder.pictureView);
 
         holder.colorContainer.post(() -> {
