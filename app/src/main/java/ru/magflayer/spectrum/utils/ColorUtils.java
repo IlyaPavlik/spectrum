@@ -3,10 +3,14 @@ package ru.magflayer.spectrum.utils;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
 import android.support.annotation.Size;
+import android.text.TextUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import ru.magflayer.spectrum.data.local.NcsColor;
 
 @SuppressWarnings("WeakerAccess")
 public class ColorUtils {
@@ -95,8 +99,11 @@ public class ColorUtils {
         return String.format("#%06X", (0xFFFFFF & color));
     }
 
-    public static int hex2Dec(final String hex) {
-        return Integer.parseInt(hex.substring(1), 16);
+    public static int hex2Dec(@Nullable final String hex) {
+        if (!TextUtils.isEmpty(hex)) {
+            return Integer.parseInt(hex.substring(1), 16);
+        }
+        return Color.TRANSPARENT;
     }
 
     public static int[] dec2Cmyk(final int color) {
@@ -227,14 +234,14 @@ public class ColorUtils {
         double minError = Double.MAX_VALUE;
         if (colors != null) {
             for (NcsColor ncsColor : colors) {
-                final int[] ncsRgb = dec2Rgb(hex2Dec(ncsColor.value));
+                final int[] ncsRgb = dec2Rgb(hex2Dec(ncsColor.getValue()));
                 double error = Math.pow(ncsRgb[0] - rgb[0], 2)
                         + Math.pow(ncsRgb[1] - rgb[1], 2)
                         + Math.pow(ncsRgb[2] - rgb[2], 2);
                 error = Math.sqrt(error);
                 if (error < minError) {
                     minError = error;
-                    name = ncsColor.name;
+                    name = ncsColor.getName();
                 }
             }
         }
@@ -291,10 +298,5 @@ public class ColorUtils {
 
     private static float constrain(float amount, float low, float high) {
         return amount < low ? low : (amount > high ? high : amount);
-    }
-
-    public static class NcsColor {
-        private String name;
-        private String value;
     }
 }

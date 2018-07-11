@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.data.local.NcsColor;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
@@ -86,7 +88,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     private ColorPicture colorPicture;
     private ColorAdapter adapter;
-    private List<ColorUtils.NcsColor> ncsColors;
+    private List<NcsColor> ncsColors;
 
     public static HistoryDetailsFragment newInstance(final ColorPicture colorPicture) {
 
@@ -128,8 +130,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         super.onViewCreated(view, savedInstanceState);
 
         Glide.with(this).load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
-                .asBitmap()
-                .fitCenter()
+                .apply(RequestOptions.fitCenterTransform())
                 .into(pictureView);
 
         adapter = new ColorAdapter(getContext());
@@ -176,23 +177,25 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     private void initRgb(final int color) {
+        Context context = getContext();
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
 
         int rgbMaxValue = 255;
 
-        redView.setColor(ContextCompat.getColor(getContext(), R.color.red));
+
+        if (context != null) redView.setColor(ContextCompat.getColor(context, R.color.red));
         redView.setValue(red);
         redView.setMaxValue(rgbMaxValue);
         redView.setText(String.valueOf(red));
 
-        greenView.setColor(ContextCompat.getColor(getContext(), R.color.green));
+        if (context != null) greenView.setColor(ContextCompat.getColor(context, R.color.green));
         greenView.setValue(green);
         greenView.setMaxValue(rgbMaxValue);
         greenView.setText(String.valueOf(green));
 
-        blueView.setColor(ContextCompat.getColor(getContext(), R.color.blue));
+        if (context != null) blueView.setColor(ContextCompat.getColor(context, R.color.blue));
         blueView.setValue(blue);
         blueView.setMaxValue(rgbMaxValue);
         blueView.setText(String.valueOf(blue));
@@ -200,6 +203,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     @SuppressLint("DefaultLocale")
     private void initCmyk(final int color) {
+        Context context = getContext();
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -207,22 +211,24 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         float[] cmyk = ColorUtils.rgb2Cmyk(red, green, blue);
         int cmykMaxValue = 100;
 
-        cyanView.setColor(ContextCompat.getColor(getContext(), R.color.cyan));
+        if (context != null) cyanView.setColor(ContextCompat.getColor(context, R.color.cyan));
         cyanView.setValue((int) (cmyk[0] * 100));
         cyanView.setMaxValue(cmykMaxValue);
         cyanView.setText(String.format("%.2f", cmyk[0]));
 
-        magentaView.setColor(ContextCompat.getColor(getContext(), R.color.magenta));
+        if (context != null)
+            magentaView.setColor(ContextCompat.getColor(context, R.color.magenta));
         magentaView.setValue((int) (cmyk[1] * 100));
         magentaView.setMaxValue(cmykMaxValue);
         magentaView.setText(String.format("%.2f", cmyk[1]));
 
-        yellowView.setColor(ContextCompat.getColor(getContext(), R.color.yellow));
+        if (context != null)
+            yellowView.setColor(ContextCompat.getColor(context, R.color.yellow));
         yellowView.setValue((int) (cmyk[2] * 100));
         yellowView.setMaxValue(cmykMaxValue);
         yellowView.setText(String.format("%.2f", cmyk[2]));
 
-        keyView.setColor(ContextCompat.getColor(getContext(), R.color.key));
+        if (context != null) keyView.setColor(ContextCompat.getColor(context, R.color.key));
         keyView.setValue((int) (cmyk[3] * 100));
         keyView.setMaxValue(cmykMaxValue);
         keyView.setText(String.format("%.2f", cmyk[3]));
@@ -290,7 +296,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     private void loadNcsColors() {
         String ncsJson = AppUtils.loadJSONFromAsset(getResources().getAssets(), "ncs.json");
-        ncsColors = new Gson().fromJson(ncsJson, new TypeToken<List<ColorUtils.NcsColor>>() {
+        ncsColors = new Gson().fromJson(ncsJson, new TypeToken<List<NcsColor>>() {
         }.getType());
     }
 
@@ -300,13 +306,14 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
             super(context);
         }
 
+        @NonNull
         @Override
-        public ColorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ColorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new ColorViewHolder(inflater.inflate(R.layout.item_history_color, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(ColorViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
             Integer color = getItem(position);
             holder.colorView.setBackgroundColor(color);
 
