@@ -94,7 +94,11 @@ public class CameraManager {
 
     public void autoFocus() {
         if (camera != null) {
-            camera.autoFocus((success, camera1) -> camera1.cancelAutoFocus());
+            try {
+                camera.autoFocus((success, camera1) -> camera1.cancelAutoFocus());
+            } catch (RuntimeException e) {
+                log.warn("Cannot auto focus camera: ", e);
+            }
         }
     }
 
