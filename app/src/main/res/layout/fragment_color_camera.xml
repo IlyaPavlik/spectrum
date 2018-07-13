@@ -60,13 +60,18 @@
             android:layout_centerInParent="true"
             android:src="@drawable/selector_save_button" />
 
-        <ru.magflayer.spectrum.presentation.widget.ToggleWidget
+        <ToggleButton
             android:id="@+id/toggle_mode"
             android:layout_width="@dimen/camera_menu_size"
             android:layout_height="@dimen/camera_menu_size"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_margin="@dimen/indent_normal" />
+            android:layout_margin="@dimen/indent_normal"
+            android:background="@drawable/bg_mode_toggle"
+            android:checked="true"
+            android:textOff="@null"
+            android:textOn="@null"
+            android:textSize="0dp" />
     </RelativeLayout>
 
     <RelativeLayout

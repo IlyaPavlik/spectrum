@@ -18,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,6 @@ import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
 import ru.magflayer.spectrum.presentation.widget.ColorDetailsWidget;
 import ru.magflayer.spectrum.presentation.widget.PointView;
-import ru.magflayer.spectrum.presentation.widget.ToggleWidget;
 import ru.magflayer.spectrum.utils.AppUtils;
 import ru.magflayer.spectrum.utils.ViewUtils;
 
@@ -62,7 +62,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     @BindView(R.id.color_recycler)
     RecyclerView colorRecycler;
     @BindView(R.id.toggle_mode)
-    ToggleWidget toggleView;
+    ToggleButton toggleView;
     @BindView(R.id.point_detector)
     PointView pointView;
     @BindView(R.id.color_details)
@@ -122,7 +122,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
             orientationEventListener.disable();
         }
 
-        updateMode(toggleView.isSingle());
+        updateMode(toggleView.isChecked());
     }
 
     @Override
@@ -143,8 +143,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         adapter = new ColorCameraAdapter(getContext());
         colorRecycler.setAdapter(adapter);
         cameraView.setSurfaceTextureListener(this);
-        colorRecycler.setVisibility(toggleView.isSingle() ? View.GONE : View.VISIBLE);
-        toggleView.setOnCheckChangedListener(this::updateMode);
+        colorRecycler.setVisibility(toggleView.isChecked() ? View.GONE : View.VISIBLE);
+        toggleView.setOnCheckedChangeListener((buttonView, isChecked) -> updateMode(isChecked));
     }
 
     @Override
@@ -178,7 +178,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        presenter.updateSurface(toggleView.isSingle() ? SurfaceInfo.Type.SINGLE : SurfaceInfo.Type.MULTIPLE);
+        presenter.updateSurface(toggleView.isChecked() ? SurfaceInfo.Type.SINGLE : SurfaceInfo.Type.MULTIPLE);
     }
 
     @Override
@@ -286,7 +286,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     private void setOrientation(final Orientation orientation) {
         logger.debug("Orientation changed: {}", orientation);
         ViewUtils.rotateView(menuButton, orientation.getDegree());
-        toggleView.rotateIcons(orientation.getDegree());
+        ViewUtils.rotateView(toggleView, orientation.getDegree());
         colorDetailsWidget.rotate(orientation.getDegree());
     }
 
