@@ -135,7 +135,12 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
         adapter = new ColorAdapter(getContext());
         adapter.setData(colorPicture.getRgbColors());
-        adapter.setItemSelectListener(position -> selectColor(adapter.getItem(position)));
+        adapter.setItemSelectListener(position -> {
+            Integer color = adapter.getItem(position);
+            if (color != null) {
+                selectColor(color);
+            }
+        });
         colorsRecycler.setAdapter(adapter);
         colorsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
@@ -315,7 +320,9 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         @Override
         public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
             Integer color = getItem(position);
-            holder.colorView.setBackgroundColor(color);
+            if (color != null) {
+                holder.colorView.setBackgroundColor(color);
+            }
 
             if (position == getSelectedPosition()) {
                 holder.colorView.setImageResource(R.drawable.rectangle_color_selected);
