@@ -119,9 +119,10 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     @Override
     public ToolbarAppearance getToolbarAppearance() {
         final List<Integer> colors = colorPicture.getRgbColors();
+        int quantity = colors != null ? colors.size() : 0;
         return ToolbarAppearance.builder()
                 .visible(ToolbarAppearance.Visibility.VISIBLE)
-                .title(getResources().getQuantityString(R.plurals.history_details_title, colors.size()))
+                .title(getResources().getQuantityString(R.plurals.history_details_title, quantity))
                 .build();
     }
 
