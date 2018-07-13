@@ -37,6 +37,8 @@
 
     <plurals name="history_details_title">
         <item quantity="one">Цвет</item>
+        <item quantity="few">Цвета</item>
+        <item quantity="many">Цвета</item>
         <item quantity="other">Цвета</item>
     </plurals>
 
