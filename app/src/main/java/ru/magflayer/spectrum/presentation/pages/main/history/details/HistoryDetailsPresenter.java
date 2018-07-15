@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import ru.magflayer.spectrum.data.local.ColorInfo;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
+import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import rx.Observable;
@@ -30,6 +31,13 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, M
 
     @Inject
     HistoryDetailsPresenter() {
+    }
+
+    void loadPicture(final long id) {
+        ColorPicture colorPicture = appRealm.loadPicture(id);
+        if (colorPicture != null) {
+            getView().showPicture(colorPicture);
+        }
     }
 
     void loadColors(String colorInfoJson) {

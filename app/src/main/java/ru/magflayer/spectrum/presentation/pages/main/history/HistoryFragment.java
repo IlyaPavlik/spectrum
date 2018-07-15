@@ -86,7 +86,9 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     }
 
     private void openHistoryDetails(final ColorPicture colorPicture) {
-        getRouter().openHistoryDetails(colorPicture);
+        final List<Integer> colors = colorPicture.getRgbColors();
+        int quantity = colors != null ? colors.size() : 0;
+        getRouter().openHistoryDetails(colorPicture.getDateInMillis(), quantity);
     }
 
     private void openAcceptDeleteColor(int position) {
