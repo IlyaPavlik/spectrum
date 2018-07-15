@@ -1,6 +1,7 @@
 package ru.magflayer.spectrum.data.database;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.squareup.otto.Bus;
 
@@ -50,6 +51,14 @@ public class AppRealm {
             colorPictures.add(colorPictureRealmConverter.fromRealm(pictureRealm));
         }
         return colorPictures;
+    }
+
+    @Nullable
+    public ColorPicture loadPicture(final long id) {
+        ColorPictureRealm result = realm.where(ColorPictureRealm.class)
+                .equalTo("date", id)
+                .findFirst();
+        return colorPictureRealmConverter.fromRealm(result);
     }
 
     public void removePicture(ColorPicture colorPicture) {

@@ -1,7 +1,5 @@
 package ru.magflayer.spectrum.presentation.pages.main.router;
 
-import ru.magflayer.spectrum.domain.model.ColorPicture;
-
 public interface MainRouter {
 
     void openSplash();
@@ -10,7 +8,7 @@ public interface MainRouter {
 
     void openHistory();
 
-    void openHistoryDetails(ColorPicture colorPicture);
+    void openHistoryDetails(long colorPictureId, int colorQuantity);
 
     void handleBack();
 

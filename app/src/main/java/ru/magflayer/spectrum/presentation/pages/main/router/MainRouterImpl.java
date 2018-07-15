@@ -2,7 +2,6 @@ package ru.magflayer.spectrum.presentation.pages.main.router;
 
 import android.support.v7.app.AppCompatActivity;
 
-import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.FragmentRouter;
 import ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraFragment;
 import ru.magflayer.spectrum.presentation.pages.main.history.HistoryFragment;
@@ -31,8 +30,8 @@ public class MainRouterImpl extends FragmentRouter implements MainRouter {
     }
 
     @Override
-    public void openHistoryDetails(final ColorPicture colorPicture) {
-        replaceFragment(HistoryDetailsFragment.newInstance(colorPicture), true);
+    public void openHistoryDetails(final long id, final int colorQuantity) {
+        replaceFragment(HistoryDetailsFragment.newInstance(id, colorQuantity), true);
     }
 
     @Override

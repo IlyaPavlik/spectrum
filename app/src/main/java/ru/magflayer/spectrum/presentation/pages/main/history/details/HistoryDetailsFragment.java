@@ -45,7 +45,8 @@ import ru.magflayer.spectrum.utils.ColorUtils;
 @Layout(R.layout.fragment_history_details)
 public class HistoryDetailsFragment extends BaseFragment implements HistoryDetailsView {
 
-    private static final String COLOR_PICTURE = "COLOR_PICTURE";
+    private static final String COLOR_PICTURE_ID = "COLOR_PICTURE_ID";
+    private static final String COLOR_QUANTITY = "COLOR_QUANTITY";
 
     @BindView(R.id.picture)
     ImageView pictureView;
@@ -86,14 +87,15 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     @Inject
     HistoryDetailsPresenter presenter;
 
-    private ColorPicture colorPicture;
     private ColorAdapter adapter;
     private List<NcsColor> ncsColors;
+    private int colorQuantity;
 
-    public static HistoryDetailsFragment newInstance(final ColorPicture colorPicture) {
+    public static HistoryDetailsFragment newInstance(final long id, final int colorQuantity) {
 
         Bundle args = new Bundle();
-        args.putParcelable(COLOR_PICTURE, colorPicture);
+        args.putLong(COLOR_PICTURE_ID, id);
+        args.putInt(COLOR_QUANTITY, colorQuantity);
 
         HistoryDetailsFragment fragment = new HistoryDetailsFragment();
         fragment.setArguments(args);
@@ -101,8 +103,8 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @Override
-    protected void handleArguments(@NonNull Bundle arguments) {
-        colorPicture = arguments.getParcelable(COLOR_PICTURE);
+    protected void handleArguments(@NonNull final Bundle arguments) {
+        colorQuantity = arguments.getInt(COLOR_QUANTITY, colorQuantity);
     }
 
     @NonNull
@@ -118,24 +120,16 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     @Override
     public ToolbarAppearance getToolbarAppearance() {
-        final List<Integer> colors = colorPicture.getRgbColors();
-        int quantity = colors != null ? colors.size() : 0;
         return ToolbarAppearance.builder()
                 .visible(ToolbarAppearance.Visibility.VISIBLE)
-                .title(getResources().getQuantityString(R.plurals.history_details_title, quantity))
+                .title(getResources().getQuantityString(R.plurals.history_details_title, colorQuantity))
                 .build();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Glide.with(this).load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
-                .apply(RequestOptions.fitCenterTransform())
-                .into(pictureView);
-
         adapter = new ColorAdapter(getContext());
-        adapter.setData(colorPicture.getRgbColors());
         adapter.setItemSelectListener(position -> {
             Integer color = adapter.getItem(position);
             if (color != null) {
@@ -157,7 +151,19 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     @Override
     public void onResume() {
         super.onResume();
+        if (getArguments() != null) {
+            presenter.loadPicture(getArguments().getLong(COLOR_PICTURE_ID));
+        }
         presenter.sendAnalytics();
+    }
+
+    @Override
+    public void showPicture(final ColorPicture colorPicture) {
+        Glide.with(this).load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
+                .apply(RequestOptions.fitCenterTransform())
+                .into(pictureView);
+
+        adapter.setData(colorPicture.getRgbColors());
     }
 
     @Override
