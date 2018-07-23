@@ -1,6 +1,7 @@
 package ru.magflayer.spectrum.presentation;
 
 import android.app.Application;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -11,6 +12,10 @@ public class MainApplication extends Application {
 
 //    @Inject
 //    protected CameraManager cameraManager;
+
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     @Override
     public void onCreate() {
