@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.domain.converter;
+package ru.magflayer.spectrum.domain.model.converter;
 
 import java.util.ArrayList;
 import java.util.List;

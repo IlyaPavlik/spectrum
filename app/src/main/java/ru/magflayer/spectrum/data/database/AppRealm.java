@@ -12,7 +12,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import ru.magflayer.spectrum.data.database.model.ColorPictureRealm;
-import ru.magflayer.spectrum.domain.converter.ColorPictureRealmConverter;
+import ru.magflayer.spectrum.domain.model.converter.ColorPictureRealmConverter;
 import ru.magflayer.spectrum.domain.model.event.PictureSavedEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 

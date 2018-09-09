@@ -11,9 +11,9 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.data.database.AppRealm;
-import ru.magflayer.spectrum.domain.model.PageAppearance;
-import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
-import ru.magflayer.spectrum.utils.RxUtils;
+import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
+import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
+import ru.magflayer.spectrum.common.utils.RxUtils;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;

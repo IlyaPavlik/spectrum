@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.utils;
+package ru.magflayer.spectrum.presentation.common.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
-import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
+import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
+import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
 
 public class ColorCameraAdapter extends BaseRecyclerAdapter<ColorCameraAdapter.ColorViewHolder, Palette.Swatch> {
 

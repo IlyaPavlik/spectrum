@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import ru.magflayer.spectrum.utils.AppUtils;
+import ru.magflayer.spectrum.presentation.common.utils.AppUtils;
 
 @SuppressWarnings("unused")
 public class PointView extends View {

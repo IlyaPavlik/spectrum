@@ -11,7 +11,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import ru.magflayer.spectrum.data.local.NcsColor;
+import ru.magflayer.spectrum.domain.model.NcsColor;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
@@ -19,7 +19,7 @@ import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
-import ru.magflayer.spectrum.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 import rx.Observable;
 
 public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, MainRouter> {

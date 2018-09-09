@@ -13,10 +13,10 @@ import com.bumptech.glide.request.RequestOptions;
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
-import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
-import ru.magflayer.spectrum.utils.Base64Utils;
-import ru.magflayer.spectrum.utils.BitmapUtils;
+import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
+import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
+import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
+import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils;
 
 class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPicture> {
 

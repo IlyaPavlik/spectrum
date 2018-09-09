@@ -22,10 +22,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
-import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
-import ru.magflayer.spectrum.utils.ColorUtils;
-import ru.magflayer.spectrum.utils.DialogUtils;
+import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
+import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
+import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.common.utils.DialogUtils;
 
 @SuppressWarnings("WeakerAccess")
 public class ColorSelectedWidget extends RelativeLayout {

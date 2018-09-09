@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.toolbar;
 
-import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
+import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 
 interface ToolbarView {
 

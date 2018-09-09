@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.utils;
+package ru.magflayer.spectrum.common.utils;
 
 import android.os.AsyncTask;
 

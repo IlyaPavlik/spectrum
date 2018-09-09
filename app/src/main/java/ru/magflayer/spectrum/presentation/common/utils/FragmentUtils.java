@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.utils;
+package ru.magflayer.spectrum.presentation.common.utils;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

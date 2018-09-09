@@ -1,10 +1,10 @@
-package ru.magflayer.spectrum.utils;
+package ru.magflayer.spectrum.presentation.common.utils;
 
 import android.animation.Animator;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import ru.magflayer.spectrum.utils.listeners.SimpleAnimatorListener;
+import ru.magflayer.spectrum.presentation.common.listeners.SimpleAnimatorListener;
 
 public class ViewUtils {
 

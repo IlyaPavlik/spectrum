@@ -11,8 +11,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import ru.magflayer.spectrum.data.android.ResourceManager;
-import ru.magflayer.spectrum.data.local.ColorInfo;
-import ru.magflayer.spectrum.data.local.NcsColor;
+import ru.magflayer.spectrum.domain.model.ColorInfo;
+import ru.magflayer.spectrum.domain.model.NcsColor;
 import ru.magflayer.spectrum.domain.model.ListType;
 import rx.Observable;
 import rx.functions.Func1;

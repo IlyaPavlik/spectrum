@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
-import ru.magflayer.spectrum.presentation.common.BaseFragment;
+import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
 

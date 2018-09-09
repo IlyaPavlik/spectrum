@@ -12,8 +12,8 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.utils.ColorUtils;
-import ru.magflayer.spectrum.utils.ViewUtils;
+import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.common.utils.ViewUtils;
 
 public class ColorDetailsWidget extends LinearLayout {
 

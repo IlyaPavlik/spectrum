@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ru.magflayer.spectrum.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 
 import static junit.framework.Assert.assertTrue;
 

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ru.magflayer.spectrum.data.android.ResourceManager;
-import ru.magflayer.spectrum.data.local.ColorInfo;
+import ru.magflayer.spectrum.domain.model.ColorInfo;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

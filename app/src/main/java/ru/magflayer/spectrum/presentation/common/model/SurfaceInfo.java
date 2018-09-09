@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.data.local;
+package ru.magflayer.spectrum.presentation.common.model;
 
 import android.graphics.Bitmap;
 
