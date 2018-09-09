@@ -3,9 +3,9 @@ package ru.magflayer.spectrum.data.local;
 import android.graphics.Bitmap;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 @AllArgsConstructor
 public class SurfaceInfo {
 

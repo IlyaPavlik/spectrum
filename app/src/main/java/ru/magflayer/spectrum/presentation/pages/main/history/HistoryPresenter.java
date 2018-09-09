@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
@@ -18,6 +19,11 @@ public class HistoryPresenter extends BasePresenter<HistoryView, MainRouter> {
     @Inject
     HistoryPresenter() {
         super();
+    }
+
+    @Override
+    protected void inject() {
+        InjectorManager.getAppComponent().inject(this);
     }
 
     void loadHistory() {

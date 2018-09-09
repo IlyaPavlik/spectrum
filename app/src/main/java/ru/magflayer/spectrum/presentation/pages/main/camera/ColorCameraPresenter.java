@@ -7,8 +7,6 @@ import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -20,12 +18,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import ru.magflayer.spectrum.data.local.ColorInfo;
 import ru.magflayer.spectrum.data.local.SurfaceInfo;
-import ru.magflayer.spectrum.domain.event.PictureSavedEvent;
+import ru.magflayer.spectrum.domain.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
+import ru.magflayer.spectrum.domain.model.event.PictureSavedEvent;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.utils.Base64Utils;
@@ -45,6 +44,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
 
     @Inject
     AnalyticsManager analyticsManager;
+    @Inject
+    ColorsInteractor colorsInteractor;
 
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
@@ -71,18 +72,22 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                     }
                 },
                 throwable -> logger.error("Error occurred while listening changing", throwable));
+
+        loadColorNames();
     }
 
-    void updateSurface(SurfaceInfo.Type type) {
+    @Override
+    protected void inject() {
+        InjectorManager.getAppComponent().inject(this);
+    }
+
+    void updateSurface(final SurfaceInfo.Type type) {
         changeObservable.onNext(type);
     }
 
-    void handleColorInfo(String colorInfoJson) {
-        Gson gson = new Gson();
-        List<ColorInfo> colorInfoList = gson.fromJson(colorInfoJson, new TypeToken<List<ColorInfo>>() {
-        }.getType());
-
-        execute(Observable.from(colorInfoList),
+    private void loadColorNames() {
+        execute(colorsInteractor.loadColorNames()
+                        .flatMap(Observable::from),
                 colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()));
     }
 

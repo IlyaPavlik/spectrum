@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -85,13 +86,15 @@ public class ColorSelectedWidget extends RelativeLayout {
         ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         String label = getContext().getString(R.string.history_dialog_copy_label);
         ClipData clip = ClipData.newPlainText(label, hexView.getText());
-        clipboard.setPrimaryClip(clip);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(clip);
+        }
 
         Toast.makeText(getContext(), R.string.history_dialog_copy, Toast.LENGTH_SHORT).show();
     }
 
     private void init(Context context) {
-        View view = inflate(context, R.layout.dialog_history_details, this);
+        View view = inflate(context, R.layout.widget_history_details, this);
         ButterKnife.bind(this, view);
 
         colorRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -146,15 +149,18 @@ public class ColorSelectedWidget extends RelativeLayout {
             super(context);
         }
 
+        @NonNull
         @Override
-        public ColorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ColorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new ColorViewHolder(inflater.inflate(R.layout.item_history_color, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(ColorViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
             Palette.Swatch swatch = getItem(position);
-            holder.colorView.setBackgroundColor(swatch.getRgb());
+            if (swatch != null) {
+                holder.colorView.setBackgroundColor(swatch.getRgb());
+            }
 
             if (position == getSelectedPosition()) {
                 holder.colorView.setImageResource(R.drawable.rectangle_color_selected);

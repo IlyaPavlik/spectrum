@@ -4,12 +4,18 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
+import ru.magflayer.spectrum.presentation.pages.main.MainPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraFragment;
+import ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.history.HistoryFragment;
+import ru.magflayer.spectrum.presentation.pages.main.history.HistoryPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.history.details.HistoryDetailsFragment;
+import ru.magflayer.spectrum.presentation.pages.main.history.details.HistoryDetailsPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.splash.SplashFragment;
+import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarViewHolder;
 import ru.magflayer.spectrum.presentation.pages.splash.SplashActivity;
+import ru.magflayer.spectrum.presentation.pages.splash.SplashPresenter;
 
 @Singleton
 @Component(modules = AppModule.class)
@@ -34,5 +40,20 @@ public interface AppComponent {
 
     //VIEW HOLDER
     void inject(ToolbarViewHolder viewHolder);
+
+    //PRESENTER
+    void inject(SplashPresenter presenter);
+
+    void inject(ru.magflayer.spectrum.presentation.pages.main.splash.SplashPresenter presenter);
+
+    void inject(MainPresenter presenter);
+
+    void inject(ToolbarPresenter presenter);
+
+    void inject(ColorCameraPresenter presenter);
+
+    void inject(HistoryPresenter presenter);
+
+    void inject(HistoryDetailsPresenter presenter);
 
 }

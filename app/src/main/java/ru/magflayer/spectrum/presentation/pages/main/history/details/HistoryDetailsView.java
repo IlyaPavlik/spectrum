@@ -11,4 +11,18 @@ interface HistoryDetailsView extends BaseView {
 
     void showColorName(String name);
 
+    void showRgb(int color);
+
+    void showRyb(int color);
+
+    void showCmyk(int color);
+
+    void showHsv(int color);
+
+    void showXyz(int color);
+
+    void showLab(int color);
+
+    void showNcs(int color, String ncsName);
+
 }

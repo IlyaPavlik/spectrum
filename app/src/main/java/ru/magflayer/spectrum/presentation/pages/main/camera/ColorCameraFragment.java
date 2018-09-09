@@ -42,7 +42,6 @@ import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.Layout;
 import ru.magflayer.spectrum.presentation.widget.ColorDetailsWidget;
 import ru.magflayer.spectrum.presentation.widget.PointView;
-import ru.magflayer.spectrum.utils.AppUtils;
 import ru.magflayer.spectrum.utils.ViewUtils;
 
 @Layout(R.layout.fragment_color_camera)
@@ -135,9 +134,6 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        String colorsJson = AppUtils.loadJSONFromAsset(getResources().getAssets(), "colors.json");
-        presenter.handleColorInfo(colorsJson);
 
         colorRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         adapter = new ColorCameraAdapter(getContext());
@@ -302,11 +298,11 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     private void updateMode(final boolean single) {
         if (single) {
-            AppUtils.changeViewVisibility(true, colorDetailsWidget, pointView);
-            AppUtils.changeViewVisibility(false, colorRecycler);
+            ViewUtils.changeViewVisibility(true, colorDetailsWidget, pointView);
+            ViewUtils.changeViewVisibility(false, colorRecycler);
         } else {
-            AppUtils.changeViewVisibility(false, colorDetailsWidget, pointView);
-            AppUtils.changeViewVisibility(true, colorRecycler);
+            ViewUtils.changeViewVisibility(false, colorDetailsWidget, pointView);
+            ViewUtils.changeViewVisibility(true, colorRecycler);
         }
     }
 

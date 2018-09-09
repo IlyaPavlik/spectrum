@@ -34,6 +34,12 @@ public abstract class BasePresenter<View, Router> {
     @Inject
     protected AppRealm appRealm;
 
+    public BasePresenter() {
+        inject();
+    }
+
+    protected abstract void inject();
+
     public View getView() {
         return view;
     }
