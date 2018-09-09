@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.utils.FragmentUtils;
+import ru.magflayer.spectrum.presentation.common.utils.FragmentUtils;
 
 public class FragmentRouter {
 

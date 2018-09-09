@@ -22,8 +22,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.magflayer.spectrum.utils.BitmapUtils;
-import ru.magflayer.spectrum.utils.RxUtils;
+import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils;
+import ru.magflayer.spectrum.common.utils.RxUtils;
 import rx.Observable;
 import rx.Subscription;
 

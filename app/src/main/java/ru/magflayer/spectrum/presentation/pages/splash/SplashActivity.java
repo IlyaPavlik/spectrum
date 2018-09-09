@@ -11,7 +11,7 @@ import android.support.v4.content.ContextCompat;
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
-import ru.magflayer.spectrum.presentation.common.BaseActivity;
+import ru.magflayer.spectrum.presentation.common.android.BaseActivity;
 import ru.magflayer.spectrum.presentation.router.GlobalRouterImpl;
 
 public class SplashActivity extends BaseActivity<SplashPresenter> {

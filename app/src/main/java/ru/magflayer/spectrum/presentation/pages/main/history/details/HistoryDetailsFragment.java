@@ -26,16 +26,16 @@ import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
-import ru.magflayer.spectrum.presentation.common.BaseFragment;
+import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
+import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.BasePresenter;
-import ru.magflayer.spectrum.presentation.common.BaseRecyclerAdapter;
-import ru.magflayer.spectrum.presentation.common.BaseViewHolder;
+import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
+import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
 import ru.magflayer.spectrum.presentation.common.Layout;
 import ru.magflayer.spectrum.presentation.widget.ColorInfoWidget;
 import ru.magflayer.spectrum.presentation.widget.TextSeekBarView;
-import ru.magflayer.spectrum.utils.Base64Utils;
-import ru.magflayer.spectrum.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
+import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 
 @Layout(R.layout.fragment_history_details)
 public class HistoryDetailsFragment extends BaseFragment implements HistoryDetailsView {

@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.presentation.common;
+package ru.magflayer.spectrum.presentation.common.android;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,8 +19,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.domain.model.PageAppearance;
-import ru.magflayer.spectrum.domain.model.ToolbarAppearance;
+import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
+import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
+import ru.magflayer.spectrum.presentation.common.BasePresenter;
+import ru.magflayer.spectrum.presentation.common.Layout;
+import ru.magflayer.spectrum.presentation.common.PageView;
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 

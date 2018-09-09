@@ -13,7 +13,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.utils.DrawableUtils;
+import ru.magflayer.spectrum.presentation.common.utils.DrawableUtils;
 
 public class TextSeekBarView extends FrameLayout {
 

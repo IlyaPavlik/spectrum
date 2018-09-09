@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.utils;
+package ru.magflayer.spectrum.presentation.common.utils;
 
 import android.app.Activity;
 import android.content.Context;

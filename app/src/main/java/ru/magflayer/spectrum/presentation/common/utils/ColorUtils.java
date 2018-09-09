@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.utils;
+package ru.magflayer.spectrum.presentation.common.utils;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
-import ru.magflayer.spectrum.data.local.NcsColor;
+import ru.magflayer.spectrum.domain.model.NcsColor;
 
 @SuppressWarnings("WeakerAccess")
 public class ColorUtils {

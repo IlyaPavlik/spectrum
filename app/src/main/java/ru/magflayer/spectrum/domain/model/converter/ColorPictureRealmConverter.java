@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.domain.converter;
+package ru.magflayer.spectrum.domain.model.converter;
 
 import ru.magflayer.spectrum.data.database.model.ColorPictureRealm;
 import ru.magflayer.spectrum.domain.model.ColorPicture;

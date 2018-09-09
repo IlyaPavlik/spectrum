@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.utils.listeners;
+package ru.magflayer.spectrum.presentation.common.listeners;
 
 import android.animation.Animator;
 
