@@ -2,13 +2,9 @@ package ru.magflayer.spectrum.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.view.View;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 
 import ru.magflayer.spectrum.presentation.common.Layout;
@@ -50,29 +46,6 @@ public class AppUtils {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }
-
-    public static void changeViewVisibility(boolean visible, View... views) {
-        for (View view : views) {
-            view.setVisibility(visible ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static String loadJSONFromAsset(AssetManager assetManager, String fileName) {
-        String json;
-        try {
-            InputStream is = assetManager.open(fileName);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
     }
 
 }

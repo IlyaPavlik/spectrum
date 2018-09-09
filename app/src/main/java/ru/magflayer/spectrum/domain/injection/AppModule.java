@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.domain.injection;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -35,5 +36,11 @@ class AppModule {
     @Provides
     AppRealm provideAppRealm(Bus bus) {
         return new AppRealm(context, bus);
+    }
+
+    @Singleton
+    @Provides
+    Gson provideGson() {
+        return new Gson();
     }
 }

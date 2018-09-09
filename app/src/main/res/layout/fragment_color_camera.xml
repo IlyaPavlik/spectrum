@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -51,14 +52,14 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="@dimen/indent_normal"
-            android:src="@drawable/ic_menu" />
+            app:srcCompat="@drawable/ic_menu" />
 
         <ImageView
             android:id="@+id/save"
             android:layout_width="@dimen/camera_save_size"
             android:layout_height="@dimen/camera_save_size"
             android:layout_centerInParent="true"
-            android:src="@drawable/selector_save_button" />
+            app:srcCompat="@drawable/selector_save_button" />
 
         <ToggleButton
             android:id="@+id/toggle_mode"
