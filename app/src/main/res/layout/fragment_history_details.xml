@@ -62,19 +62,19 @@
                     android:textSize="@dimen/history_details_title_text_size"
                     android:textStyle="bold" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/red"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/green"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/blue"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
@@ -104,25 +104,25 @@
                     android:textSize="@dimen/history_details_title_text_size"
                     android:textStyle="bold" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/cyan"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/magenta"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/yellow"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
 
-                <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+                <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
                     android:id="@+id/key"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/history_details_seek_bar_height"
@@ -130,7 +130,7 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
-        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+        <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_ryb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
             android:layout_marginLeft="@dimen/indent_small"
             android:layout_marginRight="@dimen/indent_small" />
 
-        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+        <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_hsv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,7 +146,7 @@
             android:layout_marginLeft="@dimen/indent_small"
             android:layout_marginRight="@dimen/indent_small" />
 
-        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+        <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_xyz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
             android:layout_marginLeft="@dimen/indent_small"
             android:layout_marginRight="@dimen/indent_small" />
 
-        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+        <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_lab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
             android:layout_marginLeft="@dimen/indent_small"
             android:layout_marginRight="@dimen/indent_small" />
 
-        <ru.magflayer.spectrum.presentation.widget.ColorInfoWidget
+        <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_ncs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

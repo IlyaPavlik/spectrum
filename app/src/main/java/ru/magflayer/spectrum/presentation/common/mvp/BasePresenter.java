@@ -1,5 +1,7 @@
-package ru.magflayer.spectrum.presentation.common;
+package ru.magflayer.spectrum.presentation.common.mvp;
 
+import com.arellomobile.mvp.MvpPresenter;
+import com.arellomobile.mvp.MvpView;
 import com.squareup.otto.Bus;
 
 import org.slf4j.Logger;
@@ -10,43 +12,56 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import ru.magflayer.spectrum.common.utils.RxUtils;
 import ru.magflayer.spectrum.data.database.AppRealm;
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
-import ru.magflayer.spectrum.common.utils.RxUtils;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
 @SuppressWarnings("WeakerAccess")
-public abstract class BasePresenter<View, Router> {
+public abstract class BasePresenter<View extends MvpView, Router> extends MvpPresenter<View> {
 
     protected Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
-    private View view;
     private Router router;
     private Map<String, Subscription> subscriptionMap = new HashMap<>();
 
     @Inject
     protected Bus bus;
-
     @Inject
     protected AppRealm appRealm;
 
     public BasePresenter() {
         inject();
+        bus.register(this);
+    }
+
+    @Override
+    public void attachView(View view) {
+        super.attachView(view);
+
+        setupPageAppearance(getPageAppearance());
+        setupToolbarAppearance(getToolbarAppearance());
+        openRealm();
+    }
+
+    @Override
+    public void detachView(View view) {
+        super.detachView(view);
+        closeRealm();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        bus.unregister(this);
+        unsubscribe();
     }
 
     protected abstract void inject();
-
-    public View getView() {
-        return view;
-    }
-
-    public void setView(View view) {
-        this.view = view;
-    }
 
     public Router getRouter() {
         return router;
@@ -62,22 +77,6 @@ public abstract class BasePresenter<View, Router> {
 
     public void closeRealm() {
         appRealm.close();
-    }
-
-    public void registerBus() {
-        bus.register(this);
-    }
-
-    public void unregisterBus() {
-        bus.unregister(this);
-    }
-
-    public void setupToolbarAppearance(ToolbarAppearance toolbarAppearance) {
-        bus.post(toolbarAppearance);
-    }
-
-    public void setupPageAppearance(PageAppearance pageAppearance) {
-        bus.post(pageAppearance);
     }
 
     protected <T> void execute(Observable<T> observable, Action1<T> action1) {
@@ -118,7 +117,7 @@ public abstract class BasePresenter<View, Router> {
                 .subscribe(action1, errorAction, completeAction));
     }
 
-    public void unsubscribe() {
+    private void unsubscribe() {
         for (Map.Entry<String, Subscription> entry : subscriptionMap.entrySet()) {
             if (!entry.getValue().isUnsubscribed()) {
                 entry.getValue().unsubscribe();
@@ -126,5 +125,25 @@ public abstract class BasePresenter<View, Router> {
         }
 
         subscriptionMap.clear();
+    }
+
+    protected void setupToolbarAppearance(final ToolbarAppearance toolbarAppearance) {
+        bus.post(toolbarAppearance);
+    }
+
+    protected void setupPageAppearance(final PageAppearance pageAppearance) {
+        bus.post(pageAppearance);
+    }
+
+    protected ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.NO_INFLUENCE)
+                .build();
+    }
+
+    protected PageAppearance getPageAppearance() {
+        return PageAppearance.builder()
+                .showFloatingButton(false)
+                .build();
     }
 }

@@ -39,17 +39,19 @@ public class CameraManager {
         void onTakePicture(Bitmap bitmap);
     }
 
+    @Inject
+    Bus bus;
+
     @Nullable
     private Camera camera;
     private Bitmap cameraBitmap;
     private Subscription generateBitmapSubscription;
     private ByteArrayOutputStream generateBitmapStream;
+    private WindowManager windowManager;
 
     @Inject
-    protected Bus bus;
-
-    @Inject
-    CameraManager() {
+    CameraManager(final Context context) {
+        windowManager = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE));
     }
 
     public void open() {
@@ -147,12 +149,12 @@ public class CameraManager {
         }
     }
 
-    public void setCameraDisplayOrientation(Context context) {
+    public void updateCameraDisplayOrientation() {
         android.hardware.Camera.CameraInfo camInfo =
                 new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(getBackFacingCameraId(), camInfo);
 
-        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Display display = windowManager.getDefaultDisplay();
         int rotation = display.getRotation();
         int degrees = 0;
         switch (rotation) {
@@ -170,10 +172,10 @@ public class CameraManager {
                 break;
         }
 
-        setCameraDisplayOrientation(degrees);
+        updateCameraDisplayOrientation(degrees);
     }
 
-    public void setCameraDisplayOrientation(final int degrees) {
+    public void updateCameraDisplayOrientation(final int degrees) {
         android.hardware.Camera.CameraInfo camInfo =
                 new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(getBackFacingCameraId(), camInfo);

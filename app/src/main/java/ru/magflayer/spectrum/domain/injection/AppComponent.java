@@ -11,7 +11,6 @@ import ru.magflayer.spectrum.presentation.pages.main.history.HistoryFragment;
 import ru.magflayer.spectrum.presentation.pages.main.history.HistoryPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.history.details.HistoryDetailsFragment;
 import ru.magflayer.spectrum.presentation.pages.main.history.details.HistoryDetailsPresenter;
-import ru.magflayer.spectrum.presentation.pages.main.splash.SplashFragment;
 import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarPresenter;
 import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarViewHolder;
 import ru.magflayer.spectrum.presentation.pages.splash.SplashActivity;
@@ -34,8 +33,6 @@ public interface AppComponent {
 
     void inject(HistoryFragment fragment);
 
-    void inject(SplashFragment fragment);
-
     void inject(HistoryDetailsFragment fragment);
 
     //VIEW HOLDER
@@ -43,8 +40,6 @@ public interface AppComponent {
 
     //PRESENTER
     void inject(SplashPresenter presenter);
-
-    void inject(ru.magflayer.spectrum.presentation.pages.main.splash.SplashPresenter presenter);
 
     void inject(MainPresenter presenter);
 

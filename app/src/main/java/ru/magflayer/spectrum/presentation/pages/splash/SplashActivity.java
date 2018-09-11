@@ -3,30 +3,28 @@ package ru.magflayer.spectrum.presentation.pages.splash;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import javax.inject.Inject;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity;
 import ru.magflayer.spectrum.presentation.router.GlobalRouterImpl;
 
-public class SplashActivity extends BaseActivity<SplashPresenter> {
+public class SplashActivity extends BaseActivity implements SplashView {
 
     private static final int CAMERA_PERMISSION_REQUEST = 111;
-    private static final int SPLASH_DELAY = 300;
 
-    @Inject
-    protected SplashPresenter presenter;
+    @InjectPresenter
+    SplashPresenter presenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getPresenter().setRouter(new GlobalRouterImpl(this));
+        presenter.setRouter(new GlobalRouterImpl(this));
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -35,7 +33,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
                     CAMERA_PERMISSION_REQUEST);
             return;
         }
-        startMainPage();
+        presenter.openMainPage();
     }
 
     @Override
@@ -43,19 +41,14 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
         InjectorManager.getAppComponent().inject(this);
     }
 
-    @NonNull
     @Override
-    protected SplashPresenter getPresenter() {
-        return presenter;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
         switch (requestCode) {
             case CAMERA_PERMISSION_REQUEST: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startMainPage();
+                    presenter.openMainPage();
                 } else {
                     finish();
                 }
@@ -66,10 +59,8 @@ public class SplashActivity extends BaseActivity<SplashPresenter> {
         }
     }
 
-    private void startMainPage() {
-        new Handler().postDelayed(() -> {
-            getPresenter().openMainPage();
-            finish();
-        }, SPLASH_DELAY);
+    @Override
+    public void closeScreen() {
+        finish();
     }
 }

@@ -5,28 +5,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import javax.inject.Inject;
+import com.arellomobile.mvp.MvpDelegate;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import ru.magflayer.spectrum.domain.injection.InjectorManager;
-import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouterImpl;
 
 public class ToolbarViewHolder implements ToolbarView {
 
-    @Inject
-    protected ToolbarPresenter presenter;
+    @InjectPresenter
+    ToolbarPresenter presenter;
 
     private Toolbar toolbar;
-    private MainRouter mainRouter;
+    private MvpDelegate<ToolbarViewHolder> mvpDelegate;
 
-    public ToolbarViewHolder(AppCompatActivity activity, Toolbar toolbar) {
+    public ToolbarViewHolder(final AppCompatActivity activity, final Toolbar toolbar) {
         this.toolbar = toolbar;
-        InjectorManager.getAppComponent().inject(this);
+        getMvpDelegate().onCreate();
+        getMvpDelegate().onAttach();
 
-        mainRouter = new MainRouterImpl(activity);
+        MainRouter mainRouter = new MainRouterImpl(activity);
         presenter.setRouter(mainRouter);
-        presenter.setView(this);
 
         activity.setSupportActionBar(toolbar);
         ActionBar actionBar = activity.getSupportActionBar();
@@ -36,32 +35,30 @@ public class ToolbarViewHolder implements ToolbarView {
         }
     }
 
-    public void onRegisterBus() {
-        presenter.registerBus();
-    }
-
-    public void onUnregisterBus() {
-        presenter.unregisterBus();
+    @Override
+    public void showToolbar() {
+        toolbar.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void setupToolbarAppearance(ToolbarAppearance toolbarAppearance) {
+    public void hideToolbar() {
+        toolbar.setVisibility(View.GONE);
+    }
 
-        ToolbarAppearance.Visibility visibility = toolbarAppearance.getVisible();
-        switch (visibility) {
-            case VISIBLE:
-                toolbar.setVisibility(View.VISIBLE);
-                break;
-            case INVISIBLE:
-                toolbar.setVisibility(View.GONE);
-                break;
-            default:
-                //no influence
-        }
+    @Override
+    public void showTitle(final String title) {
+        toolbar.setTitle(title);
+    }
 
-        String title = toolbarAppearance.getTitle();
-        if (title != null) {
-            toolbar.setTitle(title);
+    public void onDestroy() {
+        getMvpDelegate().onDetach();
+        getMvpDelegate().onDestroy();
+    }
+
+    private MvpDelegate getMvpDelegate() {
+        if (mvpDelegate == null) {
+            mvpDelegate = new MvpDelegate<>(this);
         }
+        return mvpDelegate;
     }
 }

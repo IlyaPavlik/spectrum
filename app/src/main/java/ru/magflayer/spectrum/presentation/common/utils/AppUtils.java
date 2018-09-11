@@ -1,25 +1,24 @@
 package ru.magflayer.spectrum.presentation.common.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
 import java.lang.annotation.Annotation;
 
-import ru.magflayer.spectrum.presentation.common.Layout;
+import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
 
-public class AppUtils {
+public final class AppUtils {
 
     private AppUtils() {
     }
 
-    public static void applyLayout(Activity activity) {
-        Class cls = activity.getClass();
-        if (!cls.isAnnotationPresent(Layout.class)) return;
+    public static Integer getLayoutId(final Object o) {
+        Class cls = o.getClass();
+        if (!cls.isAnnotationPresent(Layout.class)) return null;
         Annotation annotation = cls.getAnnotation(Layout.class);
         Layout layout = (Layout) annotation;
-        activity.setContentView(layout.value());
+        return layout.value();
     }
 
     /**
@@ -29,7 +28,7 @@ public class AppUtils {
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context) {
+    public static float convertDpToPixel(final float dp, final Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
@@ -42,7 +41,7 @@ public class AppUtils {
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent dp equivalent to px value
      */
-    public static float convertPixelsToDp(float px, Context context) {
+    public static float convertPixelsToDp(final float px, final Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);

@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.presentation.widget;
+package ru.magflayer.spectrum.presentation.common.android.widget;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

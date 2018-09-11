@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.presentation.common;
+package ru.magflayer.spectrum.presentation.common.android.layout;
 
 import android.support.annotation.LayoutRes;
 

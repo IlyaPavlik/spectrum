@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.presentation.common.android;
 
-
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -71,7 +71,7 @@ public abstract class BaseRecyclerAdapter<VH extends BaseViewHolder, T> extends 
     }
 
     @Override
-    public void onBindViewHolder(VH holder, int position, List<Object> payloads) {
+    public void onBindViewHolder(@NonNull VH holder, int position, @NonNull List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
         holder.itemView.setOnClickListener(view -> select(holder.getAdapterPosition()));
         holder.itemView.setOnLongClickListener(view -> {

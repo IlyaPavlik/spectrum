@@ -1,6 +1,5 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera;
 
-import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,11 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import butterknife.BindDimen;
 import butterknife.BindView;
@@ -32,22 +29,21 @@ import butterknife.OnClick;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
-import ru.magflayer.spectrum.domain.manager.CameraManager;
-import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
-import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
-import ru.magflayer.spectrum.presentation.common.BasePresenter;
-import ru.magflayer.spectrum.presentation.common.Layout;
-import ru.magflayer.spectrum.presentation.widget.ColorDetailsWidget;
-import ru.magflayer.spectrum.presentation.widget.PointView;
+import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
+import ru.magflayer.spectrum.presentation.common.android.widget.ColorDetailsWidget;
+import ru.magflayer.spectrum.presentation.common.android.widget.PointView;
+import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo;
 import ru.magflayer.spectrum.presentation.common.utils.ViewUtils;
 
 @Layout(R.layout.fragment_color_camera)
 public class ColorCameraFragment extends BaseFragment implements TextureView.SurfaceTextureListener, ColorCameraView {
 
     private final static int ROTATION_INTERVAL = 5;
+
+    @InjectPresenter
+    ColorCameraPresenter presenter;
 
     @BindView(R.id.camera)
     TextureView cameraView;
@@ -69,28 +65,15 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     @BindView(R.id.message)
     TextView messageView;
 
-    @Inject
-    protected ColorCameraPresenter presenter;
-    @Inject
-    protected CameraManager cameraManager;
-
     @BindDimen(R.dimen.color_list_width)
     protected int menuSize;
 
     private ColorCameraAdapter adapter;
-    private List<Palette.Swatch> swatches = new ArrayList<>();
     private OrientationEventListener orientationEventListener;
-
     private Orientation currentOrientation;
 
     public static ColorCameraFragment newInstance() {
         return new ColorCameraFragment();
-    }
-
-    @NonNull
-    @Override
-    protected BasePresenter getPresenter() {
-        return presenter;
     }
 
     @Override
@@ -99,9 +82,10 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        presenter.setRouter(getRouter());
         orientationEventListener = new OrientationEventListener(getContext()) {
             @Override
             public void onOrientationChanged(int orientation) {
@@ -131,7 +115,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -144,85 +128,78 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+    public void onSurfaceTextureAvailable(final SurfaceTexture surface, final int width, final int height) {
         logger.debug("onSurfaceTextureAvailable");
-        hideProgressBar();
-        try {
-            messageView.setVisibility(View.GONE);
-            pointView.setVisibility(View.VISIBLE);
-            cameraManager.startCamera(surface);
-            cameraManager.setCameraDisplayOrientation(getContext());
-            showAnimation();
-        } catch (Exception e) {
-            logger.error("Error occurred while starting camera ", e);
-            messageView.setVisibility(View.VISIBLE);
-            pointView.setVisibility(View.GONE);
-        }
+        presenter.handleSurfaceAvailable(surface);
     }
 
     @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+    public void onSurfaceTextureSizeChanged(final SurfaceTexture surface, final int width, final int height) {
         //do nothing
     }
 
     @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+    public boolean onSurfaceTextureDestroyed(final SurfaceTexture surface) {
         logger.debug("onSurfaceTextureDestroyed");
-        cameraManager.stopPreview();
+        presenter.handleSurfaceDestroyed();
         return true;
     }
 
     @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    public void onSurfaceTextureUpdated(final SurfaceTexture surface) {
         presenter.updateSurface(toggleView.isChecked() ? SurfaceInfo.Type.SINGLE : SurfaceInfo.Type.MULTIPLE);
     }
 
     @Override
-    public void showPictureSaved() {
+    public void showPictureSavedToast() {
         Toast.makeText(getContext(), R.string.camera_image_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showColors(List<Palette.Swatch> colors) {
+    public void showColors(final List<Palette.Swatch> colors) {
         adapter.setData(colors);
-        swatches = new ArrayList<>(colors);
     }
 
     @Override
-    public void showColorDetails(int mainColor, int titleColor) {
+    public void showColorDetails(final int mainColor, final int titleColor) {
         colorDetailsWidget.setColor(mainColor);
         pointView.setAimColor(titleColor);
-
-        swatches = Collections.singletonList(new Palette.Swatch(mainColor, Integer.MAX_VALUE));
     }
 
     @Override
-    public void showColorName(String name) {
+    public void showColorName(final String name) {
         colorDetailsWidget.setColorName(name);
     }
 
     @Override
-    public Bitmap getSurfaceBitmap() {
-        return cameraManager.getCameraBitmap();
+    public void showErrorMessage() {
+        messageView.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public PageAppearance getPageAppearance() {
-        return PageAppearance.builder()
-                .showFloatingButton(false)
-                .build();
+    public void hideErrorMessage() {
+        messageView.setVisibility(View.GONE);
     }
 
     @Override
-    public ToolbarAppearance getToolbarAppearance() {
-        return ToolbarAppearance.builder()
-                .visible(ToolbarAppearance.Visibility.INVISIBLE)
-                .build();
+    public void showCrosshair() {
+        pointView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideCrosshair() {
+        pointView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showPanels() {
+        showTopMenu();
+        showBottomMenu();
     }
 
     @OnClick(R.id.camera)
     protected void onFocusClick() {
-        cameraManager.autoFocus();
+        presenter.handleFocusClicked();
     }
 
     @OnClick(R.id.menu)
@@ -232,28 +209,20 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @OnClick(R.id.save)
     protected void onSaveClick() {
-        Bitmap bitmap = cameraManager.getCameraBitmap();
-        presenter.saveColorPicture(bitmap, swatches);
-    }
-
-    private void showAnimation() {
-        showTopMenu();
-        showBottomMenu();
-    }
-
-    private void showBottomMenu() {
-        if (infoMenuView.getVisibility() != View.VISIBLE) {
-            infoMenuView.setVisibility(View.VISIBLE);
-
-            infoMenuView.startAnimation(inFromBottomAnimation());
-        }
+        presenter.handleSaveClicked();
     }
 
     private void showTopMenu() {
         if (buttonsMenuView.getVisibility() != View.VISIBLE) {
             buttonsMenuView.setVisibility(View.VISIBLE);
-
             buttonsMenuView.startAnimation(inFromTopAnimation());
+        }
+    }
+
+    private void showBottomMenu() {
+        if (infoMenuView.getVisibility() != View.VISIBLE) {
+            infoMenuView.setVisibility(View.VISIBLE);
+            infoMenuView.startAnimation(inFromBottomAnimation());
         }
     }
 

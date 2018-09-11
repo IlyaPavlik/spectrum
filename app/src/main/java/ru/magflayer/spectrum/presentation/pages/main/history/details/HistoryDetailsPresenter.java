@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
+import com.arellomobile.mvp.InjectViewState;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,31 +13,39 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import ru.magflayer.spectrum.domain.model.NcsColor;
+import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.data.android.ResourceManager;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.presentation.common.BasePresenter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
+import ru.magflayer.spectrum.domain.model.NcsColor;
+import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
+import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import rx.Observable;
 
+@InjectViewState
 public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, MainRouter> {
 
     @Inject
     AnalyticsManager analyticsManager;
     @Inject
     ColorsInteractor colorsInteractor;
+    @Inject
+    ResourceManager resourceManager;
 
+    private final int colorQuantity;
     private final Map<String, String> colorInfoMap = new HashMap<>();
     private final List<NcsColor> ncsColors = new ArrayList<>();
 
-    @Inject
-    HistoryDetailsPresenter() {
+    HistoryDetailsPresenter(final long pictureId, final int colorQuantity) {
+        this.colorQuantity = colorQuantity;
         loadColorNames();
         loadNcsColors();
+        loadPicture(pictureId);
     }
 
     @Override
@@ -43,26 +53,40 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, M
         InjectorManager.getAppComponent().inject(this);
     }
 
-    void loadPicture(final long id) {
+    @Override
+    public void attachView(final HistoryDetailsView view) {
+        super.attachView(view);
+        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS);
+    }
+
+    private void loadPicture(final long id) {
         ColorPicture colorPicture = appRealm.loadPicture(id);
         if (colorPicture != null) {
-            getView().showPicture(colorPicture);
+            getViewState().showPicture(colorPicture);
         }
     }
 
     void handleSelectedColor(final int color) {
-        getView().showRgb(color);
-        getView().showRyb(color);
-        getView().showCmyk(color);
-        getView().showHsv(color);
-        getView().showXyz(color);
-        getView().showLab(color);
+        getViewState().showRgb(color);
+        getViewState().showRyb(color);
+        getViewState().showCmyk(color);
+        getViewState().showHsv(color);
+        getViewState().showXyz(color);
+        getViewState().showLab(color);
 
         execute(Observable.just(color)
                         .map(c -> ColorUtils.dec2Ncs(ncsColors, c)),
-                ncsName -> getView().showNcs(color, ncsName));
+                ncsName -> getViewState().showNcs(color, ncsName));
 
         handleColorDetails(color);
+    }
+
+    @Override
+    public ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.VISIBLE)
+                .title(resourceManager.getQuantityString(R.plurals.history_details_title, colorQuantity))
+                .build();
     }
 
     private void handleColorDetails(final int color) {
@@ -87,12 +111,8 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, M
                             return Pair.create(color1, result);
                         })
                         .filter(aDouble -> aDouble.second != Integer.MAX_VALUE),
-                result -> getView().showColorName(colorInfoMap.get(result.first)),
+                result -> getViewState().showColorName(colorInfoMap.get(result.first)),
                 throwable -> logger.error("Error occurred: ", throwable));
-    }
-
-    void sendAnalytics() {
-        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS);
     }
 
     private void loadColorNames() {
@@ -100,7 +120,7 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, M
                         .flatMap(Observable::from),
                 colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()),
                 throwable -> logger.error("Error occurs: ", throwable),
-                () -> getView().colorLoaded());
+                () -> getViewState().selectFirstItem());
     }
 
     private void loadNcsColors() {
