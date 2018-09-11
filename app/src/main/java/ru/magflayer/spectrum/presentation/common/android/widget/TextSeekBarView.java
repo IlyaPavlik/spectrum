@@ -1,5 +1,6 @@
 package ru.magflayer.spectrum.presentation.common.android.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -54,6 +55,7 @@ public class TextSeekBarView extends FrameLayout {
         textView.setText(text);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init(Context context) {
         View view = View.inflate(context, R.layout.widget_text_seek_bar, this);
         ButterKnife.bind(this, view);
