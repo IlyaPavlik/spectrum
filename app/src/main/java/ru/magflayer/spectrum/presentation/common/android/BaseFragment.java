@@ -3,32 +3,26 @@ package ru.magflayer.spectrum.presentation.common.android;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arellomobile.mvp.MvpAppCompatFragment;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.annotation.Annotation;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
-import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
-import ru.magflayer.spectrum.presentation.common.BasePresenter;
-import ru.magflayer.spectrum.presentation.common.Layout;
-import ru.magflayer.spectrum.presentation.common.PageView;
+import ru.magflayer.spectrum.presentation.common.mvp.view.PageView;
+import ru.magflayer.spectrum.presentation.common.utils.AppUtils;
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
 import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseFragment extends Fragment implements PageView {
+public abstract class BaseFragment extends MvpAppCompatFragment implements PageView {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
@@ -36,27 +30,22 @@ public abstract class BaseFragment extends Fragment implements PageView {
     @Nullable
     protected View progressBar;
 
-    private static final AtomicInteger lastFragmentId = new AtomicInteger(0);
-    private final int fragmentId;
     private Unbinder unbinder;
 
-    public BaseFragment() {
-        fragmentId = lastFragmentId.incrementAndGet();
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        Integer layoutId = AppUtils.getLayoutId(this);
+        if (layoutId != null) {
+            View view = inflater.inflate(layoutId, null);
+            unbinder = ButterKnife.bind(this, view);
+            return view;
+        }
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Class cls = getClass();
-        if (!cls.isAnnotationPresent(Layout.class)) return null;
-        Annotation annotation = cls.getAnnotation(Layout.class);
-        Layout layout = (Layout) annotation;
-        View view = inflater.inflate(layout.value(), null);
-        unbinder = ButterKnife.bind(this, view);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logger.debug("onViewCreated");
         final Bundle arguments = getArguments();
@@ -66,69 +55,19 @@ public abstract class BaseFragment extends Fragment implements PageView {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         inject();
-        //noinspection unchecked
-        getPresenter().setView(this);
-        getPresenter().setRouter(getRouter());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().openRealm();
-        getPresenter().registerBus();
-
-        getPresenter().setupPageAppearance(getPageAppearance());
-        getPresenter().setupToolbarAppearance(getToolbarAppearance());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getPresenter().closeRealm();
-        getPresenter().unregisterBus();
     }
 
     @Override
     public void onDestroyView() {
         logger.debug("onDestroyView");
         unbinder.unbind();
-        getPresenter().unsubscribe();
         super.onDestroyView();
     }
 
-    public String getFragmentName() {
-        return Long.toString(fragmentId);
-    }
-
-    @NonNull
-    protected abstract BasePresenter getPresenter();
-
     protected abstract void inject();
-
-    public FloatingActionButton getFloatingActionButton() {
-        if (getActivity() instanceof MainActivity) {
-            return ((MainActivity) getActivity()).getFloatingActionButton();
-        }
-
-        return null;
-    }
-
-    @Override
-    public ToolbarAppearance getToolbarAppearance() {
-        return ToolbarAppearance.builder()
-                .visible(ToolbarAppearance.Visibility.NO_INFLUENCE)
-                .build();
-    }
-
-    @Override
-    public PageAppearance getPageAppearance() {
-        return PageAppearance.builder()
-                .showFloatingButton(false)
-                .build();
-    }
 
     protected MainRouter getRouter() {
         if (getActivity() instanceof MainActivity) {

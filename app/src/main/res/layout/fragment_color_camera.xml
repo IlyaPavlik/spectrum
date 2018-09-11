@@ -29,7 +29,7 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <ru.magflayer.spectrum.presentation.widget.PointView
+    <ru.magflayer.spectrum.presentation.common.android.widget.PointView
         android:id="@+id/point_detector"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -88,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <ru.magflayer.spectrum.presentation.widget.ColorDetailsWidget
+        <ru.magflayer.spectrum.presentation.common.android.widget.ColorDetailsWidget
             android:id="@+id/color_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

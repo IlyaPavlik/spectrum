@@ -111,6 +111,12 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.4.0'
     implementation 'com.google.code.gson:gson:2.8.2'
+
+
+    implementation 'com.arello-mobile:moxy:1.5.5'
+    implementation 'com.arello-mobile:moxy-android:1.5.5'
+    implementation 'com.arello-mobile:moxy-app-compat:1.5.5'
+    annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -14,26 +14,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
-import ru.magflayer.spectrum.presentation.common.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
-import ru.magflayer.spectrum.presentation.common.Layout;
-import ru.magflayer.spectrum.presentation.widget.ColorInfoWidget;
-import ru.magflayer.spectrum.presentation.widget.TextSeekBarView;
+import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
+import ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget;
+import ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView;
 import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 
@@ -42,6 +40,9 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     private static final String COLOR_PICTURE_ID = "COLOR_PICTURE_ID";
     private static final String COLOR_QUANTITY = "COLOR_QUANTITY";
+
+    @InjectPresenter
+    HistoryDetailsPresenter presenter;
 
     @BindView(R.id.picture)
     ImageView pictureView;
@@ -79,11 +80,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     @BindView(R.id.color_info_ncs)
     ColorInfoWidget ncsInfo;
 
-    @Inject
-    HistoryDetailsPresenter presenter;
-
     private ColorAdapter adapter;
-    private int colorQuantity;
 
     public static HistoryDetailsFragment newInstance(final long id, final int colorQuantity) {
 
@@ -96,15 +93,18 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         return fragment;
     }
 
-    @Override
-    protected void handleArguments(@NonNull final Bundle arguments) {
-        colorQuantity = arguments.getInt(COLOR_QUANTITY, colorQuantity);
-    }
+    @ProvidePresenter
+    public HistoryDetailsPresenter providePresenter() {
+        int colorQuantity = 0;
+        long pictureId = -1;
+        Bundle arguments = getArguments();
 
-    @NonNull
-    @Override
-    protected BasePresenter getPresenter() {
-        return presenter;
+        if (arguments != null) {
+            colorQuantity = arguments.getInt(COLOR_QUANTITY);
+            pictureId = arguments.getLong(COLOR_PICTURE_ID);
+        }
+
+        return new HistoryDetailsPresenter(pictureId, colorQuantity);
     }
 
     @Override
@@ -113,15 +113,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @Override
-    public ToolbarAppearance getToolbarAppearance() {
-        return ToolbarAppearance.builder()
-                .visible(ToolbarAppearance.Visibility.VISIBLE)
-                .title(getResources().getQuantityString(R.plurals.history_details_title, colorQuantity))
-                .build();
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         adapter = new ColorAdapter(getContext());
         adapter.setItemSelectListener(position -> {
@@ -135,15 +127,6 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (getArguments() != null) {
-            presenter.loadPicture(getArguments().getLong(COLOR_PICTURE_ID));
-        }
-        presenter.sendAnalytics();
-    }
-
-    @Override
     public void showPicture(final ColorPicture colorPicture) {
         Glide.with(this).load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
                 .apply(RequestOptions.fitCenterTransform())
@@ -153,12 +136,12 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @Override
-    public void colorLoaded() {
+    public void selectFirstItem() {
         adapter.select(0);
     }
 
     @Override
-    public void showColorName(String name) {
+    public void showColorName(final String name) {
         titleView.setText(name);
     }
 
@@ -284,18 +267,18 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     static class ColorAdapter extends BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Integer> {
 
-        ColorAdapter(Context context) {
+        ColorAdapter(final Context context) {
             super(context);
         }
 
         @NonNull
         @Override
-        public ColorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ColorViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
             return new ColorViewHolder(inflater.inflate(R.layout.item_history_color, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ColorViewHolder holder, final int position) {
             Integer color = getItem(position);
             if (color != null) {
                 holder.colorView.setBackgroundColor(color);
@@ -309,7 +292,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
         }
 
         @Override
-        public void select(int position) {
+        public void select(final int position) {
             super.select(position);
             notifyDataSetChanged();
         }
@@ -319,7 +302,7 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
             @BindView(R.id.color)
             ImageView colorView;
 
-            ColorViewHolder(View itemView) {
+            ColorViewHolder(final View itemView) {
                 super(itemView);
             }
         }

@@ -4,17 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+    <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
         android:id="@+id/red"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+    <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
         android:id="@+id/green"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ru.magflayer.spectrum.presentation.widget.TextSeekBarView
+    <ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView
         android:id="@+id/blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

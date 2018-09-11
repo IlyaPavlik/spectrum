@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.presentation.widget;
+package ru.magflayer.spectrum.presentation.common.android.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

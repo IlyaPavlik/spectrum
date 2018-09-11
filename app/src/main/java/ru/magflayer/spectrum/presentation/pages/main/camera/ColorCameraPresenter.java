@@ -2,13 +2,16 @@ package ru.magflayer.spectrum.presentation.pages.main.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 
+import com.arellomobile.mvp.InjectViewState;
 import com.squareup.otto.Subscribe;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,20 +21,24 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
+import ru.magflayer.spectrum.domain.manager.CameraManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.domain.model.event.PictureSavedEvent;
-import ru.magflayer.spectrum.presentation.common.BasePresenter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
+import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
+import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo;
+import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
+import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
+import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
+@InjectViewState
 public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
 
     private static final int SURFACE_UPDATE_DELAY_MILLIS = 300;
@@ -46,21 +53,22 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     AnalyticsManager analyticsManager;
     @Inject
     ColorsInteractor colorsInteractor;
+    @Inject
+    CameraManager cameraManager;
 
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
     private BehaviorSubject<SurfaceInfo.Type> changeObservable = BehaviorSubject.create();
-
     private int currentDetailsColor;
+    private List<Palette.Swatch> swatches = new ArrayList<>();
 
-    @Inject
     ColorCameraPresenter() {
         super();
 
         execute(changeObservable
                         .sample(SURFACE_UPDATE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
                         .flatMap(type -> {
-                            Bitmap bitmap = getView().getSurfaceBitmap();
+                            Bitmap bitmap = cameraManager.getCameraBitmap();
                             return Observable.just(new SurfaceInfo(type, bitmap));
                         }),
                 surfaceInfo -> {
@@ -81,8 +89,51 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
         InjectorManager.getAppComponent().inject(this);
     }
 
+    @Override
+    public PageAppearance getPageAppearance() {
+        return PageAppearance.builder()
+                .showFloatingButton(false)
+                .build();
+    }
+
+    @Override
+    public ToolbarAppearance getToolbarAppearance() {
+        return ToolbarAppearance.builder()
+                .visible(ToolbarAppearance.Visibility.INVISIBLE)
+                .build();
+    }
+
     void updateSurface(final SurfaceInfo.Type type) {
         changeObservable.onNext(type);
+    }
+
+    void handleSurfaceAvailable(final SurfaceTexture surface) {
+        try {
+            cameraManager.startCamera(surface);
+            cameraManager.updateCameraDisplayOrientation();
+            getViewState().hideErrorMessage();
+            getViewState().showCrosshair();
+            getViewState().showPanels();
+        } catch (IOException e) {
+            logger.error("Error occurred while starting camera ", e);
+            getViewState().showErrorMessage();
+            getViewState().hideCrosshair();
+        } finally {
+            getViewState().hideProgressBar();
+        }
+    }
+
+    void handleSurfaceDestroyed() {
+        cameraManager.stopPreview();
+    }
+
+    void handleFocusClicked() {
+        cameraManager.autoFocus();
+    }
+
+    void handleSaveClicked() {
+        Bitmap bitmap = cameraManager.getCameraBitmap();
+        saveColorPicture(bitmap, swatches);
     }
 
     private void loadColorNames() {
@@ -113,7 +164,10 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                                     (lhs, rhs) -> Float.compare(lhs.getHsl()[2], rhs.getHsl()[2]));
                             return colors;
                         }),
-                colors -> getView().showColors(colors));
+                colors -> {
+                    getViewState().showColors(colors);
+                    swatches = new ArrayList<>(colors);
+                });
     }
 
     private void handleColorDetails(final Bitmap bmp) {
@@ -148,14 +202,25 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                                 && ColorUtils.isSameColor(currentDetailsColor, newColor)),
                 result -> {
                     currentDetailsColor = color.getRgb();
-                    getView().showColorDetails(color.getRgb(), color.getTitleTextColor());
-                    getView().showColorName(colorInfoMap.get(result.first));
+                    getViewState().showColorDetails(color.getRgb(), color.getTitleTextColor());
+                    getViewState().showColorName(colorInfoMap.get(result.first));
+
+                    swatches = Collections.singletonList(new Palette.Swatch(color.getRgb(), Integer.MAX_VALUE));
                 },
                 throwable -> logger.error("Error occurred: ", throwable));
     }
 
-    void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
-        getView().showProgressBar();
+    void openHistory() {
+        getRouter().openHistory();
+    }
+
+    @Subscribe
+    public void onPictureSaved(final PictureSavedEvent event) {
+        getViewState().showPictureSavedToast();
+    }
+
+    private void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
+        getViewState().showProgressBar();
 
         sendTakePhotoAnalytics();
 
@@ -167,18 +232,9 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                         .map(pictureBase64 ->
                                 ColorPicture.fromBase64(pictureBase64, swatches)),
                 colorPicture -> {
-                    getView().hideProgressBar();
+                    getViewState().hideProgressBar();
                     appRealm.savePicture(colorPicture);
                 });
-    }
-
-    void openHistory() {
-        getRouter().openHistory();
-    }
-
-    @Subscribe
-    public void onPictureSaved(PictureSavedEvent event) {
-        getView().showPictureSaved();
     }
 
     private void sendTakePhotoAnalytics() {

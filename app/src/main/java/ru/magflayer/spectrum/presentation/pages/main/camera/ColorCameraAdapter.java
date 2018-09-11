@@ -1,6 +1,7 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.graphics.Palette;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,22 +13,24 @@ import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
 
 public class ColorCameraAdapter extends BaseRecyclerAdapter<ColorCameraAdapter.ColorViewHolder, Palette.Swatch> {
 
-    public ColorCameraAdapter(Context context) {
+    ColorCameraAdapter(final Context context) {
         super(context);
     }
 
+    @NonNull
     @Override
-    public ColorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ColorViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
         final View view = inflater.inflate(R.layout.item_color_camera, parent, false);
         return new ColorViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ColorViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ColorViewHolder holder, final int position) {
         Palette.Swatch swatch = getItem(position);
-        int color = swatch.getRgb();
-
-        holder.colorContainer.setBackgroundColor(color);
+        if (swatch != null) {
+            int color = swatch.getRgb();
+            holder.colorContainer.setBackgroundColor(color);
+        }
     }
 
     static class ColorViewHolder extends BaseViewHolder {
@@ -35,7 +38,7 @@ public class ColorCameraAdapter extends BaseRecyclerAdapter<ColorCameraAdapter.C
         @BindView(R.id.color_container)
         ViewGroup colorContainer;
 
-        ColorViewHolder(View itemView) {
+        ColorViewHolder(final View itemView) {
             super(itemView);
         }
     }
