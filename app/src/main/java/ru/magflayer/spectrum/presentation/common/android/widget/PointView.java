@@ -1,5 +1,6 @@
 package ru.magflayer.spectrum.presentation.common.android.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -121,6 +122,7 @@ public class PointView extends View {
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();

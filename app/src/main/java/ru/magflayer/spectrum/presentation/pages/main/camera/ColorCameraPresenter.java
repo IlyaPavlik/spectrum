@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import com.arellomobile.mvp.InjectViewState;
 import com.squareup.otto.Subscribe;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -114,7 +113,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
             getViewState().hideErrorMessage();
             getViewState().showCrosshair();
             getViewState().showPanels();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Error occurred while starting camera ", e);
             getViewState().showErrorMessage();
             getViewState().hideCrosshair();
@@ -195,10 +194,10 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
                                     + Math.pow(otherBlue - blue, 2));
 
                             int result = currentMin.second > newFi ? newFi : currentMin.second;
-                            String color1 = currentMin.second > newFi ? s : currentMin.first;
-                            return Pair.create(color1, result);
+                            String colorName = currentMin.second > newFi ? s : currentMin.first;
+                            return Pair.create(colorName, result);
                         })
-                        .filter(aDouble -> aDouble.second != Integer.MAX_VALUE
+                        .filter(currentMin -> currentMin.second != Integer.MAX_VALUE
                                 && ColorUtils.isSameColor(currentDetailsColor, newColor)),
                 result -> {
                     currentDetailsColor = color.getRgb();
