@@ -12,17 +12,19 @@ import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
+import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 
 @InjectViewState
-public class HistoryPresenter extends BasePresenter<HistoryView, MainRouter> {
+public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     @Inject
     AnalyticsManager analyticsManager;
     @Inject
     ResourceManager resourceManager;
+    @Inject
+    MainRouter mainRouter;
 
     @Override
     protected void inject() {
@@ -54,7 +56,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView, MainRouter> {
     }
 
     private void openHistoryDetails(final long id, final int quantity) {
-        getRouter().openHistoryDetails(id, quantity);
+        mainRouter.openHistoryDetailsScreen(id, quantity);
     }
 
     private void loadHistory() {

@@ -18,8 +18,6 @@ import butterknife.Unbinder;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView;
 import ru.magflayer.spectrum.presentation.common.utils.AppUtils;
-import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseFragment extends MvpAppCompatFragment implements PageView {
@@ -68,14 +66,6 @@ public abstract class BaseFragment extends MvpAppCompatFragment implements PageV
     }
 
     protected abstract void inject();
-
-    protected MainRouter getRouter() {
-        if (getActivity() instanceof MainActivity) {
-            return ((MainActivity) getActivity()).getRouter();
-        }
-
-        return null;
-    }
 
     @Override
     public void showProgressBar() {

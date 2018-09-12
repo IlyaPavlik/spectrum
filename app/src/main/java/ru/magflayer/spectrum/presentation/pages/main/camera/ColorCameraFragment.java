@@ -85,7 +85,6 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        presenter.setRouter(getRouter());
         orientationEventListener = new OrientationEventListener(getContext()) {
             @Override
             public void onOrientationChanged(int orientation) {

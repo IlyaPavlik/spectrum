@@ -8,13 +8,15 @@ import android.view.WindowManager;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity;
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouterImpl;
+import ru.magflayer.spectrum.presentation.common.android.navigation.holder.MainRouterHolder;
+import ru.magflayer.spectrum.presentation.common.android.navigation.navigator.MainNavigator;
 import ru.magflayer.spectrum.presentation.pages.main.toolbar.ToolbarViewHolder;
 
 @Layout(R.layout.activity_main)
@@ -23,12 +25,16 @@ public class MainActivity extends BaseActivity implements MainView {
     @InjectPresenter
     MainPresenter presenter;
 
+    @Inject
+    MainRouterHolder mainRouterHolder;
+
     @BindView(R.id.toolbar)
     protected Toolbar toolbar;
     @BindView(R.id.fab)
     protected FloatingActionButton floatingActionButton;
 
-    private MainRouter mainRouter;
+    private final MainNavigator mainNavigator = new MainNavigator(this, R.id.container);
+
     private ToolbarViewHolder toolbarViewHolder;
 
     @Override
@@ -43,9 +49,6 @@ public class MainActivity extends BaseActivity implements MainView {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        mainRouter = new MainRouterImpl(this);
-        presenter.setRouter(mainRouter);
-
         toolbarViewHolder = new ToolbarViewHolder(this, toolbar);
 
         if (savedInstanceState == null) {
@@ -54,13 +57,21 @@ public class MainActivity extends BaseActivity implements MainView {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mainRouterHolder.setNavigator(mainNavigator);
+    }
+
+    @Override
+    protected void onPause() {
+        mainRouterHolder.removeNavigator();
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         toolbarViewHolder.onDestroy();
         super.onDestroy();
-    }
-
-    public MainRouter getRouter() {
-        return mainRouter;
     }
 
     public FloatingActionButton getFloatingActionButton() {

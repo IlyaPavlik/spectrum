@@ -17,7 +17,7 @@ import ru.magflayer.spectrum.presentation.pages.splash.SplashActivity;
 import ru.magflayer.spectrum.presentation.pages.splash.SplashPresenter;
 
 @Singleton
-@Component(modules = AppModule.class)
+@Component(modules = {AppModule.class, NavigationModule.class})
 @SuppressWarnings("WeakerAccess")
 public interface AppComponent {
 

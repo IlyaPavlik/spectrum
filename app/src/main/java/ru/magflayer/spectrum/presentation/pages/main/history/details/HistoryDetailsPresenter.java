@@ -24,11 +24,10 @@ import ru.magflayer.spectrum.domain.model.NcsColor;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import rx.Observable;
 
 @InjectViewState
-public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView, MainRouter> {
+public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView> {
 
     @Inject
     AnalyticsManager analyticsManager;

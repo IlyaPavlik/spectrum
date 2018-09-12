@@ -27,18 +27,18 @@ import ru.magflayer.spectrum.domain.manager.CameraManager;
 import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.domain.model.event.PictureSavedEvent;
+import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 @InjectViewState
-public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRouter> {
+public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
 
     private static final int SURFACE_UPDATE_DELAY_MILLIS = 300;
 
@@ -54,6 +54,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     ColorsInteractor colorsInteractor;
     @Inject
     CameraManager cameraManager;
+    @Inject
+    MainRouter mainRouter;
 
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
@@ -210,7 +212,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView, MainRou
     }
 
     void openHistory() {
-        getRouter().openHistory();
+        mainRouter.openHistoryScreen();
     }
 
     @Subscribe

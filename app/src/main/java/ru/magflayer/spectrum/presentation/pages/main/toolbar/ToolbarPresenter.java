@@ -3,13 +3,18 @@ package ru.magflayer.spectrum.presentation.pages.main.toolbar;
 import com.arellomobile.mvp.InjectViewState;
 import com.squareup.otto.Subscribe;
 
+import javax.inject.Inject;
+
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
+import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 
 @InjectViewState
-public class ToolbarPresenter extends BasePresenter<ToolbarView, MainRouter> {
+public class ToolbarPresenter extends BasePresenter<ToolbarView> {
+
+    @Inject
+    MainRouter mainRouter;
 
     @Override
     protected void inject() {
@@ -17,7 +22,7 @@ public class ToolbarPresenter extends BasePresenter<ToolbarView, MainRouter> {
     }
 
     void handleBack() {
-        getRouter().handleBack();
+        mainRouter.exit();
     }
 
     @Subscribe

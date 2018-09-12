@@ -22,11 +22,10 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 
 @SuppressWarnings("WeakerAccess")
-public abstract class BasePresenter<View extends MvpView, Router> extends MvpPresenter<View> {
+public abstract class BasePresenter<View extends MvpView> extends MvpPresenter<View> {
 
     protected Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
-    private Router router;
     private Map<String, Subscription> subscriptionMap = new HashMap<>();
 
     @Inject
@@ -62,14 +61,6 @@ public abstract class BasePresenter<View extends MvpView, Router> extends MvpPre
     }
 
     protected abstract void inject();
-
-    public Router getRouter() {
-        return router;
-    }
-
-    public void setRouter(Router router) {
-        this.router = router;
-    }
 
     public void openRealm() {
         appRealm.open();
