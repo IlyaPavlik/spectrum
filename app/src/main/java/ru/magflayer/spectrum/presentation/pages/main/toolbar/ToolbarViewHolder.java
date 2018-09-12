@@ -8,9 +8,6 @@ import android.view.View;
 import com.arellomobile.mvp.MvpDelegate;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouterImpl;
-
 public class ToolbarViewHolder implements ToolbarView {
 
     @InjectPresenter
@@ -23,9 +20,6 @@ public class ToolbarViewHolder implements ToolbarView {
         this.toolbar = toolbar;
         getMvpDelegate().onCreate();
         getMvpDelegate().onAttach();
-
-        MainRouter mainRouter = new MainRouterImpl(activity);
-        presenter.setRouter(mainRouter);
 
         activity.setSupportActionBar(toolbar);
         ActionBar actionBar = activity.getSupportActionBar();

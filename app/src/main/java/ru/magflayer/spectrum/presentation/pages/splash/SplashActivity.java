@@ -11,7 +11,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity;
-import ru.magflayer.spectrum.presentation.router.GlobalRouterImpl;
 
 public class SplashActivity extends BaseActivity implements SplashView {
 
@@ -23,8 +22,6 @@ public class SplashActivity extends BaseActivity implements SplashView {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        presenter.setRouter(new GlobalRouterImpl(this));
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {

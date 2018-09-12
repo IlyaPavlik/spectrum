@@ -43,7 +43,6 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        presenter.setRouter(getRouter());
 
         adapter = new HistoryAdapter(getContext());
         historyRecycler.setLayoutManager(new LinearLayoutManager(getContext()));

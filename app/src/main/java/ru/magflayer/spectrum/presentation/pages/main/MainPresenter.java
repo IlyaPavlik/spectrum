@@ -7,15 +7,17 @@ import javax.inject.Inject;
 
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.manager.CameraManager;
+import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
-import ru.magflayer.spectrum.presentation.pages.main.router.MainRouter;
 
 @InjectViewState
-public class MainPresenter extends BasePresenter<MainView, MainRouter> {
+public class MainPresenter extends BasePresenter<MainView> {
 
     @Inject
     CameraManager cameraManager;
+    @Inject
+    MainRouter mainRouter;
 
     @Override
     protected void inject() {
@@ -39,7 +41,7 @@ public class MainPresenter extends BasePresenter<MainView, MainRouter> {
     }
 
     void openMainScreen() {
-        getRouter().openColorCameraPage();
+        mainRouter.openCameraScreen();
     }
 
     @Subscribe

@@ -32,6 +32,7 @@ import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
 import ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget;
 import ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView;
+import ru.magflayer.spectrum.presentation.common.model.HistoryItem;
 import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 
@@ -82,11 +83,11 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     private ColorAdapter adapter;
 
-    public static HistoryDetailsFragment newInstance(final long id, final int colorQuantity) {
+    public static HistoryDetailsFragment newInstance(final HistoryItem historyItem) {
 
         Bundle args = new Bundle();
-        args.putLong(COLOR_PICTURE_ID, id);
-        args.putInt(COLOR_QUANTITY, colorQuantity);
+        args.putLong(COLOR_PICTURE_ID, historyItem.getId());
+        args.putInt(COLOR_QUANTITY, historyItem.getColorQuantity());
 
         HistoryDetailsFragment fragment = new HistoryDetailsFragment();
         fragment.setArguments(args);
