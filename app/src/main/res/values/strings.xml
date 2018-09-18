@@ -35,12 +35,7 @@
     <string name="history_toolbar_title">История</string>
     <string name="history_empty">Здесь будут храниться сохраненные цвета/наборы цветов</string>
 
-    <plurals name="history_details_title">
-        <item quantity="one">Цвет</item>
-        <item quantity="few">Цвета</item>
-        <item quantity="many">Цвета</item>
-        <item quantity="other">Цвета</item>
-    </plurals>
+    <string name="history_details_title">Детали</string>
 
     <string name="history_dialog_title">Цвет</string>
     <string name="history_dialog_copy_label">Цвет hex</string>

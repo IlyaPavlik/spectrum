@@ -11,9 +11,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import ru.magflayer.spectrum.data.android.ResourceManager;
-import ru.magflayer.spectrum.domain.model.ColorInfo;
-import ru.magflayer.spectrum.domain.model.NcsColor;
-import ru.magflayer.spectrum.domain.model.ListType;
+import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
+import ru.magflayer.spectrum.domain.entity.ListType;
+import ru.magflayer.spectrum.domain.entity.NcsColorEntity;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -34,16 +34,16 @@ public class ColorsInteractor {
         this.gson = gson;
     }
 
-    public Observable<List<ColorInfo>> loadColorNames() {
+    public Observable<List<ColorInfoEntity>> loadColorNames() {
         return Observable.fromCallable(() -> resourceManager.getAsset(COLOR_NAMES_ASSET_NAME))
                 .flatMap(convertInputStreamToString())
-                .map(fromJsonToList(ColorInfo.class));
+                .map(fromJsonToList(ColorInfoEntity.class));
     }
 
-    public Observable<List<NcsColor>> loadNscColors() {
+    public Observable<List<NcsColorEntity>> loadNscColors() {
         return Observable.fromCallable(() -> resourceManager.getAsset(NCS_COLORS_ASSET_NAME))
                 .flatMap(convertInputStreamToString())
-                .map(fromJsonToList(NcsColor.class));
+                .map(fromJsonToList(NcsColorEntity.class));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.magflayer.spectrum.presentation.common.android.navigation.Screens;
-import ru.magflayer.spectrum.presentation.common.model.HistoryItem;
 import ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraFragment;
 import ru.magflayer.spectrum.presentation.pages.main.history.HistoryFragment;
 import ru.magflayer.spectrum.presentation.pages.main.history.details.HistoryDetailsFragment;
@@ -33,7 +32,7 @@ public class MainNavigator extends SupportFragmentNavigator {
             case Screens.HISTORY_SCREEN:
                 return HistoryFragment.newInstance();
             case Screens.HISTORY_DETAILS_SCREEN:
-                return HistoryDetailsFragment.newInstance((HistoryItem) data);
+                return HistoryDetailsFragment.newInstance((String) data);
             default:
                 return null;
         }

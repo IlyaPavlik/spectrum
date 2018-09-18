@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
-import ru.magflayer.spectrum.domain.model.NcsColor;
+import ru.magflayer.spectrum.domain.entity.NcsColorEntity;
 
 @SuppressWarnings("WeakerAccess")
 public class ColorUtils {
@@ -227,13 +227,13 @@ public class ColorUtils {
         return lab;
     }
 
-    public static String dec2Ncs(final List<NcsColor> colors, @ColorInt final int color) {
+    public static String dec2Ncs(final List<NcsColorEntity> colors, @ColorInt final int color) {
         final int[] rgb = dec2Rgb(color);
 
         String name = null;
         double minError = Double.MAX_VALUE;
         if (colors != null) {
-            for (NcsColor ncsColor : colors) {
+            for (NcsColorEntity ncsColor : colors) {
                 final int[] ncsRgb = dec2Rgb(hex2Dec(ncsColor.getValue()));
                 double error = Math.pow(ncsRgb[0] - rgb[0], 2)
                         + Math.pow(ncsRgb[1] - rgb[1], 2)

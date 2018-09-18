@@ -24,23 +24,20 @@ import java.util.Collections;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
-import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
 import ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget;
 import ru.magflayer.spectrum.presentation.common.android.widget.TextSeekBarView;
-import ru.magflayer.spectrum.presentation.common.model.HistoryItem;
-import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 
 @Layout(R.layout.fragment_history_details)
 public class HistoryDetailsFragment extends BaseFragment implements HistoryDetailsView {
 
-    private static final String COLOR_PICTURE_ID = "COLOR_PICTURE_ID";
-    private static final String COLOR_QUANTITY = "COLOR_QUANTITY";
+    private static final String PHOTO_PATH_KEY = "PHOTO_PATH_KEY";
 
     @InjectPresenter
     HistoryDetailsPresenter presenter;
@@ -83,11 +80,10 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
 
     private ColorAdapter adapter;
 
-    public static HistoryDetailsFragment newInstance(final HistoryItem historyItem) {
+    public static HistoryDetailsFragment newInstance(final String filePath) {
 
         Bundle args = new Bundle();
-        args.putLong(COLOR_PICTURE_ID, historyItem.getId());
-        args.putInt(COLOR_QUANTITY, historyItem.getColorQuantity());
+        args.putString(PHOTO_PATH_KEY, filePath);
 
         HistoryDetailsFragment fragment = new HistoryDetailsFragment();
         fragment.setArguments(args);
@@ -95,17 +91,10 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
     }
 
     @ProvidePresenter
+    @SuppressWarnings("ConstantConditions")
     public HistoryDetailsPresenter providePresenter() {
-        int colorQuantity = 0;
-        long pictureId = -1;
         Bundle arguments = getArguments();
-
-        if (arguments != null) {
-            colorQuantity = arguments.getInt(COLOR_QUANTITY);
-            pictureId = arguments.getLong(COLOR_PICTURE_ID);
-        }
-
-        return new HistoryDetailsPresenter(pictureId, colorQuantity);
+        return new HistoryDetailsPresenter(arguments.getString(PHOTO_PATH_KEY));
     }
 
     @Override
@@ -124,16 +113,20 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
             }
         });
         colorsRecycler.setAdapter(adapter);
-        colorsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        colorsRecycler.setLayoutManager(manager);
     }
 
     @Override
-    public void showPicture(final ColorPicture colorPicture) {
-        Glide.with(this).load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
+    public void showPhoto(final ColorPhotoEntity entity) {
+        Glide.with(this)
+                .load(entity.getFilePath())
                 .apply(RequestOptions.fitCenterTransform())
                 .into(pictureView);
 
-        adapter.setData(colorPicture.getRgbColors());
+        adapter.setData(entity.getRgbColors());
     }
 
     @Override

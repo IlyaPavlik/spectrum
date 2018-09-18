@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.domain.model;
+package ru.magflayer.spectrum.domain.entity;
 
 public interface AnalyticsEvent {
 

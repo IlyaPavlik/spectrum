@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.common.utils.RxUtils;
-import ru.magflayer.spectrum.data.database.AppRealm;
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import rx.Observable;
@@ -30,8 +29,6 @@ public abstract class BasePresenter<View extends MvpView> extends MvpPresenter<V
 
     @Inject
     protected Bus bus;
-    @Inject
-    protected AppRealm appRealm;
 
     public BasePresenter() {
         inject();
@@ -44,13 +41,6 @@ public abstract class BasePresenter<View extends MvpView> extends MvpPresenter<V
 
         setupPageAppearance(getPageAppearance());
         setupToolbarAppearance(getToolbarAppearance());
-        openRealm();
-    }
-
-    @Override
-    public void detachView(View view) {
-        super.detachView(view);
-        closeRealm();
     }
 
     @Override
@@ -61,14 +51,6 @@ public abstract class BasePresenter<View extends MvpView> extends MvpPresenter<V
     }
 
     protected abstract void inject();
-
-    public void openRealm() {
-        appRealm.open();
-    }
-
-    public void closeRealm() {
-        appRealm.close();
-    }
 
     protected <T> void execute(Observable<T> observable, Action1<T> action1) {
         execute(String.valueOf(observable.hashCode()), observable, action1, throwable -> logger.error("Error occurred: ", throwable), () -> {

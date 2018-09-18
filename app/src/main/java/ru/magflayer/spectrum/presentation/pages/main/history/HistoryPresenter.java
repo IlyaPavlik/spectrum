@@ -2,16 +2,15 @@ package ru.magflayer.spectrum.presentation.pages.main.history;
 
 import com.arellomobile.mvp.InjectViewState;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.data.android.ResourceManager;
+import ru.magflayer.spectrum.domain.entity.AnalyticsEvent;
+import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
-import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
-import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
@@ -25,6 +24,8 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
     ResourceManager resourceManager;
     @Inject
     MainRouter mainRouter;
+    @Inject
+    ColorPhotoInteractor colorPhotoInteractor;
 
     @Override
     protected void inject() {
@@ -35,6 +36,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         loadHistory();
+        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY);
     }
 
     @Override
@@ -45,23 +47,19 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 .build();
     }
 
-    void removeColor(ColorPicture colorPicture) {
-        appRealm.removePicture(colorPicture);
+    void removeColor(final ColorPhotoEntity entity) {
+        execute(colorPhotoInteractor.removeColorPhoto(entity),
+                success -> logger.debug("Photo removed {}", success ? "successfully" : "unsuccessfully"),
+                error -> logger.warn("Error while removing photo: ", error));
     }
 
-    void handleColorSelected(final ColorPicture colorPicture) {
-        final List<Integer> colors = colorPicture.getRgbColors();
-        int quantity = colors != null ? colors.size() : 0;
-        openHistoryDetails(colorPicture.getDateInMillis(), quantity);
-    }
-
-    private void openHistoryDetails(final long id, final int quantity) {
-        mainRouter.openHistoryDetailsScreen(id, quantity);
+    void handleColorSelected(final ColorPhotoEntity entity) {
+        mainRouter.openHistoryDetailsScreen(entity.getFilePath());
     }
 
     private void loadHistory() {
-        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY);
-        List<ColorPicture> colorPictures = appRealm.loadPictures();
-        getViewState().showHistory(colorPictures);
+        execute(colorPhotoInteractor.loadColorPhotos(),
+                entities -> getViewState().showHistory(entities),
+                error -> logger.warn("Error while loading color photos: ", error));
     }
 }

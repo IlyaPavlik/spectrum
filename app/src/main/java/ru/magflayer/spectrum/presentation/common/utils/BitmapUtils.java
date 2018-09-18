@@ -10,14 +10,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.graphics.Palette;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
-public class BitmapUtils {
+public final class BitmapUtils {
 
     private BitmapUtils() {
     }
 
-    public static Bitmap drawableToBitmap(Drawable drawable) {
+    public static Bitmap drawableToBitmap(final Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
         }
@@ -31,11 +33,11 @@ public class BitmapUtils {
     }
 
     /*
-    * Where bi is your image, (x0,y0) is your upper left coordinate, and (w,h)
-    * are your width and height respectively
-    */
-    public static int averageColor(Bitmap bi, int x0, int y0, int w,
-                                   int h) {
+     * Where bi is your image, (x0,y0) is your upper left coordinate, and (w,h)
+     * are your width and height respectively
+     */
+    public static int averageColor(final Bitmap bi, final int x0, final int y0,
+                                   final int w, final int h) {
         int x1 = x0 + w;
         int y1 = y0 + h;
         int sumr = 0, sumg = 0, sumb = 0;
@@ -51,8 +53,8 @@ public class BitmapUtils {
         return Color.rgb(sumr / num, sumg / num, sumb / num);
     }
 
-    public static Palette.Swatch mostPopularColor(Bitmap bi, int x0, int y0, int w,
-                                                  int h) {
+    public static Palette.Swatch mostPopularColor(final Bitmap bi, final int x0, final int y0,
+                                                  final int w, final int h) {
         Bitmap bitmap = Bitmap.createBitmap(bi, x0, y0, w, h);
         List<Palette.Swatch> colors = Palette.from(bitmap).generate().getSwatches();
         Palette.Swatch popularColor = null;
@@ -67,7 +69,7 @@ public class BitmapUtils {
         return popularColor;
     }
 
-    public static Bitmap createMultiColorHorizontalBitmap(int width, int height, List<Integer> colors) {
+    public static Bitmap createMultiColorHorizontalBitmap(final int width, final int height, final List<Integer> colors) {
         Bitmap resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
 
         Canvas canvas = new Canvas(resultBitmap);
@@ -86,7 +88,13 @@ public class BitmapUtils {
         return resultBitmap;
     }
 
-    public static Bitmap bytesToBitmap(byte[] data) {
+    public static byte[] convertBitmapToBytes(final Bitmap bitmap) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        return outputStream.toByteArray();
+    }
+
+    public static Bitmap bytesToBitmap(final byte[] data) {
         return BitmapFactory.decodeByteArray(data, 0, data.length);
     }
 

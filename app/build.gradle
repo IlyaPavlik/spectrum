@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -61,6 +60,10 @@ android {
         disable 'SelectableText'
         // there are too few projects with RTL support
         disable 'RtlCompat', 'RtlEnabled', 'RtlHardcoded', 'RtlSymmetry'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
     }
 }
 
@@ -124,6 +127,11 @@ dependencies {
 
     //Cicerone
     implementation 'ru.terrakok.cicerone:cicerone:3.0.0'
+
+    //Room
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
 }
 
 apply plugin: 'com.google.gms.google-services'

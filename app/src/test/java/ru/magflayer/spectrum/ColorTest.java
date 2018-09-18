@@ -97,11 +97,11 @@ public class ColorTest {
 //        System.out.println(file.getAbsolutePath());
 //        try {
 //            InputStream inputStream = new FileInputStream(file);
-//            List<ColorUtils.NcsColor> colors = null;
+//            List<ColorUtils.NcsColorEntity> colors = null;
 //            try {
 //                DataInputStream dataInputStream = new DataInputStream(inputStream);
 //                String data = dataInputStream.readLine();
-//                colors = new Gson().fromJson(data, new TypeToken<List<ColorUtils.NcsColor>>() {
+//                colors = new Gson().fromJson(data, new TypeToken<List<ColorUtils.NcsColorEntity>>() {
 //                }.getType());
 //            } catch (IOException e) {
 //                e.printStackTrace();

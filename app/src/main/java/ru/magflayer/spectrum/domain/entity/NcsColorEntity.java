@@ -1,9 +1,9 @@
-package ru.magflayer.spectrum.domain.model;
+package ru.magflayer.spectrum.domain.entity;
 
 import lombok.Data;
 
 @Data
-public class NcsColor {
+public class NcsColorEntity {
     private String name;
     private String value;
 }

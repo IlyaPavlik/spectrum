@@ -45,6 +45,7 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <string name="history_details_title">Details</string>
     <string name="history_details_rgb">RGB</string>
     <string name="history_details_ryb">RYB</string>
     <string name="history_details_cmyk">CMYK</string>
