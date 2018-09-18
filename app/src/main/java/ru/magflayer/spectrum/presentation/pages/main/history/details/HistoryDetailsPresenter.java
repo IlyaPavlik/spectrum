@@ -15,12 +15,12 @@ import javax.inject.Inject;
 
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.data.android.ResourceManager;
+import ru.magflayer.spectrum.domain.entity.AnalyticsEvent;
+import ru.magflayer.spectrum.domain.entity.NcsColorEntity;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor;
 import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
-import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
-import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.domain.model.NcsColor;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
@@ -35,16 +35,16 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView> {
     ColorsInteractor colorsInteractor;
     @Inject
     ResourceManager resourceManager;
+    @Inject
+    ColorPhotoInteractor colorPhotoInteractor;
 
-    private final int colorQuantity;
     private final Map<String, String> colorInfoMap = new HashMap<>();
-    private final List<NcsColor> ncsColors = new ArrayList<>();
+    private final List<NcsColorEntity> ncsColors = new ArrayList<>();
 
-    HistoryDetailsPresenter(final long pictureId, final int colorQuantity) {
-        this.colorQuantity = colorQuantity;
+    HistoryDetailsPresenter(final String filePath) {
         loadColorNames();
         loadNcsColors();
-        loadPicture(pictureId);
+        loadPicture(filePath);
     }
 
     @Override
@@ -58,11 +58,11 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView> {
         analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS);
     }
 
-    private void loadPicture(final long id) {
-        ColorPicture colorPicture = appRealm.loadPicture(id);
-        if (colorPicture != null) {
-            getViewState().showPicture(colorPicture);
-        }
+    private void loadPicture(final String filePath) {
+        execute(colorPhotoInteractor.loadColorPhoto(filePath)
+                        .filter(entity -> entity != null),
+                entity -> getViewState().showPhoto(entity),
+                error -> logger.warn("Error while loading photo: ", error));
     }
 
     void handleSelectedColor(final int color) {
@@ -84,7 +84,7 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView> {
     public ToolbarAppearance getToolbarAppearance() {
         return ToolbarAppearance.builder()
                 .visible(ToolbarAppearance.Visibility.VISIBLE)
-                .title(resourceManager.getQuantityString(R.plurals.history_details_title, colorQuantity))
+                .title(resourceManager.getString(R.string.history_details_title))
                 .build();
     }
 

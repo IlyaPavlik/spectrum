@@ -1,5 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
@@ -20,19 +21,21 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import ru.magflayer.spectrum.domain.entity.AnalyticsEvent;
+import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
+import ru.magflayer.spectrum.domain.entity.event.PictureSavedEvent;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor;
 import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
+import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.manager.CameraManager;
-import ru.magflayer.spectrum.domain.model.AnalyticsEvent;
-import ru.magflayer.spectrum.domain.model.ColorPicture;
-import ru.magflayer.spectrum.domain.model.event.PictureSavedEvent;
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
-import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
+import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
@@ -48,6 +51,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
     private static final String TAG_SINGLE_COLOR = "TAG_SINGLE_COLOR";
     private static final String TAG_MULTIPLE_COLOR = "TAG_MULTIPLE_COLOR";
 
+    private static final String SAVE_FILE_FORMAT = "spectre_%d.png";
+
     @Inject
     AnalyticsManager analyticsManager;
     @Inject
@@ -56,6 +61,10 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
     CameraManager cameraManager;
     @Inject
     MainRouter mainRouter;
+    @Inject
+    ColorPhotoInteractor colorPhotoInteractor;
+    @Inject
+    FileManagerInteractor fileManagerInteractor;
 
     private int previousColor = -1;
     private Map<String, String> colorInfoMap = new HashMap<>();
@@ -220,22 +229,28 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
         getViewState().showPictureSavedToast();
     }
 
+    @SuppressLint("DefaultLocale")
     private void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
         getViewState().showProgressBar();
 
         sendTakePhotoAnalytics();
 
         execute(Observable.just(bitmap)
-                        .flatMap(bitmap1 ->
-                                Observable.just(Bitmap.createScaledBitmap(bitmap1, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false)))
-                        .flatMap((bitmap1 ->
-                                Observable.just(Base64Utils.bitmapToBase64(bitmap1))))
-                        .map(pictureBase64 ->
-                                ColorPicture.fromBase64(pictureBase64, swatches)),
-                colorPicture -> {
+                        .map(bitmap1 -> Bitmap.createScaledBitmap(bitmap1, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false))
+                        .flatMap(bitmap1 -> Observable.fromCallable(() -> BitmapUtils.convertBitmapToBytes(bitmap1)))
+                        .flatMap(bytes -> {
+                            String fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis());
+                            return fileManagerInteractor.saveFileToExternalStorage(fileName, bytes);
+                        })
+                        .flatMap(uri -> {
+                            List<Integer> rgbColors = convertSwatches(swatches);
+                            return colorPhotoInteractor.saveColorPhoto(new ColorPhotoEntity(uri.getPath(), rgbColors));
+                        }),
+                success -> {
                     getViewState().hideProgressBar();
-                    appRealm.savePicture(colorPicture);
-                });
+                    getViewState().showPictureSavedToast();
+                },
+                error -> logger.warn("Error while saving photo: ", error));
     }
 
     private void sendTakePhotoAnalytics() {
@@ -244,5 +259,13 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
                 ? AnalyticsEvent.TAKE_PHOTO_MODE_MULTIPLE : AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE;
         bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode);
         analyticsManager.logEvent(AnalyticsEvent.TAKE_PHOTO, bundle);
+    }
+
+    private List<Integer> convertSwatches(final List<Palette.Swatch> swatches) {
+        final List<Integer> colors = new ArrayList<>();
+        for (Palette.Swatch swatch : swatches) {
+            colors.add(swatch.getRgb());
+        }
+        return colors;
     }
 }

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ru.magflayer.spectrum.data.android.ResourceManager;
-import ru.magflayer.spectrum.domain.model.ColorInfo;
+import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,16 +37,16 @@ public class ColorsInteractorTest {
             "{\"id\":\"#FF2400\",\"name\":\"Алый\"}," +
             "{\"id\":\"#ED3CCA\",\"name\":\"Амарантовый маджента\"}," +
             "{\"id\":\"#CD9575\",\"name\":\"Античная латунь\"}]";
-    private List<ColorInfo> testColorInfos = Arrays.asList(
-            new ColorInfo("#FBCEB1", "Абрикосовый"),
-            new ColorInfo("#FDD9B5", "Абрикосовый Крайола"),
-            new ColorInfo("#B5B8B1", "Агатовый серый"),
-            new ColorInfo("#7FFFD4", "Аквамариновый"),
-            new ColorInfo("#78DBE2", "Аквамариновый Крайола"),
-            new ColorInfo("#E32636", "Ализариновый красный"),
-            new ColorInfo("#FF2400", "Алый"),
-            new ColorInfo("#ED3CCA", "Амарантовый маджента"),
-            new ColorInfo("#CD9575", "Античная латунь")
+    private List<ColorInfoEntity> testColorInfos = Arrays.asList(
+            new ColorInfoEntity("#FBCEB1", "Абрикосовый"),
+            new ColorInfoEntity("#FDD9B5", "Абрикосовый Крайола"),
+            new ColorInfoEntity("#B5B8B1", "Агатовый серый"),
+            new ColorInfoEntity("#7FFFD4", "Аквамариновый"),
+            new ColorInfoEntity("#78DBE2", "Аквамариновый Крайола"),
+            new ColorInfoEntity("#E32636", "Ализариновый красный"),
+            new ColorInfoEntity("#FF2400", "Алый"),
+            new ColorInfoEntity("#ED3CCA", "Амарантовый маджента"),
+            new ColorInfoEntity("#CD9575", "Античная латунь")
     );
 
     @Before
@@ -72,7 +72,7 @@ public class ColorsInteractorTest {
 
     @Test
     public void colorNamesTest() {
-        List<ColorInfo> exportedColorInfos = new ArrayList<>();
+        List<ColorInfoEntity> exportedColorInfos = new ArrayList<>();
         colorsInteractor.loadColorNames()
                 .subscribe(exportedColorInfos::addAll);
         Assert.assertThat(testColorInfos, CoreMatchers.is(exportedColorInfos));

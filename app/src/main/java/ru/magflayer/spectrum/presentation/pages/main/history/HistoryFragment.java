@@ -12,8 +12,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
+import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
-import ru.magflayer.spectrum.domain.model.ColorPicture;
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
 import ru.magflayer.spectrum.presentation.common.utils.DialogUtils;
@@ -48,16 +48,16 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         historyRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         historyRecycler.setAdapter(adapter);
         adapter.setItemSelectListener(position -> {
-            ColorPicture colorPicture = adapter.getItem(position);
-            if (colorPicture != null) {
-                presenter.handleColorSelected(colorPicture);
+            ColorPhotoEntity entity = adapter.getItem(position);
+            if (entity != null) {
+                presenter.handleColorSelected(entity);
             }
         });
         adapter.setItemLongClickListener(this::openAcceptDeleteColor);
     }
 
     @Override
-    public void showHistory(final List<ColorPicture> history) {
+    public void showHistory(final List<ColorPhotoEntity> history) {
         adapter.setData(history);
         emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }

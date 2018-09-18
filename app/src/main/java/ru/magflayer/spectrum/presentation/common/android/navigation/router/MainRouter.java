@@ -1,7 +1,6 @@
 package ru.magflayer.spectrum.presentation.common.android.navigation.router;
 
 import ru.magflayer.spectrum.presentation.common.android.navigation.Screens;
-import ru.magflayer.spectrum.presentation.common.model.HistoryItem;
 import ru.terrakok.cicerone.Router;
 
 public class MainRouter extends Router {
@@ -14,8 +13,8 @@ public class MainRouter extends Router {
         navigateTo(Screens.HISTORY_SCREEN);
     }
 
-    public void openHistoryDetailsScreen(final long id, final int colorQuantity) {
-        navigateTo(Screens.HISTORY_DETAILS_SCREEN, new HistoryItem(id, colorQuantity));
+    public void openHistoryDetailsScreen(final String filePath) {
+        navigateTo(Screens.HISTORY_DETAILS_SCREEN, filePath);
     }
 
 }

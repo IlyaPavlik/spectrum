@@ -12,31 +12,30 @@ import com.bumptech.glide.request.RequestOptions;
 
 import butterknife.BindView;
 import ru.magflayer.spectrum.R;
-import ru.magflayer.spectrum.domain.model.ColorPicture;
+import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter;
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder;
-import ru.magflayer.spectrum.presentation.common.utils.Base64Utils;
 import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils;
 
-class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPicture> {
+class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPhotoEntity> {
 
-    HistoryAdapter(Context context) {
+    HistoryAdapter(final Context context) {
         super(context);
     }
 
     @NonNull
     @Override
-    public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HistoryViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new HistoryViewHolder(inflater.inflate(R.layout.item_history, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull final HistoryViewHolder holder, int position) {
-        final ColorPicture colorPicture = getItem(position);
-        if (colorPicture == null) return;
+        final ColorPhotoEntity entity = getItem(position);
+        if (entity == null) return;
 
-        glide.load(Base64Utils.base46ToBytes(colorPicture.getPictureBase64()))
+        glide.load(entity.getFilePath())
                 .apply(RequestOptions.fitCenterTransform())
                 .into(holder.pictureView);
 
@@ -45,7 +44,7 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
             int height = holder.colorContainer.getMeasuredHeight();
 
             if (width > 0 && height > 0) {
-                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, colorPicture.getRgbColors());
+                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, entity.getRgbColors());
                 holder.colorContainer.setImageBitmap(colorsBitmap);
             }
         });
