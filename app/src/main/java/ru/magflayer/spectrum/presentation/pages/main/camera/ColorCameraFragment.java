@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.OrientationEventListener;
 import android.view.TextureView;
@@ -91,9 +91,11 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
                 if (isLandscape(orientation) && currentOrientation != Orientation.LANDSCAPE) {
                     currentOrientation = Orientation.LANDSCAPE;
                     setOrientation(currentOrientation);
+                    colorRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, true));
                 } else if (isPortrait(orientation) && currentOrientation != Orientation.PORTRAIT) {
                     currentOrientation = Orientation.PORTRAIT;
                     setOrientation(currentOrientation);
+                    colorRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false));
                 }
             }
         };
@@ -118,7 +120,8 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         super.onActivityCreated(savedInstanceState);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        colorRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
+        colorRecycler.setLayoutManager(layoutManager);
         adapter = new ColorCameraAdapter(getContext());
         colorRecycler.setAdapter(adapter);
         cameraView.setSurfaceTextureListener(this);
