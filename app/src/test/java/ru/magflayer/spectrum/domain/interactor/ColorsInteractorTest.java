@@ -6,28 +6,31 @@ import android.content.res.Resources;
 
 import com.google.gson.Gson;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import ru.magflayer.spectrum.data.android.ResourceManager;
 import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
+import ru.magflayer.spectrum.domain.repository.ColorInfoRepository;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ColorsInteractorTest {
 
-    private ColorsInteractor colorsInteractor;
+    @Mock
+    ColorInfoRepository colorInfoRepository;
+
+    private ColorInfoInteractor colorInfoInteractor;
     private String testData = "[{\"id\":\"#FBCEB1\",\"name\":\"Абрикосовый\"}," +
             "{\"id\":\"#FDD9B5\",\"name\":\"Абрикосовый Крайола\"}," +
             "{\"id\":\"#B5B8B1\",\"name\":\"Агатовый серый\"}," +
@@ -62,20 +65,17 @@ public class ColorsInteractorTest {
 
         try {
             when(resources.getAssets()).thenReturn(assetManager);
-            when(assetManager.open(ColorsInteractor.COLOR_NAMES_ASSET_NAME)).thenReturn(testInputStream);
+            when(assetManager.open(ColorInfoInteractor.COLOR_NAMES_ASSET_NAME)).thenReturn(testInputStream);
         } catch (IOException e) {
             Assert.fail("Resource manager getAsset throws exception: " + e.getMessage());
         }
 
-        colorsInteractor = new ColorsInteractor(resourceManager, new Gson());
+        colorInfoInteractor = new ColorInfoInteractor(colorInfoRepository, resourceManager, new Gson());
     }
 
     @Test
     public void colorNamesTest() {
-        List<ColorInfoEntity> exportedColorInfos = new ArrayList<>();
-        colorsInteractor.loadColorNames()
-                .subscribe(exportedColorInfos::addAll);
-        Assert.assertThat(testColorInfos, CoreMatchers.is(exportedColorInfos));
+        //todo
     }
 
 }

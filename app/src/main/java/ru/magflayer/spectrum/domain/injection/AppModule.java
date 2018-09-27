@@ -12,7 +12,9 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import ru.magflayer.spectrum.data.database.AppDatabase;
+import ru.magflayer.spectrum.data.database.ColorInfoRepositoryImpl;
 import ru.magflayer.spectrum.data.system.LocalFileManager;
+import ru.magflayer.spectrum.domain.repository.ColorInfoRepository;
 import ru.magflayer.spectrum.domain.repository.FileManagerRepository;
 import ru.magflayer.spectrum.domain.repository.PhotoRepository;
 
@@ -46,6 +48,7 @@ class AppModule {
     @Provides
     AppDatabase provideAppDatabase() {
         return Room.databaseBuilder(context, AppDatabase.class, AppDatabase.DATABASE_NAME)
+                .fallbackToDestructiveMigration()
                 .build();
     }
 
@@ -59,5 +62,11 @@ class AppModule {
     @Provides
     FileManagerRepository provideFileManagerRepository(final LocalFileManager localFileManager) {
         return localFileManager;
+    }
+
+    @Singleton
+    @Provides
+    ColorInfoRepository provideColorInfoRepository(final AppDatabase appDatabase) {
+        return new ColorInfoRepositoryImpl(appDatabase);
     }
 }

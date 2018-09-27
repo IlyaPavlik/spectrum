@@ -2,21 +2,16 @@ package ru.magflayer.spectrum.presentation.pages.main.camera;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.support.v4.util.Pair;
 import android.support.v7.graphics.Palette;
-import android.text.TextUtils;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -25,8 +20,8 @@ import ru.magflayer.spectrum.domain.entity.AnalyticsEvent;
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.entity.event.PictureSavedEvent;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
+import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor;
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor;
-import ru.magflayer.spectrum.domain.interactor.ColorsInteractor;
 import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
 import ru.magflayer.spectrum.domain.manager.CameraManager;
@@ -56,7 +51,7 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
     @Inject
     AnalyticsManager analyticsManager;
     @Inject
-    ColorsInteractor colorsInteractor;
+    ColorInfoInteractor colorInfoInteractor;
     @Inject
     CameraManager cameraManager;
     @Inject
@@ -67,7 +62,6 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
     FileManagerInteractor fileManagerInteractor;
 
     private int previousColor = -1;
-    private Map<String, String> colorInfoMap = new HashMap<>();
     private BehaviorSubject<SurfaceInfo.Type> changeObservable = BehaviorSubject.create();
     private int currentDetailsColor;
     private List<Palette.Swatch> swatches = new ArrayList<>();
@@ -90,8 +84,6 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
                     }
                 },
                 throwable -> logger.error("Error occurred while listening changing", throwable));
-
-        loadColorNames();
     }
 
     @Override
@@ -146,12 +138,6 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
         saveColorPicture(bitmap, swatches);
     }
 
-    private void loadColorNames() {
-        execute(colorsInteractor.loadColorNames()
-                        .flatMap(Observable::from),
-                colorInfo -> colorInfoMap.put(colorInfo.getId(), colorInfo.getName()));
-    }
-
     private void handleCameraSurface(final Bitmap bitmap) {
         execute(TAG_MULTIPLE_COLOR, Observable.just(bitmap)
                         .flatMap(bitmap1 -> Observable.just(Palette.from(bitmap1).generate()))
@@ -187,37 +173,15 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
         Palette.Swatch color = new Palette.Swatch(bmp.getPixel(centerX, centerY), 1);
 
         final String hexColor = ColorUtils.dec2Hex(color.getRgb());
-        int newColor = Color.parseColor(hexColor);
-        final int red = Color.red(newColor);
-        final int green = Color.green(newColor);
-        final int blue = Color.blue(newColor);
-
-        execute(TAG_SINGLE_COLOR, Observable.from(colorInfoMap.keySet())
-                        .reduce(Pair.create("", Integer.MAX_VALUE), (currentMin, s) -> {
-                            if (TextUtils.isEmpty(s)) s = "#000000";
-                            int otherColor = Color.parseColor(s);
-
-                            int otherRed = Color.red(otherColor);
-                            int otherGreen = Color.green(otherColor);
-                            int otherBlue = Color.blue(otherColor);
-                            int newFi = (int) (Math.pow(otherRed - red, 2)
-                                    + Math.pow(otherGreen - green, 2)
-                                    + Math.pow(otherBlue - blue, 2));
-
-                            int result = currentMin.second > newFi ? newFi : currentMin.second;
-                            String colorName = currentMin.second > newFi ? s : currentMin.first;
-                            return Pair.create(colorName, result);
-                        })
-                        .filter(currentMin -> currentMin.second != Integer.MAX_VALUE
-                                && ColorUtils.isSameColor(currentDetailsColor, newColor)),
-                result -> {
+        execute(TAG_SINGLE_COLOR, colorInfoInteractor.findColorNameByHex(hexColor),
+                colorName -> {
                     currentDetailsColor = color.getRgb();
                     getViewState().showColorDetails(color.getRgb(), color.getTitleTextColor());
-                    getViewState().showColorName(colorInfoMap.get(result.first));
+                    getViewState().showColorName(colorName);
 
                     swatches = Collections.singletonList(new Palette.Swatch(color.getRgb(), Integer.MAX_VALUE));
                 },
-                throwable -> logger.error("Error occurred: ", throwable));
+                error -> logger.error("Error while finding color name: ", error));
     }
 
     void openHistory() {

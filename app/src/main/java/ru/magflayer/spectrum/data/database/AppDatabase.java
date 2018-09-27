@@ -5,14 +5,18 @@ import android.arch.persistence.room.RoomDatabase;
 
 import java.util.List;
 
+import ru.magflayer.spectrum.data.database.dao.ColorNameDao;
 import ru.magflayer.spectrum.data.database.dao.ColorPhotoDao;
+import ru.magflayer.spectrum.data.database.dao.NcsColorDao;
+import ru.magflayer.spectrum.data.entity.ColorName;
 import ru.magflayer.spectrum.data.entity.ColorPhoto;
+import ru.magflayer.spectrum.data.entity.NcsColor;
 import ru.magflayer.spectrum.data.entity.converter.ColorPhotoConverter;
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.repository.PhotoRepository;
 import rx.Observable;
 
-@Database(entities = {ColorPhoto.class}, version = 1, exportSchema = false)
+@Database(entities = {ColorPhoto.class, ColorName.class, NcsColor.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase implements PhotoRepository {
 
     public static final String DATABASE_NAME = "spectre-database";
@@ -20,6 +24,10 @@ public abstract class AppDatabase extends RoomDatabase implements PhotoRepositor
     private final ColorPhotoConverter photoConverter = new ColorPhotoConverter();
 
     public abstract ColorPhotoDao colorPhotoDao();
+
+    public abstract ColorNameDao colorNameDao();
+
+    public abstract NcsColorDao ncsColorDao();
 
     @Override
     public Observable<Boolean> savePhoto(final ColorPhotoEntity colorPhoto) {
