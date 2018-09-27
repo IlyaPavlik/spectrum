@@ -1,7 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.history.details;
 
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
-import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
@@ -11,9 +10,6 @@ interface HistoryDetailsView extends BaseView {
 
     @StateStrategyType(AddToEndSingleStrategy.class)
     void showPhoto(ColorPhotoEntity entity);
-
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void selectFirstItem();
 
     @StateStrategyType(AddToEndSingleStrategy.class)
     void showColorName(String name);

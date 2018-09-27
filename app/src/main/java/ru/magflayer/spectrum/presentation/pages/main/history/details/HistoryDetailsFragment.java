@@ -127,10 +127,6 @@ public class HistoryDetailsFragment extends BaseFragment implements HistoryDetai
                 .into(pictureView);
 
         adapter.setData(entity.getRgbColors());
-    }
-
-    @Override
-    public void selectFirstItem() {
         adapter.select(0);
     }
 
