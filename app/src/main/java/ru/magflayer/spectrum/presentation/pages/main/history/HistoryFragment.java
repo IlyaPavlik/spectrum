@@ -1,8 +1,11 @@
 package ru.magflayer.spectrum.presentation.pages.main.history;
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,6 +18,7 @@ import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
+import ru.magflayer.spectrum.presentation.common.android.helper.SwipeToDeleteCallback;
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout;
 import ru.magflayer.spectrum.presentation.common.utils.DialogUtils;
 
@@ -47,6 +51,16 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         adapter = new HistoryAdapter(getContext());
         historyRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         historyRecycler.setAdapter(adapter);
+        historyRecycler.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
+        SwipeToDeleteCallback callback = new SwipeToDeleteCallback(getContext()) {
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, final int direction) {
+                openAcceptDeleteColor(viewHolder.getAdapterPosition());
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(historyRecycler);
         adapter.setItemSelectListener(position -> {
             ColorPhotoEntity entity = adapter.getItem(position);
             if (entity != null) {
@@ -66,10 +80,12 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         String title = getString(R.string.history_remove_title);
         String message = getString(R.string.history_remove_description);
 
-        DialogUtils.buildYesNoDialog(getContext(), title, message, (dialogInterface, i) -> {
+        Dialog dialog = DialogUtils.buildYesNoDialog(getContext(), title, message, (dialogInterface, i) -> {
             presenter.removeColor(adapter.getItem(position));
             adapter.remove(position);
             emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-        }).show();
+        });
+        dialog.setOnCancelListener(dialog1 -> adapter.notifyItemChanged(position));
+        dialog.show();
     }
 }
