@@ -25,7 +25,7 @@ public class DialogUtils {
         builder.setTitle(title);
         builder.setMessage(message);
         builder.setPositiveButton(positiveButtonRes, clickListener);
-        builder.setNegativeButton(negativeButtonRes, (dialogInterface, i) -> dialogInterface.dismiss());
+        builder.setNegativeButton(negativeButtonRes, (dialogInterface, i) -> dialogInterface.cancel());
 
         return builder.create();
     }
