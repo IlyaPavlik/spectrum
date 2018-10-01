@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.presentation.pages.main.camera;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
@@ -33,6 +34,7 @@ import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 import rx.Observable;
+import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 
 @InjectViewState
@@ -133,9 +135,9 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
         cameraManager.autoFocus();
     }
 
-    void handleSaveClicked() {
+    void handleSaveClicked(final int rotationDegree) {
         Bitmap bitmap = cameraManager.getCameraBitmap();
-        saveColorPicture(bitmap, swatches);
+        saveColorPicture(bitmap, swatches, rotationDegree);
     }
 
     private void handleCameraSurface(final Bitmap bitmap) {
@@ -194,13 +196,13 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
     }
 
     @SuppressLint("DefaultLocale")
-    private void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches) {
+    private void saveColorPicture(final Bitmap bitmap, final List<Palette.Swatch> swatches, final int rotationDegree) {
         getViewState().showProgressBar();
 
         sendTakePhotoAnalytics();
 
         execute(Observable.just(bitmap)
-                        .map(bitmap1 -> Bitmap.createScaledBitmap(bitmap1, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false))
+                        .map(scaleBitmapWithRotate(rotationDegree))
                         .flatMap(bitmap1 -> Observable.fromCallable(() -> BitmapUtils.convertBitmapToBytes(bitmap1)))
                         .flatMap(bytes -> {
                             String fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis());
@@ -231,5 +233,14 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
             colors.add(swatch.getRgb());
         }
         return colors;
+    }
+
+    private Func1<Bitmap, Bitmap> scaleBitmapWithRotate(final int degrees) {
+        return bitmap -> {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(degrees);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false);
+            return Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+        };
     }
 }

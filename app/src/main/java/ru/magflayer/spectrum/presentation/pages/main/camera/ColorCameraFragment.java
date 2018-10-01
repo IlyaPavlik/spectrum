@@ -211,7 +211,7 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
 
     @OnClick(R.id.save)
     protected void onSaveClick() {
-        presenter.handleSaveClicked();
+        presenter.handleSaveClicked(currentOrientation == Orientation.LANDSCAPE ? 0 : 90);
     }
 
     private void showTopMenu() {
