@@ -35,8 +35,13 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
         final ColorPhotoEntity entity = getItem(position);
         if (entity == null) return;
 
+        RequestOptions requestOptions = new RequestOptions()
+                .fitCenter()
+                .dontTransform()
+                .dontAnimate();
+
         glide.load(entity.getFilePath())
-                .apply(RequestOptions.fitCenterTransform())
+                .apply(requestOptions)
                 .into(holder.pictureView);
 
         holder.colorContainer.post(() -> {

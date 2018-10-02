@@ -11,6 +11,7 @@ import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor;
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor;
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager;
+import ru.magflayer.spectrum.presentation.common.model.PageAppearance;
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance;
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter;
 import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
@@ -69,6 +70,13 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView> {
         return ToolbarAppearance.builder()
                 .visible(ToolbarAppearance.Visibility.VISIBLE)
                 .title(resourceManager.getString(R.string.history_details_title))
+                .build();
+    }
+
+    @Override
+    protected PageAppearance getPageAppearance() {
+        return PageAppearance.builder()
+                .showFloatingButton(false)
                 .build();
     }
 

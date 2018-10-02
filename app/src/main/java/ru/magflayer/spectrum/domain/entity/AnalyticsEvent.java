@@ -10,4 +10,6 @@ public interface AnalyticsEvent {
     String OPEN_HISTORY = "open_history";
     String OPEN_HISTORY_DETAILS = "open_history_details";
 
+    String CHOOSE_IMAGE = "choose_image";
+
 }

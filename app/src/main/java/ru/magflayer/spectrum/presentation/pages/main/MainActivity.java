@@ -11,6 +11,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity;
@@ -74,10 +75,6 @@ public class MainActivity extends BaseActivity implements MainView {
         super.onDestroy();
     }
 
-    public FloatingActionButton getFloatingActionButton() {
-        return floatingActionButton;
-    }
-
     @Override
     public void showToolbar(final boolean showToolbar) {
         if (toolbar != null) {
@@ -90,5 +87,10 @@ public class MainActivity extends BaseActivity implements MainView {
         if (floatingActionButton != null) {
             floatingActionButton.setVisibility(showFloatingButton ? View.VISIBLE : View.GONE);
         }
+    }
+
+    @OnClick(R.id.fab)
+    public void onFabClick() {
+        presenter.handleFabClick();
     }
 }

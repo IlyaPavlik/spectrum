@@ -45,6 +45,9 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+
     <string name="history_details_title">Details</string>
     <string name="history_details_rgb">RGB</string>
     <string name="history_details_ryb">RYB</string>
@@ -55,4 +58,6 @@
     <string name="history_details_ncs">NCS</string>
 
     <string name="camera_not_available">The camera is not available.\nProbably it is being used by another application</string>
+
+    <string name="select_image_title">Select image file</string>
 </resources>

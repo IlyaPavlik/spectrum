@@ -17,24 +17,24 @@ import java.util.List;
 public class ColorPhoto {
 
     @PrimaryKey
-    private int id;
+    private long id;
     @ColumnInfo(name = "file_path")
     private String filePath;
     @ColumnInfo(name = "colors")
     @TypeConverters(RgbColorsConverters.class)
     private List<Integer> rgbColors;
 
-    public ColorPhoto(final int id, final String filePath, final List<Integer> rgbColors) {
+    public ColorPhoto(final long id, final String filePath, final List<Integer> rgbColors) {
         this.id = id;
         this.filePath = filePath;
         this.rgbColors = rgbColors;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(final int id) {
+    public void setId(final long id) {
         this.id = id;
     }
 

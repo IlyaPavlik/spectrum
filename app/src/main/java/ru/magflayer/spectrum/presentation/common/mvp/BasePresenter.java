@@ -116,7 +116,7 @@ public abstract class BasePresenter<View extends MvpView> extends MvpPresenter<V
 
     protected PageAppearance getPageAppearance() {
         return PageAppearance.builder()
-                .showFloatingButton(false)
+                .showFloatingButton(null)
                 .build();
     }
 }

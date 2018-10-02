@@ -5,6 +5,7 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
+import ru.magflayer.spectrum.domain.entity.event.FabClickEvent;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.domain.manager.CameraManager;
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter;
@@ -44,8 +45,14 @@ public class MainPresenter extends BasePresenter<MainView> {
         mainRouter.openCameraScreen();
     }
 
+    void handleFabClick() {
+        bus.post(new FabClickEvent());
+    }
+
     @Subscribe
     public void onPageAppearanceChanged(final PageAppearance pageAppearance) {
-        getViewState().showFloatingButton(pageAppearance.isShowFloatingButton());
+        if (pageAppearance.getShowFloatingButton() != null) {
+            getViewState().showFloatingButton(pageAppearance.getShowFloatingButton());
+        }
     }
 }

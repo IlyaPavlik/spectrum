@@ -15,9 +15,9 @@ public class DialogUtils {
     }
 
     @StringRes
-    private static final int positiveButtonRes = R.string.dialog_ok;
+    private static final int positiveButtonRes = R.string.dialog_yes;
     @StringRes
-    private static final int negativeButtonRes = R.string.dialog_cancel;
+    private static final int negativeButtonRes = R.string.dialog_no;
 
     public static Dialog buildYesNoDialog(Context context, String title, String message, DialogInterface.OnClickListener clickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
