@@ -47,6 +47,9 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Отмена</string>
 
+    <string name="dialog_yes">Да</string>
+    <string name="dialog_no">Нет</string>
+
     <string name="history_details_rgb">RGB</string>
     <string name="history_details_ryb">RYB</string>
     <string name="history_details_cmyk">CMYK</string>
@@ -56,4 +59,6 @@
     <string name="history_details_ncs">NCS</string>
 
     <string name="camera_not_available">Камера не доступна.\nВероятно она используется другим приложением</string>
+
+    <string name="select_image_title">Выбор изображения</string>
 </resources>

@@ -2,6 +2,7 @@ package ru.magflayer.spectrum.domain.interactor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,6 +36,8 @@ public class ColorPhotoInteractor {
                             photoRepository.removePhoto(entity);
                         }
                     }
+
+                    Collections.sort(photoEntities, (o1, o2) -> Long.compare(o2.getMillis(), o1.getMillis()));
 
                     return photoEntities;
                 });

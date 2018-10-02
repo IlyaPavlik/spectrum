@@ -29,9 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
         android:layout_margin="@dimen/indent_normal"
-        app:elevation="8dp"
+        app:elevation="@dimen/indent_small"
         app:fabSize="normal"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_save" />
+        app:srcCompat="@drawable/ic_add" />
 
 </android.support.design.widget.CoordinatorLayout>

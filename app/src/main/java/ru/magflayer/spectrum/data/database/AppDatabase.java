@@ -70,8 +70,8 @@ public abstract class AppDatabase extends RoomDatabase implements PhotoRepositor
     }
 
     public static class IdGenerator {
-        public static int generateId(final String path) {
-            return path.hashCode();
+        public static long generateId() {
+            return System.currentTimeMillis();
         }
     }
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class PageAppearance {
 
-    private boolean showFloatingButton;
+    private Boolean showFloatingButton;
 
     public static Builder builder() {
         return new Builder();
@@ -17,7 +17,7 @@ public class PageAppearance {
         private PageAppearance pageAppearance = new PageAppearance();
 
 
-        public Builder showFloatingButton(boolean showFloatingButton) {
+        public Builder showFloatingButton(final Boolean showFloatingButton) {
             pageAppearance.setShowFloatingButton(showFloatingButton);
             return this;
         }

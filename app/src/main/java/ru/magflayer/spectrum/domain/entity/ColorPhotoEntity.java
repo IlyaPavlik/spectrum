@@ -15,5 +15,11 @@ public class ColorPhotoEntity {
 
     private String filePath;
     private List<Integer> rgbColors;
+    private long millis;
 
+    public ColorPhotoEntity(final String filePath, final List<Integer> rgbColors) {
+        this.filePath = filePath;
+        this.rgbColors = rgbColors;
+        this.millis = System.currentTimeMillis();
+    }
 }
