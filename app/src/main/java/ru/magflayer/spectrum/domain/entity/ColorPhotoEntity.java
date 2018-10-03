@@ -16,10 +16,16 @@ public class ColorPhotoEntity {
     private String filePath;
     private List<Integer> rgbColors;
     private long millis;
+    private Type type;
 
-    public ColorPhotoEntity(final String filePath, final List<Integer> rgbColors) {
+    public ColorPhotoEntity(final Type type, final String filePath, final List<Integer> rgbColors) {
+        this.type = type;
         this.filePath = filePath;
         this.rgbColors = rgbColors;
         this.millis = System.currentTimeMillis();
+    }
+
+    public enum Type {
+        INTERNAL, EXTERNAL
     }
 }

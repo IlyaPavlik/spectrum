@@ -95,7 +95,8 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                         })
                         .flatMap(swatches -> {
                             List<Integer> rgbColors = convertSwatches(swatches);
-                            return colorPhotoInteractor.saveColorPhoto(new ColorPhotoEntity(path, rgbColors));
+                            ColorPhotoEntity entity = new ColorPhotoEntity(ColorPhotoEntity.Type.EXTERNAL, path, rgbColors);
+                            return colorPhotoInteractor.saveColorPhoto(entity);
                         }),
                 success -> {
                     logger.debug("Image saved: {}", success);

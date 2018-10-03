@@ -3,6 +3,7 @@ package ru.magflayer.spectrum.presentation.pages.main.history;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -92,6 +92,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
 
     @Override
     public void openPickPhoto() {
+        logger.debug("openPickPhoto");
         if (hasStoragePermission()) {
             requestPermission();
             return;
@@ -112,12 +113,19 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Context context = getContext();
+        if (context == null) {
+            logger.warn("Context is null");
+            return;
+        }
+
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_PICK_IMAGE) {
                 Uri dataUri = data.getData();
                 try {
                     if (dataUri != null) {
-                        ContentResolver resolver = getContext().getContentResolver();
+                        ContentResolver resolver = context.getContentResolver();
+                        logger.debug("Try to build bitmap from: {}", dataUri);
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, dataUri);
                         presenter.handleSelectedImage(AppUtils.getPath(getContext(), dataUri), bitmap);
                     } else {
@@ -164,8 +172,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     }
 
     private void requestPermission() {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+        requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_WRITE_EXTERNAL_STORAGE);
     }
 }

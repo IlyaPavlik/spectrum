@@ -210,7 +210,8 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
                         })
                         .flatMap(uri -> {
                             List<Integer> rgbColors = convertSwatches(swatches);
-                            return colorPhotoInteractor.saveColorPhoto(new ColorPhotoEntity(uri.getPath(), rgbColors));
+                            ColorPhotoEntity entity = new ColorPhotoEntity(ColorPhotoEntity.Type.INTERNAL, uri.getPath(), rgbColors);
+                            return colorPhotoInteractor.saveColorPhoto(entity);
                         }),
                 success -> {
                     getViewState().hideProgressBar();

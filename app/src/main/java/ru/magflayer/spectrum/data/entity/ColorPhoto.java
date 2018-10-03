@@ -23,11 +23,14 @@ public class ColorPhoto {
     @ColumnInfo(name = "colors")
     @TypeConverters(RgbColorsConverters.class)
     private List<Integer> rgbColors;
+    @ColumnInfo(name = "type")
+    private int type;
 
-    public ColorPhoto(final long id, final String filePath, final List<Integer> rgbColors) {
+    public ColorPhoto(final long id, final String filePath, final List<Integer> rgbColors, final int type) {
         this.id = id;
         this.filePath = filePath;
         this.rgbColors = rgbColors;
+        this.type = type;
     }
 
     public long getId() {
@@ -52,6 +55,14 @@ public class ColorPhoto {
 
     public void setRgbColors(final List<Integer> rgbColors) {
         this.rgbColors = rgbColors;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(final int type) {
+        this.type = type;
     }
 
     public static class RgbColorsConverters {

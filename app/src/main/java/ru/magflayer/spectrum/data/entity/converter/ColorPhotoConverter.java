@@ -6,11 +6,14 @@ import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 public class ColorPhotoConverter {
 
     public ColorPhoto convertToColorPhoto(final ColorPhotoEntity entity) {
-        return new ColorPhoto(entity.getMillis(), entity.getFilePath(), entity.getRgbColors());
+        return new ColorPhoto(entity.getMillis(), entity.getFilePath(), entity.getRgbColors(),
+                entity.getType().ordinal());
     }
 
     public ColorPhotoEntity convertToColorPhotoEntity(final ColorPhoto colorPhoto) {
-        return new ColorPhotoEntity(colorPhoto.getFilePath(), colorPhoto.getRgbColors(), colorPhoto.getId());
+        ColorPhotoEntity.Type type = ColorPhotoEntity.Type.values()[colorPhoto.getType()];
+        return new ColorPhotoEntity(colorPhoto.getFilePath(), colorPhoto.getRgbColors(),
+                colorPhoto.getId(), type);
     }
 
 }
