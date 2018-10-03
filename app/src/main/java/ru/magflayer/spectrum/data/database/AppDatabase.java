@@ -16,7 +16,7 @@ import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity;
 import ru.magflayer.spectrum.domain.repository.PhotoRepository;
 import rx.Observable;
 
-@Database(entities = {ColorPhoto.class, ColorName.class, NcsColor.class}, version = 2, exportSchema = false)
+@Database(entities = {ColorPhoto.class, ColorName.class, NcsColor.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase implements PhotoRepository {
 
     public static final String DATABASE_NAME = "spectre-database";
@@ -67,11 +67,5 @@ public abstract class AppDatabase extends RoomDatabase implements PhotoRepositor
                     ColorPhotoDao dao = colorPhotoDao();
                     return dao.deletePhoto(colorPhoto) > 0;
                 });
-    }
-
-    public static class IdGenerator {
-        public static long generateId() {
-            return System.currentTimeMillis();
-        }
     }
 }

@@ -45,7 +45,12 @@ public class ColorPhotoInteractor {
 
     public Observable<Boolean> removeColorPhoto(final ColorPhotoEntity entity) {
         return photoRepository.removePhoto(entity)
-                .map(success -> new File(entity.getFilePath()).delete());
+                .map(success -> {
+                    if (entity.getType() == ColorPhotoEntity.Type.INTERNAL) {
+                        return new File(entity.getFilePath()).delete();
+                    }
+                    return success;
+                });
     }
 
     public Observable<ColorPhotoEntity> loadColorPhoto(final String filePath) {
