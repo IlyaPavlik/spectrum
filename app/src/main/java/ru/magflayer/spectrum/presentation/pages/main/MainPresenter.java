@@ -37,8 +37,12 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     @Override
     public void detachView(final MainView view) {
+        try {
+            cameraManager.close();
+        } catch (RuntimeException e) {
+            logger.error("Cannot close stop camera");
+        }
         super.detachView(view);
-        cameraManager.close();
     }
 
     void openMainScreen() {
