@@ -16,6 +16,7 @@
 
     <dimen name="history_item_image_width">120dp</dimen>
     <dimen name="history_item_image_height">80dp</dimen>
+    <dimen name="history_item_color_size">100dp</dimen>
 
     <dimen name="history_details_picture_height">200dp</dimen>
     <dimen name="history_details_seek_bar_height">20dp</dimen>
