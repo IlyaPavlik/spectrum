@@ -19,8 +19,11 @@ import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils;
 
 class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPhotoEntity> {
 
+    private final int colorContainerSize;
+
     HistoryAdapter(final Context context) {
         super(context);
+        colorContainerSize = context.getResources().getDimensionPixelSize(R.dimen.history_item_color_size);
     }
 
     @NonNull
@@ -47,15 +50,9 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
         if (entity.getRgbColors().size() == 1) {
             holder.colorContainer.setBackgroundColor(entity.getRgbColors().get(0));
         } else {
-            holder.colorContainer.post(() -> {
-                int width = holder.colorContainer.getMeasuredWidth();
-                int height = holder.colorContainer.getMeasuredHeight();
-
-                if (width > 0 && height > 0) {
-                    Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, entity.getRgbColors());
-                    holder.colorContainer.setImageBitmap(colorsBitmap);
-                }
-            });
+            Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(colorContainerSize, colorContainerSize,
+                    entity.getRgbColors());
+            holder.colorContainer.setImageBitmap(colorsBitmap);
         }
     }
 

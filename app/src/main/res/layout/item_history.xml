@@ -23,5 +23,6 @@
         android:layout_marginTop="@dimen/indent_little"
         android:layout_marginBottom="@dimen/indent_little"
         android:layout_toRightOf="@+id/picture"
+        android:scaleType="fitXY"
         tools:src="@color/blue" />
 </RelativeLayout>
