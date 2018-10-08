@@ -44,15 +44,19 @@ class HistoryAdapter extends BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolde
                 .apply(requestOptions)
                 .into(holder.pictureView);
 
-        holder.colorContainer.post(() -> {
-            int width = holder.colorContainer.getMeasuredWidth();
-            int height = holder.colorContainer.getMeasuredHeight();
+        if (entity.getRgbColors().size() == 1) {
+            holder.colorContainer.setBackgroundColor(entity.getRgbColors().get(0));
+        } else {
+            holder.colorContainer.post(() -> {
+                int width = holder.colorContainer.getMeasuredWidth();
+                int height = holder.colorContainer.getMeasuredHeight();
 
-            if (width > 0 && height > 0) {
-                Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, entity.getRgbColors());
-                holder.colorContainer.setImageBitmap(colorsBitmap);
-            }
-        });
+                if (width > 0 && height > 0) {
+                    Bitmap colorsBitmap = BitmapUtils.createMultiColorHorizontalBitmap(width, height, entity.getRgbColors());
+                    holder.colorContainer.setImageBitmap(colorsBitmap);
+                }
+            });
+        }
     }
 
     static class HistoryViewHolder extends BaseViewHolder {
