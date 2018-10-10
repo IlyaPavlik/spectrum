@@ -1,11 +1,5 @@
 package ru.magflayer.spectrum.domain.interactor;
 
-import android.database.Cursor;
-import android.graphics.Color;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pair;
-import android.text.TextUtils;
-
 import com.google.gson.Gson;
 
 import java.io.InputStream;
@@ -15,26 +9,25 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.magflayer.spectrum.data.android.ResourceManager;
+import ru.magflayer.spectrum.domain.common.utils.Utils;
 import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
 import ru.magflayer.spectrum.domain.entity.ColorInfoState;
 import ru.magflayer.spectrum.domain.entity.ListType;
 import ru.magflayer.spectrum.domain.entity.NcsColorEntity;
 import ru.magflayer.spectrum.domain.repository.ColorInfoRepository;
+import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 import rx.Observable;
-import rx.functions.Func0;
 import rx.functions.Func1;
-import rx.observables.SyncOnSubscribe;
 
 @Slf4j
 @Singleton
 public class ColorInfoInteractor {
 
-    @VisibleForTesting
-    public static final String COLOR_NAMES_ASSET_NAME = "colors.json";
-    @VisibleForTesting
-    public static final String NCS_COLORS_ASSET_NAME = "ncs.json";
+    private static final String COLOR_NAMES_ASSET_NAME = "colors.json";
+    private static final String NCS_COLORS_ASSET_NAME = "ncs.json";
 
     private final ColorInfoRepository colorInfoRepository;
     private final ResourceManager resourceManager;
@@ -58,58 +51,56 @@ public class ColorInfoInteractor {
     }
 
     public Observable<String> findColorNameByHex(final String hex) {
-        final int sourceColor = Color.parseColor(hex);
-        final int[] sourceColorRgb = new int[]{
-                Color.red(sourceColor),
-                Color.green(sourceColor),
-                Color.blue(sourceColor)
-        };
+        final int[] sourceColorRgb;
+        try {
+            final int sourceColor = ColorUtils.parseHex2Dec(hex);
+            sourceColorRgb = ColorUtils.dec2Rgb(sourceColor);
+        } catch (Exception e) {
+            return Observable.error(e);
+        }
 
-        return createCursorObservable(colorInfoRepository::loadColorNames, "hex")
-                .reduce(Pair.create("", Double.MAX_VALUE), (currentMin, s) -> {
-                    if (TextUtils.isEmpty(s)) s = "#000000";
+        return Observable.fromCallable(colorInfoRepository::loadColorNames)
+                .flatMap(Observable::from)
+                .map(ColorInfoEntity::getId)
+                .reduce(new ColorError("", Double.MAX_VALUE), (currentMin, s) -> {
+                    if (Utils.isEmpty(s)) s = "#000000";
 
-                    int ncsColor = Color.parseColor(s);
-                    int[] ncsColorRgb = new int[]{
-                            Color.red(ncsColor),
-                            Color.green(ncsColor),
-                            Color.blue(ncsColor)
-                    };
+                    int ncsColor = ColorUtils.parseHex2Dec(s);
+                    int[] ncsColorRgb = ColorUtils.dec2Rgb(ncsColor);
 
                     double error = calculateColorDifference(sourceColorRgb, ncsColorRgb);
-                    double result = currentMin.second > error ? error : currentMin.second;
-                    String colorHex = currentMin.second > error ? s : currentMin.first;
-                    return Pair.create(colorHex, result);
+                    double result = currentMin.error > error ? error : currentMin.error;
+                    String colorHex = currentMin.error > error ? s : currentMin.id;
+                    return new ColorError(colorHex, result);
                 })
-                .filter(currentMin -> currentMin.second != Integer.MAX_VALUE)
-                .map(stringIntegerPair -> stringIntegerPair.first)
+                .filter(currentMin -> currentMin.error != Integer.MAX_VALUE)
+                .map(stringIntegerPair -> stringIntegerPair.id)
                 .flatMap(h -> Observable.fromCallable(() -> colorInfoRepository.loadColorNameByHex(h)));
     }
 
     public Observable<String> findNcsColorByHex(final String hex) {
-        final int sourceColor = Color.parseColor(hex);
-        final int[] sourceColorRgb = new int[]{
-                Color.red(sourceColor),
-                Color.green(sourceColor),
-                Color.blue(sourceColor)
-        };
+        final int[] sourceColorRgb;
+        try {
+            final int sourceColor = ColorUtils.parseHex2Dec(hex);
+            sourceColorRgb = ColorUtils.dec2Rgb(sourceColor);
+        } catch (Exception e) {
+            return Observable.error(e);
+        }
 
-        return createCursorObservable(colorInfoRepository::loadNcsColors, "hex")
-                .reduce(Pair.create("", Double.MAX_VALUE), (currentMin, s) -> {
-                    int ncsColor = Color.parseColor(s);
-                    int[] ncsColorRgb = new int[]{
-                            Color.red(ncsColor),
-                            Color.green(ncsColor),
-                            Color.blue(ncsColor)
-                    };
+        return Observable.fromCallable(colorInfoRepository::loadNcsColors)
+                .flatMap(Observable::from)
+                .map(ColorInfoEntity::getId)
+                .reduce(new ColorError("", Double.MAX_VALUE), (currentMin, s) -> {
+                    int ncsColor = ColorUtils.parseHex2Dec(s);
+                    int[] ncsColorRgb = ColorUtils.dec2Rgb(ncsColor);
 
                     double error = calculateColorDifference(sourceColorRgb, ncsColorRgb);
-                    Double result = currentMin.second > error ? error : currentMin.second;
-                    String colorHex = currentMin.second > error ? s : currentMin.first;
-                    return new Pair<>(colorHex, result);
+                    Double result = currentMin.error > error ? error : currentMin.error;
+                    String colorHex = currentMin.error > error ? s : currentMin.id;
+                    return new ColorError(colorHex, result);
                 })
-                .filter(currentMin -> currentMin.second != Integer.MAX_VALUE)
-                .map(stringIntegerPair -> stringIntegerPair.first)
+                .filter(currentMin -> currentMin.error != Integer.MAX_VALUE)
+                .map(stringIntegerPair -> stringIntegerPair.id)
                 .flatMap(h -> Observable.fromCallable(() -> colorInfoRepository.loadNcsColorByHex(h)));
     }
 
@@ -178,29 +169,17 @@ public class ColorInfoInteractor {
         return jsonText -> gson.fromJson(jsonText, new ListType<T>(clazz));
     }
 
-    private Observable<String> createCursorObservable(final Func0<Cursor> cursorFunc, final String columnName) {
-        return Observable.create(SyncOnSubscribe.createStateful(
-                cursorFunc,
-                (cursor, observer) -> {
-                    try {
-                        if (cursor != null && cursor.moveToNext()) {
-                            observer.onNext(cursor.getString(cursor.getColumnIndex(columnName)));
-                        } else {
-                            observer.onCompleted();
-                        }
-                    } catch (Exception e) {
-                        observer.onError(e);
-                    }
-                    return cursor;
-                },
-                Cursor::close));
-    }
-
     private double calculateColorDifference(final int[] colorOneRgb, final int[] colorTwoRgb) {
         Double error = Math.pow(colorTwoRgb[0] - colorOneRgb[0], 2)
                 + Math.pow(colorTwoRgb[1] - colorOneRgb[1], 2)
                 + Math.pow(colorTwoRgb[2] - colorOneRgb[2], 2);
         return Math.sqrt(error);
+    }
+
+    @AllArgsConstructor
+    private static class ColorError {
+        private String id;
+        private double error;
     }
 
 }

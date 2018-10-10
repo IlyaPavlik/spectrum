@@ -3,7 +3,8 @@ package ru.magflayer.spectrum.data.database.dao;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import android.database.Cursor;
+
+import java.util.List;
 
 import ru.magflayer.spectrum.data.entity.NcsColor;
 
@@ -13,7 +14,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface NcsColorDao {
 
     @Query("SELECT * FROM NcsColor")
-    Cursor loadNcsColors();
+    List<NcsColor> loadNcsColors();
 
     @Query("SELECT * FROM NcsColor WHERE hex=:hex")
     NcsColor loadNcsColorByHex(String hex);

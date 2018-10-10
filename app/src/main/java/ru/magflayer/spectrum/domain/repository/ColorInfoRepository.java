@@ -1,8 +1,9 @@
 package ru.magflayer.spectrum.domain.repository;
 
-import android.database.Cursor;
-
+import java.util.List;
 import java.util.Map;
+
+import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
 
 public interface ColorInfoRepository {
 
@@ -10,7 +11,7 @@ public interface ColorInfoRepository {
 
     boolean isColorNamesUploaded();
 
-    Cursor loadColorNames();
+    List<ColorInfoEntity> loadColorNames();
 
     String loadColorNameByHex(String hex);
 
@@ -18,7 +19,7 @@ public interface ColorInfoRepository {
 
     boolean isNcsColorUploaded();
 
-    Cursor loadNcsColors();
+    List<ColorInfoEntity> loadNcsColors();
 
     String loadNcsColorByHex(String hex);
 
