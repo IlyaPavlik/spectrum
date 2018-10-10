@@ -20,6 +20,21 @@ public class ColorUtils {
 
     private static final int COLOR_ERROR = 5;
 
+    public static int parseHex2Dec(final String colorString) {
+        if (colorString.charAt(0) == '#') {
+            // Use a long to avoid rollovers on #ffXXXXXX
+            long color = Long.parseLong(colorString.substring(1), 16);
+            if (colorString.length() == 7) {
+                // Set the alpha value
+                color |= 0x00000000ff000000;
+            } else if (colorString.length() != 9) {
+                throw new IllegalArgumentException("Unknown color");
+            }
+            return (int) color;
+        }
+        throw new IllegalArgumentException("Unknown color");
+    }
+
     public static int inverseColor(int color) {
         return (0x00FFFFFF - (color | 0xFF000000)) | (color & 0xFF000000);
     }

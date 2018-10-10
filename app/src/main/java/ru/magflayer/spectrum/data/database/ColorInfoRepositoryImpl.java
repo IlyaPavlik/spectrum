@@ -1,18 +1,21 @@
 package ru.magflayer.spectrum.data.database;
 
-import android.database.Cursor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import ru.magflayer.spectrum.data.entity.ColorName;
 import ru.magflayer.spectrum.data.entity.NcsColor;
+import ru.magflayer.spectrum.data.entity.converter.ColorNameConverter;
+import ru.magflayer.spectrum.data.entity.converter.NcsColorConverter;
+import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
 import ru.magflayer.spectrum.domain.repository.ColorInfoRepository;
 
 public class ColorInfoRepositoryImpl implements ColorInfoRepository {
 
     private final AppDatabase appDatabase;
+    private final ColorNameConverter colorNameConverter = new ColorNameConverter();
+    private final NcsColorConverter ncsColorConverter = new NcsColorConverter();
 
     public ColorInfoRepositoryImpl(final AppDatabase appDatabase) {
         this.appDatabase = appDatabase;
@@ -35,8 +38,9 @@ public class ColorInfoRepositoryImpl implements ColorInfoRepository {
     }
 
     @Override
-    public synchronized Cursor loadColorNames() {
-        return appDatabase.colorNameDao().loadColorNames();
+    public synchronized List<ColorInfoEntity> loadColorNames() {
+        List<ColorName> colorNames = appDatabase.colorNameDao().loadColorNames();
+        return colorNameConverter.convertToColorInfos(colorNames);
     }
 
     @Override
@@ -61,8 +65,9 @@ public class ColorInfoRepositoryImpl implements ColorInfoRepository {
     }
 
     @Override
-    public Cursor loadNcsColors() {
-        return appDatabase.ncsColorDao().loadNcsColors();
+    public synchronized List<ColorInfoEntity> loadNcsColors() {
+        List<NcsColor> ncsColors = appDatabase.ncsColorDao().loadNcsColors();
+        return ncsColorConverter.convertToColorInfos(ncsColors);
     }
 
     @Override
