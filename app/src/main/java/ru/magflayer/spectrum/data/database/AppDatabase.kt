@@ -30,25 +30,25 @@ abstract class AppDatabase : RoomDatabase(), PhotoRepository {
 
     override fun savePhoto(colorPhoto: ColorPhotoEntity): Observable<Boolean> {
         return Observable.just(colorPhoto)
-                .map<ColorPhoto> { photoConverter.convertToColorPhoto(it) }
+                .map<ColorPhoto> { photoConverter.convertToDto(it) }
                 .map { photo -> colorPhotoDao().savePhoto(photo) > 0 }
     }
 
     override fun loadPhotos(): Observable<List<ColorPhotoEntity>> {
         return Observable.fromCallable { colorPhotoDao().loadPhotos() }
                 .flatMap<ColorPhoto> { Observable.from(it) }
-                .map<ColorPhotoEntity> { photoConverter.convertToColorPhotoEntity(it) }
+                .map<ColorPhotoEntity> { photoConverter.convertToEntity(it) }
                 .toList()
     }
 
     override fun loadPhoto(filePath: String): Observable<ColorPhotoEntity> {
         return Observable.fromCallable { colorPhotoDao().loadPhoto(filePath) }
-                .map { photoConverter.convertToColorPhotoEntity(it) }
+                .map { photoConverter.convertToEntity(it) }
     }
 
     override fun removePhoto(entity: ColorPhotoEntity): Observable<Boolean> {
         return Observable.just(entity)
-                .map<ColorPhoto> { photoConverter.convertToColorPhoto(it) }
+                .map<ColorPhoto> { photoConverter.convertToDto(it) }
                 .map { colorPhoto -> colorPhotoDao().deletePhoto(colorPhoto) > 0 }
     }
 }

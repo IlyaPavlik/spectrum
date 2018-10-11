@@ -8,6 +8,4 @@ import android.arch.persistence.room.PrimaryKey
 data class ColorName(
         @PrimaryKey var hex: String,
         @ColumnInfo(name = "name") var name: String
-) {
-    constructor() : this("", "")
-}
+)
