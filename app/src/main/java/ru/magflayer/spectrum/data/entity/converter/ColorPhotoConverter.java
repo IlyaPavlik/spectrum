@@ -12,8 +12,8 @@ public class ColorPhotoConverter {
 
     public ColorPhotoEntity convertToColorPhotoEntity(final ColorPhoto colorPhoto) {
         ColorPhotoEntity.Type type = ColorPhotoEntity.Type.values()[colorPhoto.getType()];
-        return new ColorPhotoEntity(colorPhoto.getFilePath(), colorPhoto.getRgbColors(),
-                colorPhoto.getId(), type);
+        return new ColorPhotoEntity(type, colorPhoto.getFilePath(), colorPhoto.getRgbColors(),
+                colorPhoto.getId());
     }
 
 }

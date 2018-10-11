@@ -109,13 +109,14 @@ public abstract class BasePresenter<View extends MvpView> extends MvpPresenter<V
     }
 
     protected ToolbarAppearance getToolbarAppearance() {
-        return ToolbarAppearance.builder()
-                .visible(ToolbarAppearance.Visibility.NO_INFLUENCE)
-                .build();
+        return new ToolbarAppearance(
+                ToolbarAppearance.Visibility.NO_INFLUENCE,
+                ""
+        );
     }
 
     protected PageAppearance getPageAppearance() {
-        return PageAppearance.builder()
+        return PageAppearance.Companion.builder()
                 .showFloatingButton(null)
                 .build();
     }
