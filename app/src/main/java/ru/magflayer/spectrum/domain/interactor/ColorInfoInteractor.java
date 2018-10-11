@@ -2,6 +2,9 @@ package ru.magflayer.spectrum.domain.interactor;
 
 import com.google.gson.Gson;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +12,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.magflayer.spectrum.data.android.ResourceManager;
 import ru.magflayer.spectrum.domain.common.utils.Utils;
 import ru.magflayer.spectrum.domain.entity.ColorInfoEntity;
@@ -22,12 +23,13 @@ import ru.magflayer.spectrum.presentation.common.utils.ColorUtils;
 import rx.Observable;
 import rx.functions.Func1;
 
-@Slf4j
 @Singleton
 public class ColorInfoInteractor {
 
     private static final String COLOR_NAMES_ASSET_NAME = "colors.json";
     private static final String NCS_COLORS_ASSET_NAME = "ncs.json";
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final ColorInfoRepository colorInfoRepository;
     private final ResourceManager resourceManager;
@@ -176,10 +178,14 @@ public class ColorInfoInteractor {
         return Math.sqrt(error);
     }
 
-    @AllArgsConstructor
     private static class ColorError {
         private String id;
         private double error;
+
+        ColorError(final String id, final double error) {
+            this.id = id;
+            this.error = error;
+        }
     }
 
 }

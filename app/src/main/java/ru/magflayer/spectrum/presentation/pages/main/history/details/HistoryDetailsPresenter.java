@@ -67,15 +67,15 @@ public class HistoryDetailsPresenter extends BasePresenter<HistoryDetailsView> {
 
     @Override
     public ToolbarAppearance getToolbarAppearance() {
-        return ToolbarAppearance.builder()
-                .visible(ToolbarAppearance.Visibility.VISIBLE)
-                .title(resourceManager.getString(R.string.history_details_title))
-                .build();
+        return new ToolbarAppearance(
+                ToolbarAppearance.Visibility.VISIBLE,
+                resourceManager.getString(R.string.history_details_title)
+        );
     }
 
     @Override
     protected PageAppearance getPageAppearance() {
-        return PageAppearance.builder()
+        return PageAppearance.Companion.builder()
                 .showFloatingButton(false)
                 .build();
     }

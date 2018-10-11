@@ -5,14 +5,16 @@ import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Singleton
 public class AnalyticsManager {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private FirebaseAnalytics analytics;
 

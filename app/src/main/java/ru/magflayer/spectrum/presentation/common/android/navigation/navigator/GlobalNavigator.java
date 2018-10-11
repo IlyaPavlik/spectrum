@@ -3,8 +3,9 @@ package ru.magflayer.spectrum.presentation.common.android.navigation.navigator;
 import android.app.Activity;
 import android.content.Intent;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ru.magflayer.spectrum.presentation.common.android.navigation.Screens;
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity;
 import ru.magflayer.spectrum.presentation.pages.splash.SplashActivity;
@@ -14,11 +15,15 @@ import ru.terrakok.cicerone.commands.Command;
 import ru.terrakok.cicerone.commands.Forward;
 import ru.terrakok.cicerone.commands.Replace;
 
-@Slf4j
-@AllArgsConstructor
 public class GlobalNavigator implements Navigator {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private final Activity activity;
+
+    public GlobalNavigator(final Activity activity) {
+        this.activity = activity;
+    }
 
     @Override
     public void applyCommands(final Command[] commands) {

@@ -26,8 +26,6 @@ import java.util.List;
 import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.OnClick;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import ru.magflayer.spectrum.R;
 import ru.magflayer.spectrum.domain.injection.InjectorManager;
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment;
@@ -277,12 +275,18 @@ public class ColorCameraFragment extends BaseFragment implements TextureView.Sur
         }
     }
 
-    @Getter
-    @AllArgsConstructor
     private enum Orientation {
         PORTRAIT(0),
         LANDSCAPE(90);
 
         private int degree;
+
+        Orientation(final int degree) {
+            this.degree = degree;
+        }
+
+        public int getDegree() {
+            return degree;
+        }
     }
 }

@@ -95,16 +95,17 @@ public class ColorCameraPresenter extends BasePresenter<ColorCameraView> {
 
     @Override
     public PageAppearance getPageAppearance() {
-        return PageAppearance.builder()
+        return PageAppearance.Companion.builder()
                 .showFloatingButton(false)
                 .build();
     }
 
     @Override
     public ToolbarAppearance getToolbarAppearance() {
-        return ToolbarAppearance.builder()
-                .visible(ToolbarAppearance.Visibility.INVISIBLE)
-                .build();
+        return new ToolbarAppearance(
+                ToolbarAppearance.Visibility.INVISIBLE,
+                ""
+        );
     }
 
     void updateSurface(final SurfaceInfo.Type type) {
