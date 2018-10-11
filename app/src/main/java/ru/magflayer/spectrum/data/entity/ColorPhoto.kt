@@ -12,9 +12,7 @@ data class ColorPhoto(
         @field:ColumnInfo(name = "type") var type: Int
 ) {
 
-    constructor() : this(0L, "", emptyList(), 0)
-
-    class RgbColorsConverters {
+    internal class RgbColorsConverters {
 
         private val gson = Gson()
 
