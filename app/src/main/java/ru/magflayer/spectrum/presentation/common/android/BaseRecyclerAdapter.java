@@ -43,7 +43,7 @@ public abstract class BaseRecyclerAdapter<VH extends BaseViewHolder, T> extends 
 
     public void setData(List<T> data) {
         if (data != null) {
-            this.data = data;
+            this.data = new ArrayList<>(data);
             notifyDataSetChanged();
         }
     }
