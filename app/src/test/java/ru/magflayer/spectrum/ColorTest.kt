@@ -3,7 +3,7 @@ package ru.magflayer.spectrum
 import android.graphics.Color
 import junit.framework.Assert.assertTrue
 import org.junit.Test
-import ru.magflayer.spectrum.presentation.common.utils.ColorUtils
+import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import java.util.*
 
 class ColorTest {
@@ -32,7 +32,7 @@ class ColorTest {
     @Throws(Exception::class)
     fun rgbTest() {
         for (colorSpace in testColorList) {
-            val rgb = ColorUtils.dec2Rgb(colorSpace.color)
+            val rgb = ColorHelper.dec2Rgb(colorSpace.color)
             assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.rgb.rgb, rgb))
         }
     }
@@ -40,7 +40,7 @@ class ColorTest {
     @Test
     fun cmykTest() {
         for (colorSpace in testColorList) {
-            val cmyk = ColorUtils.dec2Cmyk(colorSpace.color)
+            val cmyk = ColorHelper.dec2Cmyk(colorSpace.color)
             assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.cmyk.cmyk, cmyk))
         }
     }
@@ -48,7 +48,7 @@ class ColorTest {
     @Test
     fun hslTest() {
         for (colorSpace in testColorList) {
-            val hsl = ColorUtils.dec2Hsl(colorSpace.color)
+            val hsl = ColorHelper.dec2Hsl(colorSpace.color)
             assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.hsl.hsl, hsl))
         }
     }
@@ -56,7 +56,7 @@ class ColorTest {
     @Test
     fun xyzTest() {
         for (colorSpace in testColorList) {
-            val xyz = ColorUtils.dec2Xyz(colorSpace.color)
+            val xyz = ColorHelper.dec2Xyz(colorSpace.color)
             assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.xyz.xyz, xyz))
         }
     }
@@ -64,7 +64,7 @@ class ColorTest {
     @Test
     fun labTest() {
         for (colorSpace in testColorList) {
-            val ciaLab = ColorUtils.dec2Lab(colorSpace.color)
+            val ciaLab = ColorHelper.dec2Lab(colorSpace.color)
             assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.cieLab.cieLab, ciaLab))
         }
     }
@@ -75,18 +75,18 @@ class ColorTest {
     //        System.out.println(file.getAbsolutePath());
     //        try {
     //            InputStream inputStream = new FileInputStream(file);
-    //            List<ColorUtils.NcsColorEntity> colors = null;
+    //            List<ColorHelper.NcsColorEntity> colors = null;
     //            try {
     //                DataInputStream dataInputStream = new DataInputStream(inputStream);
     //                String data = dataInputStream.readLine();
-    //                colors = new Gson().fromJson(data, new TypeToken<List<ColorUtils.NcsColorEntity>>() {
+    //                colors = new Gson().fromJson(data, new TypeToken<List<ColorHelper.NcsColorEntity>>() {
     //                }.getType());
     //            } catch (IOException e) {
     //                e.printStackTrace();
     //            }
     //
     //            for (ColorSpace colorSpace : testColorList) {
-    //                String ncs = ColorUtils.dec2Ncs(colors, Color.BLACK);
+    //                String ncs = ColorHelper.dec2Ncs(colors, Color.BLACK);
     //                System.out.println(ColorSpace.NCS.BLACK.toString() + " NCS: " + ncs);
     //            assertTrue(colorSpace.getHex().toString(), colorSpace.getNcs().getCode().equals(ncs));
     //            }

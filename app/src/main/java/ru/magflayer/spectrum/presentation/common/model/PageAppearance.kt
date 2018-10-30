@@ -1,15 +1,15 @@
 package ru.magflayer.spectrum.presentation.common.model
 
 data class PageAppearance(
-        var showFloatingButton: Boolean? = false
+        var floatingButtonState: FloatingButtonState = FloatingButtonState.INVISIBLE
 ) {
 
     class Builder {
         private val pageAppearance = PageAppearance()
 
 
-        fun showFloatingButton(showFloatingButton: Boolean?): Builder {
-            pageAppearance.showFloatingButton = showFloatingButton
+        fun showFloatingButton(floatingButtonState: FloatingButtonState): Builder {
+            pageAppearance.floatingButtonState = floatingButtonState
             return this
         }
 
@@ -23,5 +23,9 @@ data class PageAppearance(
         fun builder(): Builder {
             return Builder()
         }
+    }
+
+    enum class FloatingButtonState {
+        VISIBLE, INVISIBLE, NO_INFLUENCE
     }
 }
