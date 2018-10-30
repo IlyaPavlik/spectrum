@@ -8,7 +8,6 @@ import android.view.WindowManager
 import com.squareup.otto.Bus
 import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.common.utils.RxUtils
-import ru.magflayer.spectrum.presentation.common.utils.BitmapUtils
 import rx.Observable
 import rx.Subscription
 import java.io.ByteArrayOutputStream
@@ -111,7 +110,7 @@ internal constructor(context: Context) {
         camera?.takePicture(shutterCallback, rawCallback, Camera.PictureCallback { data, camera1 ->
             log.debug("onPictureTaken - jpeg")
 
-            val bitmap = BitmapUtils.bytesToBitmap(data)
+            val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
             pictureCallback.onTakePicture(bitmap)
 
             camera1.startPreview()

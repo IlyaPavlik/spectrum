@@ -8,7 +8,7 @@ import ru.magflayer.spectrum.domain.entity.ColorInfoState
 import ru.magflayer.spectrum.domain.entity.ListType
 import ru.magflayer.spectrum.domain.entity.NcsColorEntity
 import ru.magflayer.spectrum.domain.repository.ColorInfoRepository
-import ru.magflayer.spectrum.presentation.common.utils.ColorUtils
+import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import rx.Observable
 import rx.functions.Func1
 import java.io.InputStream
@@ -41,8 +41,8 @@ internal constructor(private val colorInfoRepository: ColorInfoRepository,
     fun findColorNameByHex(hex: String): Observable<String> {
         val sourceColorRgb: IntArray
         try {
-            val sourceColor = ColorUtils.parseHex2Dec(hex)
-            sourceColorRgb = ColorUtils.dec2Rgb(sourceColor)
+            val sourceColor = ColorHelper.parseHex2Dec(hex)
+            sourceColorRgb = ColorHelper.dec2Rgb(sourceColor)
         } catch (e: Exception) {
             return Observable.error(e)
         }
@@ -54,8 +54,8 @@ internal constructor(private val colorInfoRepository: ColorInfoRepository,
                     var colorNameHex = s
                     if (colorNameHex.isEmpty()) colorNameHex = "#000000"
 
-                    val ncsColor = ColorUtils.parseHex2Dec(colorNameHex)
-                    val ncsColorRgb = ColorUtils.dec2Rgb(ncsColor)
+                    val ncsColor = ColorHelper.parseHex2Dec(colorNameHex)
+                    val ncsColorRgb = ColorHelper.dec2Rgb(ncsColor)
 
                     val error = calculateColorDifference(sourceColorRgb, ncsColorRgb)
                     val result = if (currentMin.error > error) error else currentMin.error
@@ -70,8 +70,8 @@ internal constructor(private val colorInfoRepository: ColorInfoRepository,
     fun findNcsColorByHex(hex: String): Observable<String> {
         val sourceColorRgb: IntArray
         try {
-            val sourceColor = ColorUtils.parseHex2Dec(hex)
-            sourceColorRgb = ColorUtils.dec2Rgb(sourceColor)
+            val sourceColor = ColorHelper.parseHex2Dec(hex)
+            sourceColorRgb = ColorHelper.dec2Rgb(sourceColor)
         } catch (e: Exception) {
             return Observable.error(e)
         }
@@ -80,8 +80,8 @@ internal constructor(private val colorInfoRepository: ColorInfoRepository,
                 .flatMap { Observable.from(it) }
                 .map { it.id }
                 .reduce(ColorError("", java.lang.Double.MAX_VALUE)) { currentMin, s ->
-                    val ncsColor = ColorUtils.parseHex2Dec(s)
-                    val ncsColorRgb = ColorUtils.dec2Rgb(ncsColor)
+                    val ncsColor = ColorHelper.parseHex2Dec(s)
+                    val ncsColorRgb = ColorHelper.dec2Rgb(ncsColor)
 
                     val error = calculateColorDifference(sourceColorRgb, ncsColorRgb)
                     val result = if (currentMin.error > error) error else currentMin.error
