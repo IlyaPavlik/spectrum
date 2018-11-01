@@ -15,6 +15,7 @@ interface ColorCameraView : PageView {
         const val ERROR_MESSAGE_TAG = "error_message"
         const val CROSSHAIR_TAG = "crosshair"
         const val PANELS_TAG = "panels"
+        const val FLASH_VISIBILITY_TAG = "flash_visibility"
     }
 
     @StateStrategyType(OneExecutionStateStrategy::class)
@@ -43,5 +44,11 @@ interface ColorCameraView : PageView {
 
     @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = PANELS_TAG)
     fun showPanels()
+
+    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = FLASH_VISIBILITY_TAG)
+    fun showFlash()
+
+    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = FLASH_VISIBILITY_TAG)
+    fun hideFlash()
 
 }

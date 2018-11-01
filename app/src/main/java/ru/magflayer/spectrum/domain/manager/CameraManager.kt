@@ -1,6 +1,7 @@
 package ru.magflayer.spectrum.domain.manager
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.Camera
 import android.view.Surface
@@ -19,7 +20,7 @@ import kotlin.experimental.and
 @Suppress("DEPRECATION")
 @Singleton
 class CameraManager @Inject
-internal constructor(context: Context) {
+internal constructor(val context: Context) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -56,6 +57,8 @@ internal constructor(context: Context) {
         fun onTakePicture(bitmap: Bitmap)
     }
 
+    fun isFlashAvailable() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
+
     fun open() {
         camera = Camera.open(backFacingCameraId)
 
@@ -63,10 +66,12 @@ internal constructor(context: Context) {
             throw RuntimeException("Camera not available")
         }
 
-        val parameters = camera?.parameters
-        parameters?.setPreviewSize(CAMERA_WIDTH, CAMERA_HEIGHT)
-        parameters?.previewFormat = ImageFormat.NV21
-        camera?.parameters = parameters
+        camera?.apply {
+            val params = parameters
+            params.setPreviewSize(CAMERA_WIDTH, CAMERA_HEIGHT)
+            params.previewFormat = ImageFormat.NV21
+            parameters = params
+        }
 
         camera?.setPreviewCallback { data, _ ->
             if (generateBitmapSubscription == null || generateBitmapSubscription!!.isUnsubscribed) {
@@ -102,6 +107,22 @@ internal constructor(context: Context) {
         }
     }
 
+    fun enabledFlash() {
+        camera?.let {
+            val params = it.parameters
+            params.flashMode = Camera.Parameters.FLASH_MODE_TORCH
+            it.parameters = params
+        }
+    }
+
+    fun disableFlash() {
+        camera?.let {
+            val params = it.parameters
+            params.flashMode = Camera.Parameters.FLASH_MODE_OFF
+            it.parameters = params
+        }
+    }
+
     fun takePicture(pictureCallback: OnTakePictureListener) {
         camera?.takePicture(shutterCallback, rawCallback, Camera.PictureCallback { data, camera1 ->
             log.debug("onPictureTaken - jpeg")
@@ -118,17 +139,16 @@ internal constructor(context: Context) {
     }
 
     fun close() {
-        if (camera != null) {
-            camera!!.stopPreview()
-            camera!!.setPreviewCallback(null)
-            camera!!.unlock()
-            camera!!.release()
-            camera = null
+        camera?.apply {
+            stopPreview()
+            setPreviewCallback(null)
+            unlock()
+            release()
         }
-        if (generateBitmapSubscription != null) {
-            generateBitmapSubscription!!.unsubscribe()
-            generateBitmapSubscription = null
-        }
+        camera = null
+
+        generateBitmapSubscription?.apply { unsubscribe() }
+        generateBitmapSubscription = null
 
         generateBitmapStream.reset()
     }
