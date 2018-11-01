@@ -53,6 +53,8 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     lateinit var colorRecycler: RecyclerView
     @BindView(R.id.toggle_mode)
     lateinit var toggleView: ToggleButton
+    @BindView(R.id.flash)
+    lateinit var flashView: ToggleButton
     @BindView(R.id.point_detector)
     lateinit var pointView: PointView
     @BindView(R.id.color_details)
@@ -169,6 +171,14 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         showBottomMenu()
     }
 
+    override fun showFlash() {
+        flashView.visible(true)
+    }
+
+    override fun hideFlash() {
+        flashView.visible(false)
+    }
+
     @OnClick(R.id.camera)
     fun onFocusClick() {
         presenter.handleFocusClicked()
@@ -182,6 +192,11 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     @OnClick(R.id.save)
     fun onSaveClick() {
         presenter.handleSaveClicked(if (currentOrientation == Orientation.LANDSCAPE) 0 else 90)
+    }
+
+    @OnClick(R.id.flash)
+    fun onFlashClick() {
+        presenter.handleFlashClick(flashView.isChecked)
     }
 
     private fun showTopMenu() {
@@ -224,6 +239,7 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         logger.debug("Orientation changed: {}", orientation)
         menuButton.rotate(orientation.degree)
         toggleView.rotate(orientation.degree)
+        flashView.rotate(orientation.degree)
         colorDetailsWidget.rotate(orientation.degree)
     }
 

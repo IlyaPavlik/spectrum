@@ -59,7 +59,26 @@
             android:layout_width="@dimen/camera_save_size"
             android:layout_height="@dimen/camera_save_size"
             android:layout_centerInParent="true"
+            android:layout_marginLeft="@dimen/indent_normal"
+            android:layout_marginRight="@dimen/indent_normal"
             app:srcCompat="@drawable/selector_save_button" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/save"
+            android:layout_toRightOf="@+id/toggle_mode">
+
+            <ToggleButton
+                android:id="@+id/flash"
+                android:layout_width="@dimen/camera_menu_size"
+                android:layout_height="@dimen/camera_menu_size"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_flash"
+                android:checked="false"
+                android:textOff="@null"
+                android:textOn="@null" />
+        </FrameLayout>
 
         <ToggleButton
             android:id="@+id/toggle_mode"

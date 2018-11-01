@@ -101,6 +101,15 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         InjectorManager.appComponent?.inject(this)
     }
 
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        if (cameraManager.isFlashAvailable()) {
+            viewState.showFlash()
+        } else {
+            viewState.hideFlash()
+        }
+    }
+
     internal fun updateSurface(type: SurfaceInfo.Type) {
         changeObservable.onNext(type)
     }
@@ -132,6 +141,14 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
     internal fun handleSaveClicked(rotationDegree: Int) {
         val bitmap = cameraManager.cameraBitmap
         saveColorPicture(bitmap, swatches, rotationDegree)
+    }
+
+    internal fun handleFlashClick(checked: Boolean) {
+        if (checked) {
+            cameraManager.enabledFlash()
+        } else {
+            cameraManager.disableFlash()
+        }
     }
 
     private fun handleCameraSurface(bitmap: Bitmap) {
@@ -173,7 +190,6 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
             execute(TAG_SINGLE_COLOR, colorInfoInteractor.findColorNameByHex(hexColor),
                     Action1 { colorName ->
                         currentDetailsColor = color.rgb
-                        logger.debug("Rgb color: {}", currentDetailsColor)
                         viewState.showColorDetails(color.rgb, color.titleTextColor)
                         viewState.showColorName(colorName)
 
