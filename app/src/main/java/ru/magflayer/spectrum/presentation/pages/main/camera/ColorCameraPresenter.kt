@@ -168,17 +168,19 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         val centerY = bmp.height / 2
 
         val color = Palette.Swatch(bmp.getPixel(centerX, centerY), 1)
+        if (color.rgb != 0) {
+            val hexColor = ColorHelper.dec2Hex(color.rgb)
+            execute(TAG_SINGLE_COLOR, colorInfoInteractor.findColorNameByHex(hexColor),
+                    Action1 { colorName ->
+                        currentDetailsColor = color.rgb
+                        logger.debug("Rgb color: {}", currentDetailsColor)
+                        viewState.showColorDetails(color.rgb, color.titleTextColor)
+                        viewState.showColorName(colorName)
 
-        val hexColor = ColorHelper.dec2Hex(color.rgb)
-        execute(TAG_SINGLE_COLOR, colorInfoInteractor.findColorNameByHex(hexColor),
-                Action1 { colorName ->
-                    currentDetailsColor = color.rgb
-                    viewState.showColorDetails(color.rgb, color.titleTextColor)
-                    viewState.showColorName(colorName)
-
-                    swatches = listOf(Palette.Swatch(color.rgb, Integer.MAX_VALUE))
-                },
-                Action1 { error -> logger.error("Error while finding color name: ", error) })
+                        swatches = listOf(Palette.Swatch(color.rgb, Integer.MAX_VALUE))
+                    },
+                    Action1 { error -> logger.error("Error while finding color name: ", error) })
+        }
     }
 
     internal fun openHistory() {
