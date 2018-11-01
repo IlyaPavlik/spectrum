@@ -26,19 +26,17 @@ class MainPresenter : BasePresenter<MainView>() {
         super.attachView(view)
         try {
             cameraManager.open()
-        } catch (e: RuntimeException) {
+        } catch (e: Exception) {
             logger.error("Camera not available: ", e)
         }
-
     }
 
     override fun detachView(view: MainView) {
         try {
             cameraManager.close()
-        } catch (e: RuntimeException) {
+        } catch (e: Exception) {
             logger.error("Cannot close stop camera")
         }
-
         super.detachView(view)
     }
 

@@ -30,7 +30,7 @@ internal constructor(context: Context) {
     var cameraBitmap: Bitmap? = null
         private set
     private var generateBitmapSubscription: Subscription? = null
-    private var generateBitmapStream: ByteArrayOutputStream? = null
+    private val generateBitmapStream = ByteArrayOutputStream()
     private val windowManager: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     private val backFacingCameraId: Int
@@ -63,19 +63,15 @@ internal constructor(context: Context) {
             throw RuntimeException("Camera not available")
         }
 
-        if (generateBitmapStream == null) {
-            generateBitmapStream = ByteArrayOutputStream()
-        }
-
         val parameters = camera?.parameters
         parameters?.setPreviewSize(CAMERA_WIDTH, CAMERA_HEIGHT)
         parameters?.previewFormat = ImageFormat.NV21
         camera?.parameters = parameters
 
-        camera?.setPreviewCallback { data, camera1 ->
+        camera?.setPreviewCallback { data, _ ->
             if (generateBitmapSubscription == null || generateBitmapSubscription!!.isUnsubscribed) {
                 val size = camera?.parameters?.previewSize
-                generateBitmapSubscription = generateBitmapObservable(data, size!!, generateBitmapStream!!)
+                generateBitmapSubscription = generateBitmapObservable(data, size!!, generateBitmapStream)
                         .subscribe({ bitmap -> cameraBitmap = bitmap },
                                 { throwable -> log.error("Error while generating bitmap: ", throwable) })
             }
@@ -133,15 +129,8 @@ internal constructor(context: Context) {
             generateBitmapSubscription!!.unsubscribe()
             generateBitmapSubscription = null
         }
-        if (generateBitmapStream != null) {
-            try {
-                generateBitmapStream!!.close()
-            } catch (e: IOException) {
-                log.warn("Error occurred while closing generate bitmap stream: ", e)
-            }
 
-            generateBitmapStream = null
-        }
+        generateBitmapStream.reset()
     }
 
     fun updateCameraDisplayOrientation() {
@@ -161,7 +150,7 @@ internal constructor(context: Context) {
         updateCameraDisplayOrientation(degrees)
     }
 
-    fun updateCameraDisplayOrientation(degrees: Int) {
+    private fun updateCameraDisplayOrientation(degrees: Int) {
         val camInfo = android.hardware.Camera.CameraInfo()
         android.hardware.Camera.getCameraInfo(backFacingCameraId, camInfo)
 
@@ -182,11 +171,11 @@ internal constructor(context: Context) {
                 .compose(RxUtils.applySchedulers(RxUtils.ANDROID_THREAD_POOL_EXECUTOR, RxUtils.ANDROID_THREAD_POOL_EXECUTOR))
                 .flatMap { bytes ->
                     //Convert YUV to RGB
-                    val yuvimage = YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null)
-                    yuvimage.compressToJpeg(Rect(0, 0, previewSize.width, previewSize.height), 50, stream)
+                    val yuvImage = YuvImage(bytes, ImageFormat.NV21, previewSize.width, previewSize.height, null)
+                    yuvImage.compressToJpeg(Rect(0, 0, previewSize.width, previewSize.height), 50, stream)
                     val jdata = stream.toByteArray()
                     stream.reset()
-                    Observable.just(BitmapFactory.decodeByteArray(jdata, 0, jdata.size))
+                    Observable.fromCallable { BitmapFactory.decodeByteArray(jdata, 0, jdata.size) }
 
                     //TODO research decode Yuv data to RGB, below method very slow
                     // int[] imagePixels = convertYUV420_NV21toRGB8888(yuvimage.getYuvData(), previewSize.width, previewSize.height);
@@ -196,6 +185,7 @@ internal constructor(context: Context) {
 
     companion object {
 
+        // Min allowed camera image size, if it is less setParameters will throw exception
         private const val CAMERA_WIDTH = 1280
         private const val CAMERA_HEIGHT = 720
 
@@ -247,13 +237,10 @@ internal constructor(context: Context) {
         }
 
         private fun convertYUVtoRGB(y: Int, u: Int, v: Int): Int {
-            var r: Int
-            var g: Int
-            var b: Int
+            var r = y + (1.402f * v).toInt()
+            var g = y - (0.344f * u + 0.714f * v).toInt()
+            var b = y + (1.772f * u).toInt()
 
-            r = y + (1.402f * v).toInt()
-            g = y - (0.344f * u + 0.714f * v).toInt()
-            b = y + (1.772f * u).toInt()
             r = if (r > 255) 255 else if (r < 0) 0 else r
             g = if (g > 255) 255 else if (g < 0) 0 else g
             b = if (b > 255) 255 else if (b < 0) 0 else b
