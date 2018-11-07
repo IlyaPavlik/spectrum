@@ -1,5 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
+import android.annotation.SuppressLint
 import android.graphics.SurfaceTexture
 import android.os.Bundle
 import android.support.v7.graphics.Palette
@@ -9,6 +10,7 @@ import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -31,6 +33,8 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     companion object {
 
         private const val ROTATION_INTERVAL = 5
+        private const val ZOOM_VISIBLE_DELAY = 1000L
+        private const val ZOOM_TOUCH_SPAN = 30
 
         fun newInstance(): ColorCameraFragment {
             return ColorCameraFragment()
@@ -61,10 +65,15 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     lateinit var colorDetailsWidget: ColorDetailsWidget
     @BindView(R.id.message)
     lateinit var messageView: TextView
+    @BindView(R.id.zoom_container)
+    lateinit var zoomContainer: ViewGroup;
+    @BindView(R.id.zoom_seek)
+    lateinit var zoomBar: SeekBar;
 
     private lateinit var adapter: ColorCameraAdapter
     private var orientationEventListener: OrientationEventListener? = null
     private var currentOrientation = Orientation.PORTRAIT
+    private var prevZoomValue = 0.toFloat()
 
     override fun inject() {
         InjectorManager.appComponent?.inject(this)
@@ -95,6 +104,7 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         }
 
         updateMode(toggleView.isChecked)
+        setOrientation(currentOrientation)
     }
 
     override fun onDestroyView() {
@@ -102,6 +112,7 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         super.onDestroyView()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -110,6 +121,34 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         colorRecycler.layoutManager = layoutManager
         colorRecycler.adapter = adapter
         cameraView.surfaceTextureListener = this
+        cameraView.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_MOVE -> {
+                    val value = if (currentOrientation == Orientation.PORTRAIT) {
+                        event.y
+                    } else {
+                        event.x
+                    }
+                    val direction = if (currentOrientation == Orientation.PORTRAIT) {
+                        (prevZoomValue - value).toInt()
+                    } else {
+                        (value - prevZoomValue).toInt()
+                    }
+                    if (prevZoomValue > 0 && (value / ZOOM_TOUCH_SPAN).toInt() != (prevZoomValue / ZOOM_TOUCH_SPAN).toInt()) {
+                        presenter.handleCameraZoom(direction)
+                    }
+                    prevZoomValue = value
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    prevZoomValue = -1F
+                    false
+                }
+                else -> {
+                    false
+                }
+            }
+        }
         colorRecycler.visibility = if (toggleView.isChecked) View.GONE else View.VISIBLE
         toggleView.setOnCheckedChangeListener { _, isChecked -> updateMode(isChecked) }
     }
@@ -179,6 +218,19 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         flashView.visible(false)
     }
 
+    override fun changeMaxZoom(max: Int) {
+        zoomBar.max = max
+    }
+
+    override fun changeZoomProgress(progress: Int) {
+        zoomBar.progress = progress
+
+        if (zoomBar.visibility != View.VISIBLE) {
+            zoomBar.visibility = View.VISIBLE
+            zoomBar.postDelayed({ zoomBar.visibility = View.GONE }, ZOOM_VISIBLE_DELAY)
+        }
+    }
+
     @OnClick(R.id.camera)
     fun onFocusClick() {
         presenter.handleFocusClicked()
@@ -241,6 +293,7 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         toggleView.rotate(orientation.degree)
         flashView.rotate(orientation.degree)
         colorDetailsWidget.rotate(orientation.degree)
+        zoomContainer.rotate((orientation.degree - 90).rem(360))
     }
 
     private fun isPortrait(orientation: Int): Boolean {

@@ -51,4 +51,10 @@ interface ColorCameraView : PageView {
     @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = FLASH_VISIBILITY_TAG)
     fun hideFlash()
 
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun changeMaxZoom(max: Int);
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun changeZoomProgress(progress: Int);
+
 }

@@ -24,4 +24,7 @@
 
     <dimen name="divider_height">1dp</dimen>
 
+    <dimen name="camera_zoom_container_size">200dp</dimen>
+    <dimen name="camera_zoom_width">30dp</dimen>
+
 </resources>
