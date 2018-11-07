@@ -35,6 +35,23 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
+    <FrameLayout
+        android:id="@+id/zoom_container"
+        android:layout_width="@dimen/camera_zoom_container_size"
+        android:layout_height="@dimen/camera_zoom_container_size"
+        android:layout_centerInParent="true">
+
+        <SeekBar
+            android:id="@+id/zoom_seek"
+            android:layout_width="@dimen/camera_zoom_container_size"
+            android:layout_height="@dimen/camera_zoom_width"
+            android:layout_gravity="bottom"
+            android:progressDrawable="@drawable/bg_zoom_progress"
+            android:thumb="@null"
+            android:visibility="gone"
+            tools:progress="100" />
+    </FrameLayout>
+
     <RelativeLayout
         android:id="@+id/right_menu"
         android:layout_width="match_parent"

@@ -46,6 +46,7 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         private const val TAG_MULTIPLE_COLOR = "TAG_MULTIPLE_COLOR"
 
         private const val SAVE_FILE_FORMAT = "spectre_%d.png"
+        private const val ZOOM_STEP_FACTOR = 20;
     }
 
     @Inject
@@ -65,6 +66,7 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
     private val changeObservable = BehaviorSubject.create<SurfaceInfo.Type>()
     private var currentDetailsColor: Int = 0
     private var swatches: List<Palette.Swatch> = ArrayList()
+    private var zoomStep = 1
 
     override val pageAppearance: PageAppearance
         get() = PageAppearance.builder()
@@ -108,6 +110,9 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         } else {
             viewState.hideFlash()
         }
+        val maxZoom = cameraManager.getMaxZoom()
+        viewState.changeMaxZoom(maxZoom)
+        zoomStep = maxZoom / ZOOM_STEP_FACTOR
     }
 
     internal fun updateSurface(type: SurfaceInfo.Type) {
@@ -149,6 +154,30 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         } else {
             cameraManager.disableFlash()
         }
+    }
+
+    internal fun handleCameraZoom(direction: Int) {
+        if (!cameraManager.isZoomSupported()) return
+
+        val maxZoom = cameraManager.getMaxZoom()
+        var zoom = cameraManager.getZoom()
+
+        if (direction > 0 && zoom < maxZoom) {
+            zoom += if ((zoom + zoomStep) > maxZoom) {
+                maxZoom - zoom
+            } else {
+                zoomStep
+            }
+        } else if (direction < 0 && zoom > 0) {
+            zoom -= if ((zoom - zoomStep) < 0) {
+                zoom
+            } else {
+                zoomStep
+            }
+        }
+        logger.debug("Zoom: {}", zoom)
+        cameraManager.setZoom(zoom)
+        viewState.changeZoomProgress(zoom)
     }
 
     private fun handleCameraSurface(bitmap: Bitmap) {
@@ -240,6 +269,9 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         else
             AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE
         bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode)
+        bundle.putBoolean(AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT, cameraManager.isFlashlightEnabled())
+        bundle.putString(AnalyticsEvent.TAKE_PHOTO_ZOOM, "${cameraManager.getZoomRatio()}%")
+
         analyticsManager.logEvent(AnalyticsEvent.TAKE_PHOTO, bundle)
     }
 

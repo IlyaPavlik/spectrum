@@ -20,4 +20,7 @@
     <color name="magenta">#9C27B0</color>
     <color name="yellow">#FFEB3B</color>
     <color name="key">#000000</color>
+
+    <color name="white_opacity_30">#4dffffff</color>
+    <color name="semi_white">#77FFFFFF</color>
 </resources>

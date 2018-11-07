@@ -107,6 +107,13 @@ internal constructor(val context: Context) {
         }
     }
 
+    fun isFlashlightEnabled(): Boolean {
+        return camera?.run {
+            parameters.flashMode == Camera.Parameters.FLASH_MODE_TORCH
+                    || parameters.flashMode == Camera.Parameters.FLASH_MODE_ON
+        } ?: false
+    }
+
     fun enabledFlash() {
         camera?.let {
             val params = it.parameters
@@ -120,6 +127,34 @@ internal constructor(val context: Context) {
             val params = it.parameters
             params.flashMode = Camera.Parameters.FLASH_MODE_OFF
             it.parameters = params
+        }
+    }
+
+    fun isZoomSupported(): Boolean {
+        return camera?.parameters?.isZoomSupported ?: false
+    }
+
+    fun getZoom(): Int {
+        return camera?.parameters?.zoom ?: 0
+    }
+
+    fun getZoomRatio(): Int {
+        return camera?.run {
+            val index = parameters.zoom
+            parameters.zoomRatios[index]
+        } ?: 100
+    }
+
+    fun getMaxZoom(): Int {
+        return camera?.parameters?.maxZoom ?: 0
+    }
+
+    fun setZoom(zoom: Int) {
+        camera?.cancelAutoFocus()
+        camera?.apply {
+            val param = parameters
+            param.zoom = zoom
+            parameters = param
         }
     }
 

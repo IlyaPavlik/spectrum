@@ -16,6 +16,7 @@ class PointView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     companion object {
         private const val RADIUS_DP = 4f
         private const val STROKE_WIDTH_DP = 2f
+        private const val POINTER_SIZE = 50
     }
 
     private val aimPaint = Paint()
@@ -23,7 +24,6 @@ class PointView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         private set
     var currentY: Float = 0.toFloat()
         private set
-    private var circleRadius: Float = 0.toFloat()
 
     private val leftTopArc = RectF()
     private val leftBottomArc = RectF()
@@ -31,6 +31,7 @@ class PointView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     private val rightBottomArc = RectF()
 
     private val radius = AppHelper.convertDpToPixel(RADIUS_DP, context).toInt()
+    private var circleRadius: Float = radius.toFloat()
 
     private var onPointChangeListener: OnPointChangeListener? = null
     private var moveEnabled: Boolean = false
@@ -61,10 +62,10 @@ class PointView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         currentX = (parentWidth / 2).toFloat()
         currentY = (parentHeight / 2).toFloat()
 
-        leftTopArc.set(currentX - 50, currentY - 50, currentX, currentY)
-        leftBottomArc.set(currentX - 50, currentY, currentX, currentY + 50)
-        rightTopArc.set(currentX, currentY - 50, currentX + 50, currentY)
-        rightBottomArc.set(currentX, currentY, currentX + 50, currentY + 50)
+        leftTopArc.set(currentX - POINTER_SIZE, currentY - POINTER_SIZE, currentX, currentY)
+        leftBottomArc.set(currentX - POINTER_SIZE, currentY, currentX, currentY + POINTER_SIZE)
+        rightTopArc.set(currentX, currentY - POINTER_SIZE, currentX + POINTER_SIZE, currentY)
+        rightBottomArc.set(currentX, currentY, currentX + POINTER_SIZE, currentY + POINTER_SIZE)
     }
 
     override fun onDraw(canvas: Canvas) {
