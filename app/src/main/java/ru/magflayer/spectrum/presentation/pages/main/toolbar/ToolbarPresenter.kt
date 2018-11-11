@@ -33,6 +33,8 @@ class ToolbarPresenter : BasePresenter<ToolbarView>() {
             }
         }
 
-        viewState.showTitle(toolbarAppearance.title)
+        if (!toolbarAppearance.title.isEmpty()) {
+            viewState.showTitle(toolbarAppearance.title)
+        }
     }
 }

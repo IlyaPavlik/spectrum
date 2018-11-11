@@ -1,16 +1,14 @@
 package ru.magflayer.spectrum.presentation
 
-import android.app.Application
+import android.support.multidex.MultiDexApplication
 import android.support.v7.app.AppCompatDelegate
-
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
-
 import io.fabric.sdk.android.Fabric
 import ru.magflayer.spectrum.BuildConfig
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 
-class MainApplication : Application() {
+class MainApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
