@@ -141,7 +141,7 @@ internal constructor(val context: Context) {
     fun getZoomRatio(): Int {
         return camera?.run {
             val index = parameters.zoom
-            parameters.zoomRatios[index]
+            parameters.zoomRatios?.get(index)
         } ?: 100
     }
 
