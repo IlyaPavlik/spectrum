@@ -3,9 +3,6 @@ package ru.magflayer.spectrum.presentation.pages.main.camera
 import android.annotation.SuppressLint
 import android.graphics.SurfaceTexture
 import android.os.Bundle
-import android.support.v7.graphics.Palette
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
@@ -14,9 +11,12 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.palette.graphics.Palette
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.OnClick
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.presenter.InjectPresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
@@ -63,12 +63,15 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     lateinit var pointView: PointView
     @BindView(R.id.color_details)
     lateinit var colorDetailsWidget: ColorDetailsWidget
+
     @BindView(R.id.message)
     lateinit var messageView: TextView
+
     @BindView(R.id.zoom_container)
-    lateinit var zoomContainer: ViewGroup;
+    lateinit var zoomContainer: ViewGroup
+
     @BindView(R.id.zoom_seek)
-    lateinit var zoomBar: SeekBar;
+    lateinit var zoomBar: SeekBar
 
     private lateinit var adapter: ColorCameraAdapter
     private var orientationEventListener: OrientationEventListener? = null

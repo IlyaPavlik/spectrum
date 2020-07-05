@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.arellomobile.mvp.MvpAppCompatFragment
+import moxy.MvpAppCompatFragment
 import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.helper.AppHelper

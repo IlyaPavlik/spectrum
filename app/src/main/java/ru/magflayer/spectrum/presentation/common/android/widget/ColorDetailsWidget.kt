@@ -2,12 +2,12 @@ package ru.magflayer.spectrum.presentation.common.android.widget
 
 import android.content.Context
 import android.graphics.Color
-import android.support.annotation.ColorInt
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import butterknife.BindView
 import butterknife.ButterKnife
 import ru.magflayer.spectrum.R

@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.history
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 
 class HistoryDiffCallback(

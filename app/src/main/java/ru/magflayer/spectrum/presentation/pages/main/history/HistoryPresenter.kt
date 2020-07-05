@@ -1,9 +1,9 @@
 package ru.magflayer.spectrum.presentation.pages.main.history
 
 import android.graphics.Bitmap
-import android.support.v7.graphics.Palette
-import com.arellomobile.mvp.InjectViewState
+import androidx.palette.graphics.Palette
 import com.squareup.otto.Subscribe
+import moxy.InjectViewState
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent

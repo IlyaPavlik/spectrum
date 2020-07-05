@@ -1,12 +1,13 @@
 package ru.magflayer.spectrum.presentation.pages.splash
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-
-import com.arellomobile.mvp.presenter.InjectPresenter
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import moxy.presenter.InjectPresenter
 
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity
@@ -15,6 +16,11 @@ class SplashActivity : BaseActivity(), SplashView {
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST = 111
+
+        fun newIntent(context: Context): Intent {
+            return Intent(context, SplashActivity::class.java)
+        }
+
     }
 
     @InjectPresenter

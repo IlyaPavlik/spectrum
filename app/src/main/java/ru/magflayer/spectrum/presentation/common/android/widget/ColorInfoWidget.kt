@@ -1,13 +1,13 @@
 package ru.magflayer.spectrum.presentation.common.android.widget
 
 import android.content.Context
-import android.support.v7.widget.CardView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 
 import butterknife.BindView
 import butterknife.ButterKnife

@@ -1,13 +1,15 @@
 package ru.magflayer.spectrum.presentation.pages.main
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.WindowManager
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
 import butterknife.OnClick
-import com.arellomobile.mvp.presenter.InjectPresenter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import moxy.presenter.InjectPresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity
@@ -20,6 +22,13 @@ import javax.inject.Inject
 @Layout(R.layout.activity_main)
 class MainActivity : BaseActivity(), MainView {
 
+    companion object {
+        @JvmStatic
+        fun newIntent(context: Context): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
+    }
+
     @InjectPresenter
     lateinit var presenter: MainPresenter
 
@@ -28,6 +37,7 @@ class MainActivity : BaseActivity(), MainView {
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
+
     @BindView(R.id.fab)
     lateinit var floatingActionButton: FloatingActionButton
 

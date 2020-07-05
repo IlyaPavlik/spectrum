@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.presentation.pages.main
 
-import com.arellomobile.mvp.InjectViewState
 import com.squareup.otto.Subscribe
+import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.entity.event.FabClickEvent
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.manager.CameraManager

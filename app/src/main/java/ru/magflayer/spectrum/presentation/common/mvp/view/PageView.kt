@@ -1,8 +1,6 @@
 package ru.magflayer.spectrum.presentation.common.mvp.view
 
-
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-
+import moxy.viewstate.strategy.StateStrategyType
 import ru.magflayer.spectrum.presentation.common.mvp.strategy.AddToEndSingleByTagStateStrategy
 
 interface PageView : BaseView {

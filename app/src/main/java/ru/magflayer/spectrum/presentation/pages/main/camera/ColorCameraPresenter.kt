@@ -6,9 +6,9 @@ import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.graphics.Palette
-import com.arellomobile.mvp.InjectViewState
+import androidx.palette.graphics.Palette
 import com.squareup.otto.Subscribe
+import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.entity.event.PictureSavedEvent
@@ -46,7 +46,7 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         private const val TAG_MULTIPLE_COLOR = "TAG_MULTIPLE_COLOR"
 
         private const val SAVE_FILE_FORMAT = "spectre_%d.png"
-        private const val ZOOM_STEP_FACTOR = 20;
+        private const val ZOOM_STEP_FACTOR = 20
     }
 
     @Inject

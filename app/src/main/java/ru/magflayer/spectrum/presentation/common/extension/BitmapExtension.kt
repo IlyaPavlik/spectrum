@@ -1,9 +1,7 @@
-@file:Suppress("unused")
-
 package ru.magflayer.spectrum.presentation.common.extension
 
 import android.graphics.*
-import android.support.v7.graphics.Palette
+import androidx.palette.graphics.Palette
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 

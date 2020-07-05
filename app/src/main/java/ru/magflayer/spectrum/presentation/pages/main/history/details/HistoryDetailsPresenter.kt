@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.history.details
 
-import com.arellomobile.mvp.InjectViewState
+import moxy.InjectViewState
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
