@@ -1,8 +1,8 @@
 package ru.magflayer.spectrum.data.android
 
 import android.content.Context
-import android.support.annotation.PluralsRes
-import android.support.annotation.StringRes
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject

@@ -1,14 +1,14 @@
 package ru.magflayer.spectrum.presentation.common.android.navigation.router
 
-import ru.magflayer.spectrum.presentation.common.android.navigation.Screens
+import ru.magflayer.spectrum.presentation.common.android.navigation.MainScreens
 import ru.terrakok.cicerone.Router
 
 class MainRouter : Router() {
 
-    fun openCameraScreen() = newRootScreen(Screens.CAMERA_SCREEN)
+    fun openCameraScreen() = newRootScreen(MainScreens.Camera)
 
-    fun openHistoryScreen() = navigateTo(Screens.HISTORY_SCREEN)
+    fun openHistoryScreen() = navigateTo(MainScreens.HistoryList)
 
-    fun openHistoryDetailsScreen(filePath: String) = navigateTo(Screens.HISTORY_DETAILS_SCREEN, filePath)
+    fun openHistoryDetailsScreen(filePath: String) = navigateTo(MainScreens.HistoryDetails(filePath))
 
 }

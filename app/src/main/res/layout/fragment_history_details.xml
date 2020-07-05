@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/indent_small">
@@ -25,7 +25,7 @@
                     android:layout_height="@dimen/history_details_picture_height"
                     android:scaleType="centerCrop" />
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/colors"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -38,14 +38,14 @@
                     android:padding="@dimen/indent_small"
                     android:textSize="@dimen/history_details_title_text_size" />
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small">
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,8 +56,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/indent_normal"
                     android:layout_marginLeft="@dimen/indent_normal"
+                    android:layout_marginBottom="@dimen/indent_normal"
                     android:text="@string/history_details_rgb"
                     android:textSize="@dimen/history_details_title_text_size"
                     android:textStyle="bold" />
@@ -80,14 +80,14 @@
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small">
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -98,8 +98,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/indent_normal"
                     android:layout_marginLeft="@dimen/indent_normal"
+                    android:layout_marginBottom="@dimen/indent_normal"
                     android:text="@string/history_details_cmyk"
                     android:textSize="@dimen/history_details_title_text_size"
                     android:textStyle="bold" />
@@ -128,46 +128,46 @@
                     android:layout_height="@dimen/history_details_seek_bar_height"
                     android:layout_marginBottom="@dimen/indent_small" />
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_ryb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small" />
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small" />
 
         <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_hsv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small" />
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small" />
 
         <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_xyz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small" />
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small" />
 
         <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_lab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small" />
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small" />
 
         <ru.magflayer.spectrum.presentation.common.android.widget.ColorInfoWidget
             android:id="@+id/color_info_ncs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/indent_small"
             android:layout_marginLeft="@dimen/indent_small"
-            android:layout_marginRight="@dimen/indent_small" />
+            android:layout_marginRight="@dimen/indent_small"
+            android:layout_marginBottom="@dimen/indent_small" />
     </LinearLayout>
 </ScrollView>

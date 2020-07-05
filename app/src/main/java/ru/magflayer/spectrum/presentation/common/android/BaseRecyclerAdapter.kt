@@ -1,8 +1,8 @@
 package ru.magflayer.spectrum.presentation.common.android
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import java.util.*

@@ -1,9 +1,9 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
 import android.content.Context
-import android.support.v7.graphics.Palette
 import android.view.View
 import android.view.ViewGroup
+import androidx.palette.graphics.Palette
 
 import butterknife.BindView
 import ru.magflayer.spectrum.R

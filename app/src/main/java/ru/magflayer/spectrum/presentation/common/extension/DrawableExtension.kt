@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.drawable.*
 import android.os.Build
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 
 fun Drawable.setColor(@ColorInt color: Int) {
     if (this is ShapeDrawable) {

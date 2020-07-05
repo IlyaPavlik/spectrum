@@ -1,11 +1,9 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
-import android.support.v7.graphics.Palette
-
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
-import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-
+import androidx.palette.graphics.Palette
+import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
 import ru.magflayer.spectrum.presentation.common.mvp.strategy.AddToEndSingleByTagStateStrategy
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 
@@ -52,9 +50,9 @@ interface ColorCameraView : PageView {
     fun hideFlash()
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun changeMaxZoom(max: Int);
+    fun changeMaxZoom(max: Int)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun changeZoomProgress(progress: Int);
+    fun changeZoomProgress(progress: Int)
 
 }

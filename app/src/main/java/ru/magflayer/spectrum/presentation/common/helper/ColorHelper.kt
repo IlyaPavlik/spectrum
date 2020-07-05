@@ -1,12 +1,10 @@
-@file:Suppress("unused")
-
 package ru.magflayer.spectrum.presentation.common.helper
 
 import android.graphics.Color
-import android.support.annotation.ColorInt
-import android.support.annotation.IntRange
-import android.support.annotation.Size
 import android.text.TextUtils
+import androidx.annotation.ColorInt
+import androidx.annotation.IntRange
+import androidx.annotation.Size
 import ru.magflayer.spectrum.domain.entity.NcsColorEntity
 import java.math.BigDecimal
 

@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.presentation.pages.main.toolbar
 
-import com.arellomobile.mvp.InjectViewState
 import com.squareup.otto.Subscribe
+import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -9,11 +9,11 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
 
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 7
         versionName "0.6.1"
         vectorDrawables.useSupportLibrary = true
@@ -85,20 +85,20 @@ dependencies {
     testImplementation "org.powermock:powermock-classloading-xstream:1.7.4"
 
     //Google Support
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:palette-v7:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.palette:palette:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.google.android.material:material:1.1.0'
 
     //Google Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.google.firebase:firebase-core:17.4.3'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
 
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
-
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    kapt 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.jakewharton:butterknife:10.2.0'
+    kapt 'com.jakewharton:butterknife-compiler:10.2.0'
 
     //Dependency injection
     implementation 'com.google.dagger:dagger:2.17'
@@ -123,17 +123,19 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 
     //Moxy
-    implementation 'com.arello-mobile:moxy:1.5.5'
-    implementation 'com.arello-mobile:moxy-app-compat:1.5.5'
-    kapt 'com.arello-mobile:moxy-compiler:1.5.5'
+    implementation "com.github.moxy-community:moxy:2.1.2"
+    kapt "com.github.moxy-community:moxy-compiler:2.1.2"
+    implementation "com.github.moxy-community:moxy-android:2.1.2"
+    implementation "com.github.moxy-community:moxy-androidx:2.1.2"
+    implementation "com.github.moxy-community:moxy-material:2.1.2"
 
     //Cicerone
-    implementation 'ru.terrakok.cicerone:cicerone:3.0.0'
+    implementation 'ru.terrakok.cicerone:cicerone:5.1.1'
 
     //Room
-    implementation "android.arch.persistence.room:runtime:1.1.1"
-    kapt "android.arch.persistence.room:compiler:1.1.1"
-    implementation "android.arch.persistence.room:rxjava2:1.1.1"
+    implementation 'androidx.room:room-runtime:2.0.0'
+    kapt 'androidx.room:room-compiler:2.0.0'
+    implementation 'androidx.room:room-rxjava2:2.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

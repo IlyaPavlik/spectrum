@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.data.database.dao
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import ru.magflayer.spectrum.data.entity.ColorPhoto
 
 @Dao

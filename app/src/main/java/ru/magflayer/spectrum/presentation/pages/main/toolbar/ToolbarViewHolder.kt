@@ -1,10 +1,10 @@
 package ru.magflayer.spectrum.presentation.pages.main.toolbar
 
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.View
-import com.arellomobile.mvp.MvpDelegate
-import com.arellomobile.mvp.presenter.InjectPresenter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import moxy.MvpDelegate
+import moxy.presenter.InjectPresenter
 
 class ToolbarViewHolder(activity: AppCompatActivity, private val toolbar: Toolbar) : ToolbarView {
 

@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.splash
 
-import com.arellomobile.mvp.InjectViewState
+import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.GlobalRouter

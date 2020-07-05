@@ -1,9 +1,8 @@
 package ru.magflayer.spectrum.presentation.pages.main.history
 
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
-import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-
+import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 

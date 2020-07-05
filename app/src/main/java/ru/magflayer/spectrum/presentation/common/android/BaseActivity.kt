@@ -5,7 +5,7 @@ import android.view.View
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.arellomobile.mvp.MvpAppCompatActivity
+import moxy.MvpAppCompatActivity
 import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.android.navigation.holder.GlobalRouterHolder

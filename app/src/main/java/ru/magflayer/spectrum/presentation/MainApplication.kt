@@ -1,11 +1,7 @@
 package ru.magflayer.spectrum.presentation
 
-import android.support.multidex.MultiDexApplication
-import android.support.v7.app.AppCompatDelegate
-import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.core.CrashlyticsCore
-import io.fabric.sdk.android.Fabric
-import ru.magflayer.spectrum.BuildConfig
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.multidex.MultiDexApplication
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 
 class MainApplication : MultiDexApplication() {
@@ -14,9 +10,6 @@ class MainApplication : MultiDexApplication() {
         super.onCreate()
 
         InjectorManager.init(this)
-
-        val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
-        Fabric.with(this, Crashlytics.Builder().core(core).build())
     }
 
     companion object {

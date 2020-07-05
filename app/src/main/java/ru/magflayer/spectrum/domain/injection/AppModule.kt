@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.domain.injection
 
-import android.arch.persistence.room.Room
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
 import com.squareup.otto.Bus
 import com.squareup.otto.ThreadEnforcer

@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.data.entity
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

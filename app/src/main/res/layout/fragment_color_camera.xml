@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         tools:background="@color/white" />
 
-    <android.support.v4.widget.ContentLoadingProgressBar
+    <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/color_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

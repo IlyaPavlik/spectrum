@@ -1,8 +1,7 @@
 package ru.magflayer.spectrum.presentation.pages.main.toolbar
 
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-
+import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.StateStrategyType
 import ru.magflayer.spectrum.presentation.common.mvp.strategy.AddToEndSingleByTagStateStrategy
 import ru.magflayer.spectrum.presentation.common.mvp.view.BaseView
 

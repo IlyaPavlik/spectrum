@@ -3,12 +3,12 @@ package ru.magflayer.spectrum.presentation.common.android.widget
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.LayerDrawable
-import android.support.annotation.ColorInt
-import android.support.v7.widget.AppCompatSeekBar
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.appcompat.widget.AppCompatSeekBar
 import butterknife.BindView
 import butterknife.ButterKnife
 import ru.magflayer.spectrum.R
@@ -19,6 +19,7 @@ class TextSeekBarView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     @BindView(R.id.seek_bar)
     lateinit var seekBar: AppCompatSeekBar
+
     @BindView(R.id.text)
     lateinit var textView: TextView
 

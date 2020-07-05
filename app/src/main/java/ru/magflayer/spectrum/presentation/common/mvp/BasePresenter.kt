@@ -1,8 +1,8 @@
 package ru.magflayer.spectrum.presentation.common.mvp
 
-import com.arellomobile.mvp.MvpPresenter
-import com.arellomobile.mvp.MvpView
 import com.squareup.otto.Bus
+import moxy.MvpPresenter
+import moxy.MvpView
 import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.common.utils.RxUtils
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance

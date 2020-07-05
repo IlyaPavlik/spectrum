@@ -6,16 +6,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.content.ContextCompat
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.*
 import butterknife.BindView
-import com.arellomobile.mvp.presenter.InjectPresenter
+import moxy.presenter.InjectPresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.injection.InjectorManager
@@ -25,7 +21,6 @@ import ru.magflayer.spectrum.presentation.common.android.helper.SwipeToDeleteCal
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout
 import ru.magflayer.spectrum.presentation.common.helper.AppHelper
 import ru.magflayer.spectrum.presentation.common.helper.DialogHelper
-
 
 @Layout(R.layout.fragment_history)
 class HistoryFragment : BaseFragment(), HistoryView {
@@ -45,6 +40,7 @@ class HistoryFragment : BaseFragment(), HistoryView {
 
     @BindView(R.id.history_recycler)
     lateinit var historyRecycler: RecyclerView
+
     @BindView(R.id.empty)
     lateinit var emptyView: TextView
 
@@ -105,7 +101,7 @@ class HistoryFragment : BaseFragment(), HistoryView {
         getIntent.type = "image/*"
 
         val pickIntent = Intent(Intent.ACTION_PICK)
-        pickIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+        pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
 
         val chooserIntent = Intent.createChooser(getIntent, title)
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(pickIntent))
