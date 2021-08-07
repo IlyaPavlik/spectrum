@@ -8,8 +8,8 @@ import com.bumptech.glide.RequestManager
 import java.util.*
 
 abstract class BaseRecyclerAdapter<VH : BaseViewHolder, T>(
-        val context: Context?,
-        val inflater: LayoutInflater = LayoutInflater.from(context)
+    val context: Context,
+    val inflater: LayoutInflater = LayoutInflater.from(context)
 ) : RecyclerView.Adapter<VH>() {
 
     val data = ArrayList<T>()
@@ -17,7 +17,7 @@ abstract class BaseRecyclerAdapter<VH : BaseViewHolder, T>(
     var itemSelectListener: OnItemSelectListener? = null
     var selectedPosition: Int = 0
 
-    protected var glide: RequestManager? = context?.let { Glide.with(it) }
+    protected var glide: RequestManager = context.let { Glide.with(it) }
 
     interface OnItemLongClickListener {
         fun onItemLongClick(position: Int)
@@ -54,7 +54,7 @@ abstract class BaseRecyclerAdapter<VH : BaseViewHolder, T>(
 
     override fun onBindViewHolder(holder: VH, position: Int, payloads: List<Any>) {
         super.onBindViewHolder(holder, position, payloads)
-        holder.itemView.setOnClickListener { select(holder.adapterPosition) }
+        holder.itemView.setOnClickListener { select(holder.bindingAdapterPosition) }
         holder.itemView.setOnLongClickListener {
             itemLongClickListener?.onItemLongClick(position)
             true

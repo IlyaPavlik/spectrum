@@ -46,21 +46,28 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
 
     @BindView(R.id.camera)
     lateinit var cameraView: TextureView
+
     @BindView(R.id.right_menu)
     lateinit var buttonsMenuView: ViewGroup
+
     @BindView(R.id.left_menu)
     lateinit var infoMenuView: ViewGroup
 
     @BindView(R.id.menu)
     lateinit var menuButton: View
+
     @BindView(R.id.color_recycler)
     lateinit var colorRecycler: RecyclerView
+
     @BindView(R.id.toggle_mode)
     lateinit var toggleView: ToggleButton
+
     @BindView(R.id.flash)
     lateinit var flashView: ToggleButton
+
     @BindView(R.id.point_detector)
     lateinit var pointView: PointView
+
     @BindView(R.id.color_details)
     lateinit var colorDetailsWidget: ColorDetailsWidget
 
@@ -85,17 +92,19 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = ColorCameraAdapter(context)
+        adapter = ColorCameraAdapter(requireContext())
         orientationEventListener = object : OrientationEventListener(context) {
             override fun onOrientationChanged(orientation: Int) {
                 if (isLandscape(orientation) && currentOrientation != Orientation.LANDSCAPE) {
                     currentOrientation = Orientation.LANDSCAPE
                     setOrientation(currentOrientation)
-                    colorRecycler.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, true)
+                    colorRecycler.layoutManager =
+                        GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, true)
                 } else if (isPortrait(orientation) && currentOrientation != Orientation.PORTRAIT) {
                     currentOrientation = Orientation.PORTRAIT
                     setOrientation(currentOrientation)
-                    colorRecycler.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+                    colorRecycler.layoutManager =
+                        GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
                 }
             }
         }
@@ -270,10 +279,11 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
 
     private fun inFromTopAnimation(): Animation {
         val inFromTop = TranslateAnimation(
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, +1.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f)
+            Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, +1.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f
+        )
         inFromTop.duration = 800
         inFromTop.interpolator = AccelerateInterpolator()
         return inFromTop
@@ -281,10 +291,11 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
 
     private fun inFromBottomAnimation(): Animation {
         val inFromBottom = TranslateAnimation(
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, -1.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f)
+            Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f,
+            Animation.RELATIVE_TO_PARENT, -1.0f,
+            Animation.RELATIVE_TO_PARENT, 0.0f
+        )
         inFromBottom.duration = 800
         inFromBottom.interpolator = AccelerateInterpolator()
         return inFromBottom

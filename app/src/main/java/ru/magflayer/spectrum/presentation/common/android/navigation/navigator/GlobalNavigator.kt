@@ -1,6 +1,6 @@
 package ru.magflayer.spectrum.presentation.common.android.navigation.navigator
 
 import androidx.fragment.app.FragmentActivity
-import ru.terrakok.cicerone.android.support.SupportAppNavigator
+import com.github.terrakok.cicerone.androidx.AppNavigator
 
-class GlobalNavigator(activity: FragmentActivity) : SupportAppNavigator(activity, -1)
+class GlobalNavigator(activity: FragmentActivity) : AppNavigator(activity, -1)

@@ -10,4 +10,8 @@ interface FileManagerRepository {
 
     fun saveFileToExternalStorage(fileName: String, bytes: ByteArray): Observable<Uri>
 
+    fun isFileExists(filePath: String): Observable<Boolean>
+
+    fun copyFileToExternalEndpoint(sourceFilePath: Uri): Observable<Uri>
+
 }

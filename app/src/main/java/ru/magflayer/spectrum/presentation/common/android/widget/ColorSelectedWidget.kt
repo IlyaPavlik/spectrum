@@ -3,7 +3,6 @@ package ru.magflayer.spectrum.presentation.common.android.widget
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
@@ -15,7 +14,6 @@ import android.widget.Toast
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
@@ -25,33 +23,45 @@ import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import ru.magflayer.spectrum.presentation.common.helper.DialogHelper
 
-class ColorSelectedWidget @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : RelativeLayout(context, attrs, defStyleAttr) {
+class ColorSelectedWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : RelativeLayout(context, attrs, defStyleAttr) {
 
     @BindView(R.id.color_recycler)
     lateinit var colorRecyclerView: RecyclerView
+
     @BindView(R.id.color_hex)
     lateinit var hexView: TextView
 
     @BindView(R.id.red)
     lateinit var redView: TextView
+
     @BindView(R.id.green)
     lateinit var greenView: TextView
+
     @BindView(R.id.blue)
     lateinit var blueView: TextView
 
     @BindView(R.id.hue)
     lateinit var hueView: TextView
+
     @BindView(R.id.saturation)
     lateinit var saturationView: TextView
+
     @BindView(R.id.value)
     lateinit var valueView: TextView
 
     @BindView(R.id.cyan)
     lateinit var cyanView: TextView
+
     @BindView(R.id.magenta)
     lateinit var magentaView: TextView
+
     @BindView(R.id.yellow)
     lateinit var yellowView: TextView
+
     @BindView(R.id.key)
     lateinit var keyView: TextView
 
@@ -61,7 +71,8 @@ class ColorSelectedWidget @JvmOverloads constructor(context: Context, attrs: Att
         val view = View.inflate(context, R.layout.widget_history_details, this)
         ButterKnife.bind(this, view)
 
-        colorRecyclerView.layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
+        colorRecyclerView.layoutManager =
+            LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
 
         colorAdapter = ColorAdapter(getContext())
         colorAdapter.itemSelectListener = object : BaseRecyclerAdapter.OnItemSelectListener {
@@ -80,8 +91,12 @@ class ColorSelectedWidget @JvmOverloads constructor(context: Context, attrs: Att
         colorAdapter.select(0)
 
         val title = context.getString(R.string.history_dialog_title)
-        DialogHelper.buildViewDialog(context, title, this, DialogInterface.OnClickListener { dialogInterface, _ -> dialogInterface.dismiss() })
-                .show()
+        DialogHelper.buildViewDialog(
+            context,
+            title,
+            this
+        ) { dialogInterface, _ -> dialogInterface.dismiss() }
+            .show()
     }
 
     @OnClick(R.id.color_hex_container)
@@ -89,7 +104,7 @@ class ColorSelectedWidget @JvmOverloads constructor(context: Context, attrs: Att
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val label = context.getString(R.string.history_dialog_copy_label)
         val clip = ClipData.newPlainText(label, hexView.text)
-        clipboard.primaryClip = clip
+        clipboard.setPrimaryClip(clip)
 
         Toast.makeText(context, R.string.history_dialog_copy, Toast.LENGTH_SHORT).show()
     }
@@ -128,7 +143,8 @@ class ColorSelectedWidget @JvmOverloads constructor(context: Context, attrs: Att
         keyView.text = context.getString(R.string.key_color_format, k)
     }
 
-    internal class ColorAdapter(context: Context) : BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Palette.Swatch>(context) {
+    internal class ColorAdapter(context: Context) :
+        BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Palette.Swatch>(context) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorViewHolder {
             return ColorViewHolder(inflater.inflate(R.layout.item_history_color, parent, false))

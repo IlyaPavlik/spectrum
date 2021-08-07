@@ -45,28 +45,37 @@ class HistoryDetailsFragment : BaseFragment(), HistoryDetailsView {
 
     @BindView(R.id.red)
     lateinit var redView: TextSeekBarView
+
     @BindView(R.id.green)
     lateinit var greenView: TextSeekBarView
+
     @BindView(R.id.blue)
     lateinit var blueView: TextSeekBarView
 
     @BindView(R.id.cyan)
     lateinit var cyanView: TextSeekBarView
+
     @BindView(R.id.magenta)
     lateinit var magentaView: TextSeekBarView
+
     @BindView(R.id.yellow)
     lateinit var yellowView: TextSeekBarView
+
     @BindView(R.id.key)
     lateinit var keyView: TextSeekBarView
 
     @BindView(R.id.color_info_ryb)
     lateinit var rybInfo: ColorInfoWidget
+
     @BindView(R.id.color_info_hsv)
     lateinit var hsvInfo: ColorInfoWidget
+
     @BindView(R.id.color_info_xyz)
     lateinit var xyzInfo: ColorInfoWidget
+
     @BindView(R.id.color_info_lab)
     lateinit var labInfo: ColorInfoWidget
+
     @BindView(R.id.color_info_ncs)
     lateinit var ncsInfo: ColorInfoWidget
 
@@ -85,7 +94,7 @@ class HistoryDetailsFragment : BaseFragment(), HistoryDetailsView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = ColorAdapter(context)
+        adapter = ColorAdapter(requireContext())
         adapter.itemSelectListener = object : BaseRecyclerAdapter.OnItemSelectListener {
             override fun onItemSelect(position: Int) {
                 adapter.getItem(position)?.let { presenter.handleSelectedColor(it) }
@@ -93,16 +102,18 @@ class HistoryDetailsFragment : BaseFragment(), HistoryDetailsView {
         }
         colorsRecycler.adapter = adapter
 
-        val manager = LinearLayoutManager(context,
-                LinearLayoutManager.HORIZONTAL, false)
+        val manager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.HORIZONTAL, false
+        )
         colorsRecycler.layoutManager = manager
     }
 
     override fun showPhoto(entity: ColorPhotoEntity) {
         Glide.with(this)
-                .load(entity.filePath)
-                .apply(RequestOptions.fitCenterTransform())
-                .into(pictureView)
+            .load(entity.filePath)
+            .apply(RequestOptions.fitCenterTransform())
+            .into(pictureView)
 
         adapter.setData(entity.rgbColors)
         adapter.select(0)
@@ -141,11 +152,13 @@ class HistoryDetailsFragment : BaseFragment(), HistoryDetailsView {
         val ryb = ColorHelper.dec2Ryb(color)
 
         rybInfo.setTitle(getString(R.string.history_details_ryb))
-        rybInfo.setParams(Arrays.asList(
+        rybInfo.setParams(
+            Arrays.asList(
                 getString(R.string.ryb_r_format, ryb[0]),
                 getString(R.string.ryb_y_format, ryb[1]),
                 getString(R.string.ryb_b_format, ryb[2])
-        ))
+            )
+        )
     }
 
     @SuppressLint("DefaultLocale")
@@ -197,33 +210,39 @@ class HistoryDetailsFragment : BaseFragment(), HistoryDetailsView {
         val value = (hsv[2] * 100).toInt()
 
         hsvInfo.setTitle(getString(R.string.history_details_hsv))
-        hsvInfo.setParams(Arrays.asList(
+        hsvInfo.setParams(
+            Arrays.asList(
                 getString(R.string.hue_long_format, hue),
                 getString(R.string.saturation_long_format, saturation),
                 getString(R.string.value_long_format, value)
-        ))
+            )
+        )
     }
 
     override fun showXyz(color: Int) {
         val xyz = ColorHelper.dec2Xyz(color)
 
         xyzInfo.setTitle(getString(R.string.history_details_xyz))
-        xyzInfo.setParams(Arrays.asList(
+        xyzInfo.setParams(
+            Arrays.asList(
                 getString(R.string.x_format, xyz[0]),
                 getString(R.string.y_format, xyz[1]),
                 getString(R.string.z_format, xyz[2])
-        ))
+            )
+        )
     }
 
     override fun showLab(color: Int) {
         val lab = ColorHelper.dec2Lab(color)
 
         labInfo.setTitle(getString(R.string.history_details_lab))
-        labInfo.setParams(Arrays.asList(
+        labInfo.setParams(
+            Arrays.asList(
                 getString(R.string.l_format, lab[0]),
                 getString(R.string.a_format, lab[1]),
                 getString(R.string.b_format, lab[2])
-        ))
+            )
+        )
     }
 
     override fun showNcs(color: Int, ncsName: String) {
@@ -231,7 +250,8 @@ class HistoryDetailsFragment : BaseFragment(), HistoryDetailsView {
         ncsInfo.setParams(listOf(ncsName))
     }
 
-    internal class ColorAdapter(context: Context?) : BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Int>(context) {
+    internal class ColorAdapter(context: Context) :
+        BaseRecyclerAdapter<ColorAdapter.ColorViewHolder, Int>(context) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorViewHolder {
             return ColorViewHolder(inflater.inflate(R.layout.item_history_color, parent, false))

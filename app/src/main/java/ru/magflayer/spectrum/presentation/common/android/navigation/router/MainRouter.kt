@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.presentation.common.android.navigation.router
 
+import com.github.terrakok.cicerone.Router
 import ru.magflayer.spectrum.presentation.common.android.navigation.MainScreens
-import ru.terrakok.cicerone.Router
 
 class MainRouter : Router() {
 
