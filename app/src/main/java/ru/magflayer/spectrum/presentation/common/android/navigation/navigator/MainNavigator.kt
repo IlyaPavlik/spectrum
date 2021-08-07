@@ -1,9 +1,7 @@
 package ru.magflayer.spectrum.presentation.common.android.navigation.navigator
 
 import androidx.fragment.app.FragmentActivity
-import ru.terrakok.cicerone.android.support.SupportAppNavigator
+import com.github.terrakok.cicerone.androidx.AppNavigator
 
-class MainNavigator(
-        activity: FragmentActivity,
-        containerId: Int
-) : SupportAppNavigator(activity, containerId)
+class MainNavigator(activity: FragmentActivity, containerId: Int) :
+    AppNavigator(activity, containerId)

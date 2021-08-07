@@ -13,10 +13,12 @@ import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 import ru.magflayer.spectrum.presentation.common.extension.createMultiColorHorizontalBitmap
 
-internal class HistoryAdapter(context: Context?) : BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPhotoEntity>(context) {
+internal class HistoryAdapter(
+    context: Context
+) : BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPhotoEntity>(context) {
 
-    private val colorContainerSize: Int = context?.resources?.getDimensionPixelSize(R.dimen.history_item_color_size)
-            ?: 0
+    private val colorContainerSize: Int =
+        context.resources.getDimensionPixelSize(R.dimen.history_item_color_size)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -27,16 +29,19 @@ internal class HistoryAdapter(context: Context?) : BaseRecyclerAdapter<HistoryAd
         val (_, filePath, rgbColors) = getItem(position) ?: return
 
         val requestOptions = RequestOptions()
-                .fitCenter()
-                .dontTransform()
-                .dontAnimate()
+            .fitCenter()
+            .dontTransform()
+            .dontAnimate()
 
-        glide?.load(filePath)?.apply(requestOptions)?.into(holder.pictureView)
+        glide.load(filePath)
+            .apply(requestOptions)
+            .into(holder.pictureView)
 
         if (rgbColors.size == 1) {
             holder.colorContainer.setBackgroundColor(rgbColors[0])
         } else {
-            val colorsBitmap = createMultiColorHorizontalBitmap(colorContainerSize, colorContainerSize, rgbColors)
+            val colorsBitmap =
+                createMultiColorHorizontalBitmap(colorContainerSize, colorContainerSize, rgbColors)
             holder.colorContainer.setImageBitmap(colorsBitmap)
         }
     }
@@ -44,6 +49,7 @@ internal class HistoryAdapter(context: Context?) : BaseRecyclerAdapter<HistoryAd
     internal class HistoryViewHolder(itemView: View) : BaseViewHolder(itemView) {
         @BindView(R.id.picture)
         lateinit var pictureView: ImageView
+
         @BindView(R.id.color_container)
         lateinit var colorContainer: ImageView
     }

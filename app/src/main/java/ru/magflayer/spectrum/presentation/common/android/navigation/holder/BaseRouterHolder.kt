@@ -1,9 +1,9 @@
 package ru.magflayer.spectrum.presentation.common.android.navigation.holder
 
-import ru.terrakok.cicerone.BaseRouter
-import ru.terrakok.cicerone.Cicerone
-import ru.terrakok.cicerone.Navigator
-import ru.terrakok.cicerone.NavigatorHolder
+import com.github.terrakok.cicerone.BaseRouter
+import com.github.terrakok.cicerone.Cicerone
+import com.github.terrakok.cicerone.Navigator
+import com.github.terrakok.cicerone.NavigatorHolder
 
 abstract class BaseRouterHolder<T : BaseRouter> internal constructor(router: T) {
 
@@ -13,7 +13,7 @@ abstract class BaseRouterHolder<T : BaseRouter> internal constructor(router: T) 
         get() = cicerone.router
 
     private val navigatorHolder: NavigatorHolder
-        get() = cicerone.navigatorHolder
+        get() = cicerone.getNavigatorHolder()
 
     fun setNavigator(navigator: Navigator) {
         navigatorHolder.setNavigator(navigator)

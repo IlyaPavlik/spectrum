@@ -10,7 +10,9 @@ import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 
-class ColorCameraAdapter internal constructor(context: Context?) : BaseRecyclerAdapter<ColorCameraAdapter.ColorViewHolder, Palette.Swatch>(context) {
+class ColorCameraAdapter constructor(
+    context: Context
+) : BaseRecyclerAdapter<ColorCameraAdapter.ColorViewHolder, Palette.Swatch>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorViewHolder {
         val view = inflater.inflate(R.layout.item_color_camera, parent, false)

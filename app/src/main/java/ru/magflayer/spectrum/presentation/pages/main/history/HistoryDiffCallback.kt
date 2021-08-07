@@ -4,8 +4,8 @@ import androidx.recyclerview.widget.DiffUtil
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 
 class HistoryDiffCallback(
-        private val oldItems: List<ColorPhotoEntity>,
-        private val newItems: List<ColorPhotoEntity>
+    private val oldItems: List<ColorPhotoEntity>,
+    private val newItems: List<ColorPhotoEntity>
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

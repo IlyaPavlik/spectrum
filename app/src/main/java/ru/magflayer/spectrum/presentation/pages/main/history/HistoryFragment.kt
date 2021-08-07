@@ -1,9 +1,9 @@
 package ru.magflayer.spectrum.presentation.pages.main.history
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -19,7 +19,6 @@ import ru.magflayer.spectrum.presentation.common.android.BaseFragment
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.helper.SwipeToDeleteCallback
 import ru.magflayer.spectrum.presentation.common.android.layout.Layout
-import ru.magflayer.spectrum.presentation.common.helper.AppHelper
 import ru.magflayer.spectrum.presentation.common.helper.DialogHelper
 
 @Layout(R.layout.fragment_history)
@@ -53,10 +52,15 @@ class HistoryFragment : BaseFragment(), HistoryView {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        adapter = HistoryAdapter(context)
+        adapter = HistoryAdapter(requireContext())
         historyRecycler.layoutManager = LinearLayoutManager(context)
         historyRecycler.adapter = adapter
-        historyRecycler.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        historyRecycler.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
 
         val callback = object : SwipeToDeleteCallback(context) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -97,13 +101,13 @@ class HistoryFragment : BaseFragment(), HistoryView {
         }
 
         val title = getString(R.string.select_image_title)
-        val getIntent = Intent(Intent.ACTION_GET_CONTENT)
-        getIntent.type = "image/*"
+        val getContentIntent = Intent(Intent.ACTION_GET_CONTENT)
+        getContentIntent.type = "image/*"
 
         val pickIntent = Intent(Intent.ACTION_PICK)
         pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
 
-        val chooserIntent = Intent.createChooser(getIntent, title)
+        val chooserIntent = Intent.createChooser(getContentIntent, title)
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(pickIntent))
 
         startActivityForResult(chooserIntent, REQUEST_PICK_IMAGE)
@@ -119,14 +123,12 @@ class HistoryFragment : BaseFragment(), HistoryView {
             if (requestCode == REQUEST_PICK_IMAGE) {
                 val dataUri = data?.data
                 try {
-                    if (dataUri != null) {
-                        val resolver = context?.contentResolver
-                        logger.debug("Try to build bitmap from: {}", dataUri)
-                        val bitmap = MediaStore.Images.Media.getBitmap(resolver, dataUri)
-                        presenter.handleSelectedImage(AppHelper.getPath(context!!, dataUri), bitmap)
-                    } else {
-                        logger.warn("Data uri is null")
-                    }
+                    dataUri?.let { uri ->
+                        logger.debug("Try to build bitmap from: {}", uri)
+                        val inputStream = requireContext().contentResolver.openInputStream(uri)
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        presenter.handleSelectedImage(uri, bitmap)
+                    } ?: logger.warn("Data uri is null")
                 } catch (e: Exception) {
                     logger.warn("Cannot load bitmap: ", e)
                 }
@@ -136,8 +138,10 @@ class HistoryFragment : BaseFragment(), HistoryView {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_WRITE_EXTERNAL_STORAGE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -152,22 +156,30 @@ class HistoryFragment : BaseFragment(), HistoryView {
         val message = getString(R.string.history_remove_description)
 
         context?.let { it ->
-            val dialog = DialogHelper.buildYesNoDialog(it, title, message, DialogInterface.OnClickListener { _, _ ->
+            val dialog = DialogHelper.buildYesNoDialog(
+                it,
+                title,
+                message
+            ) { _, _ ->
                 adapter.getItem(position)?.let { presenter.removeColor(it) }
                 emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
-            })
+            }
             dialog.setOnCancelListener { adapter.notifyItemChanged(position) }
             dialog.show()
         }
     }
 
     private fun hasStoragePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(activity!!,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission() {
-        requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_WRITE_EXTERNAL_STORAGE)
+        requestPermissions(
+            arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            REQUEST_WRITE_EXTERNAL_STORAGE
+        )
     }
 }

@@ -57,7 +57,11 @@ object AppHelper {
      */
     fun getPath(context: Context, uri: Uri): String {
         // DocumentProvider
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(
+                context,
+                uri
+            )
+        ) {
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
@@ -70,7 +74,8 @@ object AppHelper {
             } else if (isDownloadsDocument(uri)) {
                 val id = DocumentsContract.getDocumentId(uri)
                 val contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
+                    Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
+                )
 
                 return getDataColumn(context, contentUri, null, null)
             } else if (isMediaDocument(uri)) {
@@ -94,7 +99,7 @@ object AppHelper {
         } else if ("content".equals(uri.scheme!!, ignoreCase = true)) {
             return getDataColumn(context, uri, null, null)
         } else if ("file".equals(uri.scheme!!, ignoreCase = true)) {
-            return uri.path
+            return uri.path ?: ""
         }// File
         // MediaStore (and general)
         return ""
@@ -110,16 +115,20 @@ object AppHelper {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    private fun getDataColumn(context: Context, uri: Uri, selection: String?,
-                              selectionArgs: Array<String>?): String {
+    private fun getDataColumn(
+        context: Context, uri: Uri, selection: String?,
+        selectionArgs: Array<String>?
+    ): String {
         val column = "_data"
         val projection = arrayOf(column)
         val contentResult = context.contentResolver
 
         contentResult.query(uri, projection, selection, selectionArgs, null).use { cursor ->
-            if (cursor.moveToFirst()) {
-                val column_index = cursor.getColumnIndexOrThrow(column)
-                return cursor.getString(column_index)
+            cursor?.let {
+                if (it.moveToFirst()) {
+                    val columnIndex = it.getColumnIndexOrThrow(column)
+                    return it.getString(columnIndex)
+                }
             }
         }
         return ""
