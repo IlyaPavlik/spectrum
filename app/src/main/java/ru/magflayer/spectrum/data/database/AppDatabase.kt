@@ -13,7 +13,11 @@ import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.repository.PhotoRepository
 import rx.Observable
 
-@Database(entities = [ColorPhoto::class, ColorName::class, NcsColor::class], version = 3, exportSchema = false)
+@Database(
+    entities = [ColorPhoto::class, ColorName::class, NcsColor::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase(), PhotoRepository {
 
     companion object {
@@ -30,25 +34,25 @@ abstract class AppDatabase : RoomDatabase(), PhotoRepository {
 
     override fun savePhoto(colorPhoto: ColorPhotoEntity): Observable<Boolean> {
         return Observable.just(colorPhoto)
-                .map<ColorPhoto> { photoConverter.convertToDto(it) }
-                .map { photo -> colorPhotoDao().savePhoto(photo) > 0 }
+            .map<ColorPhoto> { photoConverter.convertToDto(it) }
+            .map { photo -> colorPhotoDao().savePhoto(photo) > 0 }
     }
 
     override fun loadPhotos(): Observable<List<ColorPhotoEntity>> {
         return Observable.fromCallable { colorPhotoDao().loadPhotos() }
-                .flatMap<ColorPhoto> { Observable.from(it) }
-                .map<ColorPhotoEntity> { photoConverter.convertToEntity(it) }
-                .toList()
+            .flatMap<ColorPhoto> { Observable.from(it) }
+            .map<ColorPhotoEntity> { photoConverter.convertToEntity(it) }
+            .toList()
     }
 
     override fun loadPhoto(filePath: String): Observable<ColorPhotoEntity> {
         return Observable.fromCallable { colorPhotoDao().loadPhoto(filePath) }
-                .map { photoConverter.convertToEntity(it) }
+            .map { photoConverter.convertToEntity(it) }
     }
 
     override fun removePhoto(entity: ColorPhotoEntity): Observable<Boolean> {
         return Observable.just(entity)
-                .map<ColorPhoto> { photoConverter.convertToDto(it) }
-                .map { colorPhoto -> colorPhotoDao().deletePhoto(colorPhoto) > 0 }
+            .map<ColorPhoto> { photoConverter.convertToDto(it) }
+            .map { colorPhoto -> colorPhotoDao().deletePhoto(colorPhoto) > 0 }
     }
 }

@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.presentation.common.model
 
 data class PageAppearance(
-        var floatingButtonState: FloatingButtonState = FloatingButtonState.INVISIBLE
+    var floatingButtonState: FloatingButtonState = FloatingButtonState.INVISIBLE
 ) {
 
     class Builder {

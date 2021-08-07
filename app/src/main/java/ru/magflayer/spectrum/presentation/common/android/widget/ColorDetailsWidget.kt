@@ -14,32 +14,45 @@ import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.extension.rotate
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 
-class ColorDetailsWidget @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = -1) : LinearLayout(context, attrs, defStyleAttr) {
+class ColorDetailsWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = -1
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     @BindView(R.id.color_container)
     lateinit var colorContainer: View
+
     @BindView(R.id.color)
     lateinit var colorView: View
+
     @BindView(R.id.color_id)
     lateinit var colorHexView: TextView
+
     @BindView(R.id.color_name)
     lateinit var colorNameView: TextView
 
     @BindView(R.id.color_rgb)
     lateinit var colorRGB: View
+
     @BindView(R.id.red)
     lateinit var redView: TextSeekBarView
+
     @BindView(R.id.green)
     lateinit var greenView: TextSeekBarView
+
     @BindView(R.id.blue)
     lateinit var blueView: TextSeekBarView
 
     @BindView(R.id.color_hsv)
     lateinit var colorHSV: View
+
     @BindView(R.id.hue)
     lateinit var hueView: TextView
+
     @BindView(R.id.saturation)
     lateinit var saturationView: TextView
+
     @BindView(R.id.value)
     lateinit var valueView: TextView
 

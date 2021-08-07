@@ -9,6 +9,7 @@ class MainRouter : Router() {
 
     fun openHistoryScreen() = navigateTo(MainScreens.HistoryList)
 
-    fun openHistoryDetailsScreen(filePath: String) = navigateTo(MainScreens.HistoryDetails(filePath))
+    fun openHistoryDetailsScreen(filePath: String) =
+        navigateTo(MainScreens.HistoryDetails(filePath))
 
 }

@@ -13,10 +13,16 @@ object DialogHelper {
 
     @StringRes
     private val positiveButtonRes = R.string.dialog_yes
+
     @StringRes
     private val negativeButtonRes = R.string.dialog_no
 
-    fun buildYesNoDialog(context: Context, title: String, message: String, clickListener: DialogInterface.OnClickListener): Dialog {
+    fun buildYesNoDialog(
+        context: Context,
+        title: String,
+        message: String,
+        clickListener: DialogInterface.OnClickListener
+    ): Dialog {
         val builder = AlertDialog.Builder(context)
 
         builder.setTitle(title)
@@ -27,7 +33,12 @@ object DialogHelper {
         return builder.create()
     }
 
-    fun buildViewDialog(context: Context, title: String, view: View, clickListener: DialogInterface.OnClickListener): Dialog {
+    fun buildViewDialog(
+        context: Context,
+        title: String,
+        view: View,
+        clickListener: DialogInterface.OnClickListener
+    ): Dialog {
         val builder = AlertDialog.Builder(context)
 
         builder.setTitle(title)

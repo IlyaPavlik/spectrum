@@ -32,7 +32,11 @@ object ColorHelper {
     }
 
     fun isSameColor(previousColor: Int, newColor: Int): Boolean {
-        val previousRgb = intArrayOf(Color.red(previousColor), Color.green(previousColor), Color.blue(previousColor))
+        val previousRgb = intArrayOf(
+            Color.red(previousColor),
+            Color.green(previousColor),
+            Color.blue(previousColor)
+        )
         val newRgb = intArrayOf(Color.red(newColor), Color.green(newColor), Color.blue(newColor))
 
         return (Math.abs(previousRgb[0] - newRgb[0]) >= COLOR_ERROR
@@ -60,9 +64,11 @@ object ColorHelper {
         return rgb2Hsl(rgb[0], rgb[1], rgb[2])
     }
 
-    fun rgb2Hsl(@IntRange(from = 0x0, to = 0xFF) r: Int,
-                @IntRange(from = 0x0, to = 0xFF) g: Int,
-                @IntRange(from = 0x0, to = 0xFF) b: Int): FloatArray {
+    fun rgb2Hsl(
+        @IntRange(from = 0x0, to = 0xFF) r: Int,
+        @IntRange(from = 0x0, to = 0xFF) g: Int,
+        @IntRange(from = 0x0, to = 0xFF) b: Int
+    ): FloatArray {
         val outHsl = FloatArray(3)
 
         val rf = r / 255f
@@ -115,7 +121,12 @@ object ColorHelper {
     fun dec2Cmyk(color: Int): IntArray {
         val rgb = dec2Rgb(color)
         val cmyk = rgb2Cmyk(*rgb)
-        return intArrayOf(Math.round(cmyk[0]) * 100, Math.round(cmyk[1]) * 100, Math.round(cmyk[2]) * 100, Math.round(cmyk[3]) * 100)
+        return intArrayOf(
+            Math.round(cmyk[0]) * 100,
+            Math.round(cmyk[1]) * 100,
+            Math.round(cmyk[2]) * 100,
+            Math.round(cmyk[3]) * 100
+        )
     }
 
     fun rgb2Cmyk(@Size(3) vararg rgb: Int): FloatArray {
@@ -152,7 +163,17 @@ object ColorHelper {
     fun dec2Xyz(@ColorInt color: Int): DoubleArray {
         val xyz = DoubleArray(3)
         val rgba = dec2Rgba(color)
-        val coef = floatArrayOf(0.4124f, 0.3576f, 0.1805f, 0.2126f, 0.7152f, 0.0722f, 0.0193f, 0.1192f, 0.9505f)
+        val coef = floatArrayOf(
+            0.4124f,
+            0.3576f,
+            0.1805f,
+            0.2126f,
+            0.7152f,
+            0.0722f,
+            0.0193f,
+            0.1192f,
+            0.9505f
+        )
 
         var r = rgba[0] / 255.0
         var g = rgba[1] / 255.0

@@ -11,7 +11,11 @@ import android.view.View
 
 import ru.magflayer.spectrum.presentation.common.helper.AppHelper
 
-class PointView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = -1) : View(context, attrs, defStyleAttr) {
+class PointView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = -1
+) : View(context, attrs, defStyleAttr) {
 
     companion object {
         private const val RADIUS_DP = 4f
@@ -98,9 +102,10 @@ class PointView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
 
     private fun touchDown(x: Float, y: Float): Boolean {
         if (x > currentX - circleRadius
-                && x < currentX + circleRadius
-                && y > currentY - circleRadius
-                && y < currentY + circleRadius) {
+            && x < currentX + circleRadius
+            && y > currentY - circleRadius
+            && y < currentY + circleRadius
+        ) {
             moveEnabled = true
             currentX = x
             currentY = y

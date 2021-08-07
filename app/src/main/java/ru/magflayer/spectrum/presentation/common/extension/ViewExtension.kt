@@ -9,15 +9,15 @@ fun View.rotate(degree: Int) {
     if (rotation == degree.toFloat()) return
 
     animate()
-            .rotationBy(degree - rotation)
-            .setDuration(200)
-            .setInterpolator(LinearInterpolator())
-            .setListener(object : SimpleAnimatorListener() {
-                override fun onAnimationEnd(animation: Animator) {
-                    rotation = degree.toFloat()
-                }
-            })
-            .start()
+        .rotationBy(degree - rotation)
+        .setDuration(200)
+        .setInterpolator(LinearInterpolator())
+        .setListener(object : SimpleAnimatorListener() {
+            override fun onAnimationEnd(animation: Animator) {
+                rotation = degree.toFloat()
+            }
+        })
+        .start()
 }
 
 fun View.visible(visible: Boolean) {

@@ -13,7 +13,11 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import ru.magflayer.spectrum.R
 
-class ColorInfoWidget @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = -1) : CardView(context, attrs, defStyleAttr) {
+class ColorInfoWidget @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = -1
+) : CardView(context, attrs, defStyleAttr) {
 
     companion object {
         private const val MAX_COLUMNS = 3
@@ -21,6 +25,7 @@ class ColorInfoWidget @JvmOverloads constructor(context: Context, attrs: Attribu
 
     @BindView(R.id.color_info_title)
     lateinit var titleView: TextView
+
     @BindView(R.id.color_info_container)
     lateinit var paramContainer: ViewGroup
 
@@ -44,7 +49,8 @@ class ColorInfoWidget @JvmOverloads constructor(context: Context, attrs: Attribu
                 tableRow = TableRow(context)
                 paramContainer.addView(tableRow)
             }
-            val paramTextView = inflater?.inflate(R.layout.widget_color_info_item, tableRow, false) as TextView
+            val paramTextView =
+                inflater?.inflate(R.layout.widget_color_info_item, tableRow, false) as TextView
             paramTextView.text = param
             tableRow.addView(paramTextView)
         }

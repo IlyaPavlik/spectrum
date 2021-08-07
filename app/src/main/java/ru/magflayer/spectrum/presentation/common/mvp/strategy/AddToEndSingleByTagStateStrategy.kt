@@ -6,7 +6,10 @@ import moxy.viewstate.strategy.StateStrategy
 
 class AddToEndSingleByTagStateStrategy : StateStrategy {
 
-    override fun <View : MvpView> beforeApply(currentState: MutableList<ViewCommand<View>>, incomingCommand: ViewCommand<View>) {
+    override fun <View : MvpView> beforeApply(
+        currentState: MutableList<ViewCommand<View>>,
+        incomingCommand: ViewCommand<View>
+    ) {
         val iterator = currentState.iterator()
 
         while (iterator.hasNext()) {
@@ -21,7 +24,10 @@ class AddToEndSingleByTagStateStrategy : StateStrategy {
         currentState.add(incomingCommand)
     }
 
-    override fun <View : MvpView> afterApply(currentState: List<ViewCommand<View>>, incomingCommand: ViewCommand<View>) {
+    override fun <View : MvpView> afterApply(
+        currentState: List<ViewCommand<View>>,
+        incomingCommand: ViewCommand<View>
+    ) {
         // pass
     }
 }
