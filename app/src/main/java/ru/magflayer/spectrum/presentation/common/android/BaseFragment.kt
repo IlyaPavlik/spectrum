@@ -23,8 +23,10 @@ abstract class BaseFragment : MvpAppCompatFragment(), PageView {
 
     private var unbinder: Unbinder? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val layoutId = AppHelper.getLayoutId(this)
         if (layoutId != null) {
             val view = inflater.inflate(layoutId, null)

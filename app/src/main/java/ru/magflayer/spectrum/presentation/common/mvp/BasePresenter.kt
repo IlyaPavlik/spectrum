@@ -25,14 +25,14 @@ abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
 
     open val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
-                ToolbarAppearance.Visibility.NO_INFLUENCE,
-                ""
+            ToolbarAppearance.Visibility.NO_INFLUENCE,
+            ""
         )
 
     open val pageAppearance: PageAppearance
         get() = PageAppearance.builder()
-                .showFloatingButton(PageAppearance.FloatingButtonState.NO_INFLUENCE)
-                .build()
+            .showFloatingButton(PageAppearance.FloatingButtonState.NO_INFLUENCE)
+            .build()
 
     init {
         inject()
@@ -56,30 +56,43 @@ abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
 
     protected fun <T> execute(observable: Observable<T>, action1: Action1<T>) {
         execute(observable.hashCode().toString(), observable, action1,
-                Action1 { throwable -> logger.error("Error occurred: ", throwable) }, Action0 { })
+            Action1 { throwable -> logger.error("Error occurred: ", throwable) }, Action0 { })
     }
 
-    protected fun <T> execute(observable: Observable<T>, action1: Action1<T>,
-                              errorAction: Action1<Throwable>) {
+    protected fun <T> execute(
+        observable: Observable<T>, action1: Action1<T>,
+        errorAction: Action1<Throwable>
+    ) {
         execute(observable.hashCode().toString(), observable, action1, errorAction, Action0 { })
     }
 
-    protected fun <T> execute(observable: Observable<T>, action1: Action1<T>,
-                              errorAction: Action1<Throwable>, completeAction: Action0) {
+    protected fun <T> execute(
+        observable: Observable<T>, action1: Action1<T>,
+        errorAction: Action1<Throwable>, completeAction: Action0
+    ) {
         execute(observable.hashCode().toString(), observable, action1, errorAction, completeAction)
     }
 
     protected fun <T> execute(tag: String, observable: Observable<T>, action1: Action1<T>) {
-        execute(tag, observable, action1, Action1 { throwable -> logger.error("Error occurred: ", throwable) }, Action0 { })
+        execute(
+            tag,
+            observable,
+            action1,
+            Action1 { throwable -> logger.error("Error occurred: ", throwable) },
+            Action0 { })
     }
 
-    protected fun <T> execute(tag: String, observable: Observable<T>, action1: Action1<T>,
-                              errorAction: Action1<Throwable>) {
+    protected fun <T> execute(
+        tag: String, observable: Observable<T>, action1: Action1<T>,
+        errorAction: Action1<Throwable>
+    ) {
         execute(tag, observable, action1, errorAction, Action0 { })
     }
 
-    protected fun <T> execute(tag: String, observable: Observable<T>, action1: Action1<T>,
-                              errorAction: Action1<Throwable>, completeAction: Action0) {
+    protected fun <T> execute(
+        tag: String, observable: Observable<T>, action1: Action1<T>,
+        errorAction: Action1<Throwable>, completeAction: Action0
+    ) {
         if (subscriptionMap.containsKey(tag)) {
             val subscription = subscriptionMap[tag]
             if (subscription != null && !subscription.isUnsubscribed) {
@@ -88,8 +101,8 @@ abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
         }
 
         subscriptionMap[tag] = observable
-                .compose(RxUtils.applySchedulers())
-                .subscribe(action1, errorAction, completeAction)
+            .compose(RxUtils.applySchedulers())
+            .subscribe(action1, errorAction, completeAction)
     }
 
     private fun unsubscribe() {

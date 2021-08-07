@@ -10,8 +10,8 @@ object InjectorManager {
     fun init(application: Application) {
         synchronized(InjectorManager::class.java) {
             appComponent = DaggerAppComponent.builder()
-                    .appModule(AppModule(application))
-                    .build()
+                .appModule(AppModule(application))
+                .build()
         }
     }
 }

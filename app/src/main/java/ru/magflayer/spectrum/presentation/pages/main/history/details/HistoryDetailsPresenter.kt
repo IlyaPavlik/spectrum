@@ -17,27 +17,31 @@ import rx.functions.Action1
 import javax.inject.Inject
 
 @InjectViewState
-class HistoryDetailsPresenter internal constructor(filePath: String) : BasePresenter<HistoryDetailsView>() {
+class HistoryDetailsPresenter internal constructor(filePath: String) :
+    BasePresenter<HistoryDetailsView>() {
 
     @Inject
     lateinit var analyticsManager: AnalyticsManager
+
     @Inject
     lateinit var colorInfoInteractor: ColorInfoInteractor
+
     @Inject
     lateinit var resourceManager: ResourceManager
+
     @Inject
     lateinit var colorPhotoInteractor: ColorPhotoInteractor
 
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
-                ToolbarAppearance.Visibility.VISIBLE,
-                resourceManager.getString(R.string.history_details_title)
+            ToolbarAppearance.Visibility.VISIBLE,
+            resourceManager.getString(R.string.history_details_title)
         )
 
     override val pageAppearance: PageAppearance
         get() = PageAppearance.builder()
-                .showFloatingButton(PageAppearance.FloatingButtonState.INVISIBLE)
-                .build()
+            .showFloatingButton(PageAppearance.FloatingButtonState.INVISIBLE)
+            .build()
 
     init {
         loadPicture(filePath)
@@ -54,9 +58,9 @@ class HistoryDetailsPresenter internal constructor(filePath: String) : BasePrese
 
     private fun loadPicture(filePath: String) {
         execute<ColorPhotoEntity>(colorPhotoInteractor.loadColorPhoto(filePath)
-                .filter { entity -> entity != null },
-                Action1 { entity -> viewState.showPhoto(entity) },
-                Action1 { error -> logger.warn("Error while loading photo: ", error) })
+            .filter { entity -> entity != null },
+            Action1 { entity -> viewState.showPhoto(entity) },
+            Action1 { error -> logger.warn("Error while loading photo: ", error) })
     }
 
     internal fun handleSelectedColor(color: Int) {
@@ -69,7 +73,7 @@ class HistoryDetailsPresenter internal constructor(filePath: String) : BasePrese
 
         val hex = ColorHelper.dec2Hex(color)
         execute(colorInfoInteractor.findNcsColorByHex(hex),
-                Action1 { ncsName -> viewState.showNcs(color, ncsName) })
+            Action1 { ncsName -> viewState.showNcs(color, ncsName) })
 
         handleColorDetails(color)
     }
@@ -77,7 +81,7 @@ class HistoryDetailsPresenter internal constructor(filePath: String) : BasePrese
     private fun handleColorDetails(color: Int) {
         val hexColor = ColorHelper.dec2Hex(color)
         execute(colorInfoInteractor.findColorNameByHex(hexColor),
-                Action1 { viewState.showColorName(it) },
-                Action1 { error -> logger.error("Error while finding color name: ", error) })
+            Action1 { viewState.showColorName(it) },
+            Action1 { error -> logger.error("Error while finding color name: ", error) })
     }
 }

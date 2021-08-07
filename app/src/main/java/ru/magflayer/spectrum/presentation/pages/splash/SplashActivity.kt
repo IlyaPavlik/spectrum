@@ -31,9 +31,11 @@ class SplashActivity : BaseActivity(), SplashView {
 
         val permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.CAMERA),
-                    CAMERA_PERMISSION_REQUEST)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST
+            )
             return
         }
         presenter.openMainPage()
@@ -43,8 +45,10 @@ class SplashActivity : BaseActivity(), SplashView {
         InjectorManager.appComponent?.inject(this)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             CAMERA_PERMISSION_REQUEST -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

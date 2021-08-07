@@ -15,6 +15,7 @@ class MainPresenter : BasePresenter<MainView>() {
 
     @Inject
     lateinit var cameraManager: CameraManager
+
     @Inject
     lateinit var mainRouter: MainRouter
 

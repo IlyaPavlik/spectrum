@@ -14,17 +14,18 @@ class SplashPresenter : BasePresenter<SplashView>() {
 
     @Inject
     lateinit var globalRouter: GlobalRouter
+
     @Inject
     lateinit var colorInfoInteractor: ColorInfoInteractor
 
     internal fun openMainPage() {
         execute(colorInfoInteractor.uploadColorInfo(),
-                Action1 { colorInfoState -> logger.debug("Color info loaded: {}", colorInfoState) },
-                Action1 { error ->
-                    logger.warn("Error while uploaded color info: ", error)
-                    globalRouter.startMain()
-                },
-                Action0 { globalRouter.startMain() })
+            Action1 { colorInfoState -> logger.debug("Color info loaded: {}", colorInfoState) },
+            Action1 { error ->
+                logger.warn("Error while uploaded color info: ", error)
+                globalRouter.startMain()
+            },
+            Action0 { globalRouter.startMain() })
     }
 
     override fun inject() {

@@ -15,7 +15,11 @@ import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.extension.setColor
 
 @SuppressLint("ClickableViewAccessibility")
-class TextSeekBarView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = -1) : FrameLayout(context, attrs, defStyleAttr) {
+class TextSeekBarView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = -1
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     @BindView(R.id.seek_bar)
     lateinit var seekBar: AppCompatSeekBar

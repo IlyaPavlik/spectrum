@@ -32,7 +32,8 @@ internal constructor(val context: Context) {
         private set
     private var generateBitmapSubscription: Subscription? = null
     private val generateBitmapStream = ByteArrayOutputStream()
-    private val windowManager: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val windowManager: WindowManager =
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     private val backFacingCameraId: Int
         get() {
@@ -57,7 +58,8 @@ internal constructor(val context: Context) {
         fun onTakePicture(bitmap: Bitmap)
     }
 
-    fun isFlashAvailable() = context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
+    fun isFlashAvailable() =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
 
     fun open() {
         camera = Camera.open(backFacingCameraId)
@@ -76,9 +78,15 @@ internal constructor(val context: Context) {
         camera?.setPreviewCallback { data, _ ->
             if (generateBitmapSubscription == null || generateBitmapSubscription!!.isUnsubscribed) {
                 val size = camera?.parameters?.previewSize
-                generateBitmapSubscription = generateBitmapObservable(data, size!!, generateBitmapStream)
+                generateBitmapSubscription =
+                    generateBitmapObservable(data, size!!, generateBitmapStream)
                         .subscribe({ bitmap -> cameraBitmap = bitmap },
-                                { throwable -> log.error("Error while generating bitmap: ", throwable) })
+                            { throwable ->
+                                log.error(
+                                    "Error while generating bitmap: ",
+                                    throwable
+                                )
+                            })
             }
         }
     }
@@ -220,22 +228,34 @@ internal constructor(val context: Context) {
         camera?.setDisplayOrientation(result)
     }
 
-    private fun generateBitmapObservable(data: ByteArray, previewSize: Camera.Size,
-                                         stream: ByteArrayOutputStream): Observable<Bitmap> {
+    private fun generateBitmapObservable(
+        data: ByteArray, previewSize: Camera.Size,
+        stream: ByteArrayOutputStream
+    ): Observable<Bitmap> {
         return Observable.just(data)
-                .compose(RxUtils.applySchedulers(RxUtils.ANDROID_THREAD_POOL_EXECUTOR, RxUtils.ANDROID_THREAD_POOL_EXECUTOR))
-                .flatMap { bytes ->
-                    //Convert YUV to RGB
-                    val yuvImage = YuvImage(bytes, ImageFormat.NV21, previewSize.width, previewSize.height, null)
-                    yuvImage.compressToJpeg(Rect(0, 0, previewSize.width, previewSize.height), 50, stream)
-                    val jdata = stream.toByteArray()
-                    stream.reset()
-                    Observable.fromCallable { BitmapFactory.decodeByteArray(jdata, 0, jdata.size) }
+            .compose(
+                RxUtils.applySchedulers(
+                    RxUtils.ANDROID_THREAD_POOL_EXECUTOR,
+                    RxUtils.ANDROID_THREAD_POOL_EXECUTOR
+                )
+            )
+            .flatMap { bytes ->
+                //Convert YUV to RGB
+                val yuvImage =
+                    YuvImage(bytes, ImageFormat.NV21, previewSize.width, previewSize.height, null)
+                yuvImage.compressToJpeg(
+                    Rect(0, 0, previewSize.width, previewSize.height),
+                    50,
+                    stream
+                )
+                val jdata = stream.toByteArray()
+                stream.reset()
+                Observable.fromCallable { BitmapFactory.decodeByteArray(jdata, 0, jdata.size) }
 
-                    //TODO research decode Yuv data to RGB, below method very slow
-                    // int[] imagePixels = convertYUV420_NV21toRGB8888(yuvimage.getYuvData(), previewSize.width, previewSize.height);
-                    // return Observable.just(Bitmap.createBitmap(imagePixels, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888));
-                }
+                //TODO research decode Yuv data to RGB, below method very slow
+                // int[] imagePixels = convertYUV420_NV21toRGB8888(yuvimage.getYuvData(), previewSize.width, previewSize.height);
+                // return Observable.just(Bitmap.createBitmap(imagePixels, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888));
+            }
     }
 
     companion object {
