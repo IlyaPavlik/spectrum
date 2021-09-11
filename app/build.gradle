@@ -25,6 +25,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     signingConfigs {
         config {
             keyAlias keystoreProperties['keyAlias']
@@ -68,6 +72,10 @@ android {
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
     }
+
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -96,9 +104,6 @@ dependencies {
     implementation library.firebaseCore
     implementation library.firebaseAnalytics
     implementation library.firebaseCrashlytics
-
-    implementation library.butterknife
-    kapt library.butterknifeCompiler
 
     //Dependency injection
     implementation library.dagger
@@ -136,6 +141,9 @@ dependencies {
     implementation library.room
     kapt library.roomCompiler
     implementation library.roomRxJava
+
+    /* Tools */
+    implementation library.viewBindingDelegate
 }
 
 apply plugin: 'com.google.gms.google-services'

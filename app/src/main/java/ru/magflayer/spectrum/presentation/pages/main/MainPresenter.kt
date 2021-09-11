@@ -23,6 +23,10 @@ class MainPresenter : BasePresenter<MainView>() {
         InjectorManager.appComponent?.inject(this)
     }
 
+    override fun onFirstViewAttach() {
+        mainRouter.openCameraScreen()
+    }
+
     override fun attachView(view: MainView) {
         super.attachView(view)
         try {
@@ -39,10 +43,6 @@ class MainPresenter : BasePresenter<MainView>() {
             logger.error("Cannot close stop camera")
         }
         super.detachView(view)
-    }
-
-    internal fun openMainScreen() {
-        mainRouter.openCameraScreen()
     }
 
     internal fun handleFabClick() {

@@ -7,28 +7,21 @@ import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
-import android.widget.SeekBar
-import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.OnClick
+import by.kirich1409.viewbindingdelegate.viewBinding
 import moxy.presenter.InjectPresenter
 import ru.magflayer.spectrum.R
+import ru.magflayer.spectrum.databinding.FragmentColorCameraBinding
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
-import ru.magflayer.spectrum.presentation.common.android.layout.Layout
-import ru.magflayer.spectrum.presentation.common.android.widget.ColorDetailsWidget
-import ru.magflayer.spectrum.presentation.common.android.widget.PointView
 import ru.magflayer.spectrum.presentation.common.extension.rotate
 import ru.magflayer.spectrum.presentation.common.extension.visible
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo
 
-@Layout(R.layout.fragment_color_camera)
-class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, ColorCameraView {
+class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
+    TextureView.SurfaceTextureListener, ColorCameraView {
 
     companion object {
 
@@ -41,44 +34,10 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         }
     }
 
+    private val viewBinding by viewBinding(FragmentColorCameraBinding::bind)
+
     @InjectPresenter
     lateinit var presenter: ColorCameraPresenter
-
-    @BindView(R.id.camera)
-    lateinit var cameraView: TextureView
-
-    @BindView(R.id.right_menu)
-    lateinit var buttonsMenuView: ViewGroup
-
-    @BindView(R.id.left_menu)
-    lateinit var infoMenuView: ViewGroup
-
-    @BindView(R.id.menu)
-    lateinit var menuButton: View
-
-    @BindView(R.id.color_recycler)
-    lateinit var colorRecycler: RecyclerView
-
-    @BindView(R.id.toggle_mode)
-    lateinit var toggleView: ToggleButton
-
-    @BindView(R.id.flash)
-    lateinit var flashView: ToggleButton
-
-    @BindView(R.id.point_detector)
-    lateinit var pointView: PointView
-
-    @BindView(R.id.color_details)
-    lateinit var colorDetailsWidget: ColorDetailsWidget
-
-    @BindView(R.id.message)
-    lateinit var messageView: TextView
-
-    @BindView(R.id.zoom_container)
-    lateinit var zoomContainer: ViewGroup
-
-    @BindView(R.id.zoom_seek)
-    lateinit var zoomBar: SeekBar
 
     private lateinit var adapter: ColorCameraAdapter
     private var orientationEventListener: OrientationEventListener? = null
@@ -98,12 +57,12 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
                 if (isLandscape(orientation) && currentOrientation != Orientation.LANDSCAPE) {
                     currentOrientation = Orientation.LANDSCAPE
                     setOrientation(currentOrientation)
-                    colorRecycler.layoutManager =
+                    viewBinding.colorRecycler.layoutManager =
                         GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, true)
                 } else if (isPortrait(orientation) && currentOrientation != Orientation.PORTRAIT) {
                     currentOrientation = Orientation.PORTRAIT
                     setOrientation(currentOrientation)
-                    colorRecycler.layoutManager =
+                    viewBinding.colorRecycler.layoutManager =
                         GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
                 }
             }
@@ -115,8 +74,13 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
             orientationEventListener?.disable()
         }
 
-        updateMode(toggleView.isChecked)
+        updateMode(viewBinding.toggleMode.isChecked)
         setOrientation(currentOrientation)
+
+        viewBinding.camera.setOnClickListener { presenter.handleFocusClicked() }
+        viewBinding.menu.setOnClickListener { presenter.openHistory() }
+        viewBinding.save.setOnClickListener { presenter.handleSaveClicked(if (currentOrientation == Orientation.LANDSCAPE) 0 else 90) }
+        viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
     }
 
     override fun onDestroyView() {
@@ -130,10 +94,10 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val layoutManager = GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
-        colorRecycler.layoutManager = layoutManager
-        colorRecycler.adapter = adapter
-        cameraView.surfaceTextureListener = this
-        cameraView.setOnTouchListener { _, event ->
+        viewBinding.colorRecycler.layoutManager = layoutManager
+        viewBinding.colorRecycler.adapter = adapter
+        viewBinding.camera.surfaceTextureListener = this
+        viewBinding.camera.setOnTouchListener { _, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_MOVE -> {
                     val value = if (currentOrientation == Orientation.PORTRAIT) {
@@ -161,8 +125,9 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
                 }
             }
         }
-        colorRecycler.visibility = if (toggleView.isChecked) View.GONE else View.VISIBLE
-        toggleView.setOnCheckedChangeListener { _, isChecked -> updateMode(isChecked) }
+        viewBinding.colorRecycler.visibility =
+            if (viewBinding.toggleMode.isChecked) View.GONE else View.VISIBLE
+        viewBinding.toggleMode.setOnCheckedChangeListener { _, isChecked -> updateMode(isChecked) }
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
@@ -181,7 +146,7 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-        presenter.updateSurface(if (toggleView.isChecked) SurfaceInfo.Type.SINGLE else SurfaceInfo.Type.MULTIPLE)
+        presenter.updateSurface(if (viewBinding.toggleMode.isChecked) SurfaceInfo.Type.SINGLE else SurfaceInfo.Type.MULTIPLE)
     }
 
     override fun showPictureSavedToast() {
@@ -193,28 +158,28 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     }
 
     override fun showColorDetails(mainColor: Int, titleColor: Int) {
-        colorDetailsWidget.setColor(mainColor)
-        pointView.setAimColor(titleColor)
+        viewBinding.colorDetails.setColor(mainColor)
+        viewBinding.pointDetector.setAimColor(titleColor)
     }
 
     override fun showColorName(name: String) {
-        colorDetailsWidget.setColorName(name)
+        viewBinding.colorDetails.setColorName(name)
     }
 
     override fun showErrorMessage() {
-        messageView.visibility = View.VISIBLE
+        viewBinding.message.visibility = View.VISIBLE
     }
 
     override fun hideErrorMessage() {
-        messageView.visibility = View.GONE
+        viewBinding.message.visibility = View.GONE
     }
 
     override fun showCrosshair() {
-        pointView.visibility = View.VISIBLE
+        viewBinding.pointDetector.visibility = View.VISIBLE
     }
 
     override fun hideCrosshair() {
-        pointView.visibility = View.GONE
+        viewBinding.pointDetector.visibility = View.GONE
     }
 
     override fun showPanels() {
@@ -223,57 +188,37 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
     }
 
     override fun showFlash() {
-        flashView.visible(true)
+        viewBinding.flash.visible(true)
     }
 
     override fun hideFlash() {
-        flashView.visible(false)
+        viewBinding.flash.visible(false)
     }
 
     override fun changeMaxZoom(max: Int) {
-        zoomBar.max = max
+        viewBinding.zoomSeek.max = max
     }
 
-    override fun changeZoomProgress(progress: Int) {
-        zoomBar.progress = progress
+    override fun changeZoomProgress(progress: Int) = with(viewBinding) {
+        zoomSeek.progress = progress
 
-        if (zoomBar.visibility != View.VISIBLE) {
-            zoomBar.visibility = View.VISIBLE
-            zoomBar.postDelayed({ zoomBar.visibility = View.GONE }, ZOOM_VISIBLE_DELAY)
+        if (zoomSeek.visibility != View.VISIBLE) {
+            zoomSeek.visibility = View.VISIBLE
+            zoomSeek.postDelayed({ zoomSeek.visibility = View.GONE }, ZOOM_VISIBLE_DELAY)
         }
     }
 
-    @OnClick(R.id.camera)
-    fun onFocusClick() {
-        presenter.handleFocusClicked()
-    }
-
-    @OnClick(R.id.menu)
-    fun onMenuClick() {
-        presenter.openHistory()
-    }
-
-    @OnClick(R.id.save)
-    fun onSaveClick() {
-        presenter.handleSaveClicked(if (currentOrientation == Orientation.LANDSCAPE) 0 else 90)
-    }
-
-    @OnClick(R.id.flash)
-    fun onFlashClick() {
-        presenter.handleFlashClick(flashView.isChecked)
-    }
-
-    private fun showTopMenu() {
-        if (buttonsMenuView.visibility != View.VISIBLE) {
-            buttonsMenuView.visibility = View.VISIBLE
-            buttonsMenuView.startAnimation(inFromTopAnimation())
+    private fun showTopMenu() = with(viewBinding) {
+        if (rightMenu.visibility != View.VISIBLE) {
+            rightMenu.visibility = View.VISIBLE
+            rightMenu.startAnimation(inFromTopAnimation())
         }
     }
 
-    private fun showBottomMenu() {
-        if (infoMenuView.visibility != View.VISIBLE) {
-            infoMenuView.visibility = View.VISIBLE
-            infoMenuView.startAnimation(inFromBottomAnimation())
+    private fun showBottomMenu() = with(viewBinding) {
+        if (leftMenu.visibility != View.VISIBLE) {
+            leftMenu.visibility = View.VISIBLE
+            leftMenu.startAnimation(inFromBottomAnimation())
         }
     }
 
@@ -301,12 +246,12 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
         return inFromBottom
     }
 
-    private fun setOrientation(orientation: Orientation) {
+    private fun setOrientation(orientation: Orientation) = with(viewBinding) {
         logger.debug("Orientation changed: {}", orientation)
-        menuButton.rotate(orientation.degree)
-        toggleView.rotate(orientation.degree)
-        flashView.rotate(orientation.degree)
-        colorDetailsWidget.rotate(orientation.degree)
+        menu.rotate(orientation.degree)
+        toggleMode.rotate(orientation.degree)
+        flash.rotate(orientation.degree)
+        colorDetails.rotate(orientation.degree)
         zoomContainer.rotate((orientation.degree - 90).rem(360))
     }
 
@@ -321,14 +266,14 @@ class ColorCameraFragment : BaseFragment(), TextureView.SurfaceTextureListener, 
                 || orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL) // [280 : 260]
     }
 
-    private fun updateMode(single: Boolean) {
+    private fun updateMode(single: Boolean) = with(viewBinding) {
         if (single) {
-            colorDetailsWidget.visible(true)
-            pointView.visible(true)
+            colorDetails.visible(true)
+            pointDetector.visible(true)
             colorRecycler.visible(false)
         } else {
-            colorDetailsWidget.visible(false)
-            pointView.visible(false)
+            colorDetails.visible(false)
+            pointDetector.visible(false)
             colorRecycler.visible(true)
         }
     }

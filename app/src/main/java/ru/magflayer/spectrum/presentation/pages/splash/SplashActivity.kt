@@ -8,11 +8,12 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import moxy.presenter.InjectPresenter
+import ru.magflayer.spectrum.R
 
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity
 
-class SplashActivity : BaseActivity(), SplashView {
+class SplashActivity : BaseActivity(R.layout.activity_splash), SplashView {
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST = 111

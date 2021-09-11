@@ -7,22 +7,20 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
-import butterknife.BindView
+import by.kirich1409.viewbindingdelegate.viewBinding
 import moxy.presenter.InjectPresenter
 import ru.magflayer.spectrum.R
+import ru.magflayer.spectrum.databinding.FragmentHistoryBinding
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.helper.SwipeToDeleteCallback
-import ru.magflayer.spectrum.presentation.common.android.layout.Layout
 import ru.magflayer.spectrum.presentation.common.helper.DialogHelper
 
-@Layout(R.layout.fragment_history)
-class HistoryFragment : BaseFragment(), HistoryView {
+class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
 
     companion object {
 
@@ -34,33 +32,32 @@ class HistoryFragment : BaseFragment(), HistoryView {
         }
     }
 
+    private val viewBinding by viewBinding(FragmentHistoryBinding::bind)
+
     @InjectPresenter
     lateinit var presenter: HistoryPresenter
 
-    @BindView(R.id.history_recycler)
-    lateinit var historyRecycler: RecyclerView
-
-    @BindView(R.id.empty)
-    lateinit var emptyView: TextView
-
-    private lateinit var adapter: HistoryAdapter
+    private lateinit var historyAdapter: HistoryAdapter
 
     override fun inject() {
         InjectorManager.appComponent?.inject(this)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        adapter = HistoryAdapter(requireContext())
-        historyRecycler.layoutManager = LinearLayoutManager(context)
-        historyRecycler.adapter = adapter
-        historyRecycler.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                DividerItemDecoration.VERTICAL
+        historyAdapter = HistoryAdapter(requireContext())
+
+        viewBinding.historyRecycler.apply {
+            this.layoutManager = LinearLayoutManager(context)
+            this.adapter = historyAdapter
+            this.addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                )
             )
-        )
+        }
 
         val callback = object : SwipeToDeleteCallback(context) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -68,29 +65,31 @@ class HistoryFragment : BaseFragment(), HistoryView {
             }
         }
         val itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper.attachToRecyclerView(historyRecycler)
+        itemTouchHelper.attachToRecyclerView(viewBinding.historyRecycler)
 
-        adapter.itemSelectListener = object : BaseRecyclerAdapter.OnItemSelectListener {
+        historyAdapter.itemSelectListener = object : BaseRecyclerAdapter.OnItemSelectListener {
             override fun onItemSelect(position: Int) {
-                adapter.getItem(position)?.let { presenter.handleColorSelected(it) }
+                historyAdapter.getItem(position)?.let { presenter.handleColorSelected(it) }
             }
         }
 
-        adapter.itemLongClickListener = object : BaseRecyclerAdapter.OnItemLongClickListener {
-            override fun onItemLongClick(position: Int) {
-                openAcceptDeleteColor(position)
+        historyAdapter.itemLongClickListener =
+            object : BaseRecyclerAdapter.OnItemLongClickListener {
+                override fun onItemLongClick(position: Int) {
+                    openAcceptDeleteColor(position)
+                }
             }
-        }
     }
 
     override fun showHistory(history: List<ColorPhotoEntity>) {
-        val diffResult = DiffUtil.calculateDiff(HistoryDiffCallback(adapter.data, history))
+        val diffResult = DiffUtil.calculateDiff(HistoryDiffCallback(historyAdapter.data, history))
 
-        adapter.data.clear()
-        adapter.data.addAll(history)
-        diffResult.dispatchUpdatesTo(adapter)
+        historyAdapter.data.clear()
+        historyAdapter.data.addAll(history)
+        diffResult.dispatchUpdatesTo(historyAdapter)
 
-        emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+        viewBinding.empty.visibility =
+            if (historyAdapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
     override fun openPickPhoto() {
@@ -161,10 +160,11 @@ class HistoryFragment : BaseFragment(), HistoryView {
                 title,
                 message
             ) { _, _ ->
-                adapter.getItem(position)?.let { presenter.removeColor(it) }
-                emptyView.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+                historyAdapter.getItem(position)?.let { presenter.removeColor(it) }
+                viewBinding.empty.visibility =
+                    if (historyAdapter.itemCount == 0) View.VISIBLE else View.GONE
             }
-            dialog.setOnCancelListener { adapter.notifyItemChanged(position) }
+            dialog.setOnCancelListener { historyAdapter.notifyItemChanged(position) }
             dialog.show()
         }
     }

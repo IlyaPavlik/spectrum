@@ -5,8 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.palette.graphics.Palette
 
-import butterknife.BindView
+import by.kirich1409.viewbindingdelegate.viewBinding
 import ru.magflayer.spectrum.R
+import ru.magflayer.spectrum.databinding.ItemColorCameraBinding
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 
@@ -28,7 +29,9 @@ class ColorCameraAdapter constructor(
     }
 
     class ColorViewHolder(itemView: View) : BaseViewHolder(itemView) {
-        @BindView(R.id.color_container)
-        lateinit var colorContainer: ViewGroup
+
+        private val viewBinding by viewBinding(ItemColorCameraBinding::bind)
+
+        val colorContainer: ViewGroup = viewBinding.colorContainer
     }
 }

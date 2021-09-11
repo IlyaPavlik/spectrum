@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import butterknife.BindView
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.request.RequestOptions
 import ru.magflayer.spectrum.R
+import ru.magflayer.spectrum.databinding.ItemHistoryBinding
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
@@ -47,10 +48,13 @@ internal class HistoryAdapter(
     }
 
     internal class HistoryViewHolder(itemView: View) : BaseViewHolder(itemView) {
-        @BindView(R.id.picture)
-        lateinit var pictureView: ImageView
 
-        @BindView(R.id.color_container)
-        lateinit var colorContainer: ImageView
+        private val viewBinding by viewBinding(ItemHistoryBinding::bind)
+
+        val pictureView: ImageView
+            get() = viewBinding.picture
+
+        val colorContainer: ImageView
+            get() = viewBinding.colorContainer
     }
 }
