@@ -3,16 +3,16 @@ package ru.magflayer.spectrum.presentation.pages.main.history
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.palette.graphics.Palette
-import com.squareup.otto.Subscribe
 import moxy.InjectViewState
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.entity.event.FabClickEvent
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
 import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
+import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
+import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
@@ -39,6 +39,12 @@ class HistoryPresenter : BasePresenter<HistoryView>() {
     @Inject
     lateinit var fileManagerInteractor: FileManagerInteractor
 
+    @Inject
+    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
+
+    @Inject
+    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
+
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
             ToolbarAppearance.Visibility.VISIBLE,
@@ -62,10 +68,11 @@ class HistoryPresenter : BasePresenter<HistoryView>() {
         analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY)
     }
 
-    @Subscribe
-    fun onFabClicked(event: FabClickEvent) {
-        viewState.openPickPhoto()
-        analyticsManager.logEvent(AnalyticsEvent.CHOOSE_IMAGE)
+    override fun attachView(view: HistoryView) {
+        super.attachView(view)
+        toolbarAppearanceInteractor.setToolbarAppearance(toolbarAppearance)
+        pageAppearanceInteractor.setPageAppearance(pageAppearance)
+        execute(pageAppearanceInteractor.observeFabEvent()) { handleFabClicked() }
     }
 
     internal fun removeColor(entity: ColorPhotoEntity) {
@@ -131,5 +138,10 @@ class HistoryPresenter : BasePresenter<HistoryView>() {
 
     private fun convertSwatches(swatches: List<Palette.Swatch>): List<Int> {
         return swatches.map { it.rgb }
+    }
+
+    private fun handleFabClicked() {
+        viewState.openPickPhoto()
+        analyticsManager.logEvent(AnalyticsEvent.CHOOSE_IMAGE)
     }
 }

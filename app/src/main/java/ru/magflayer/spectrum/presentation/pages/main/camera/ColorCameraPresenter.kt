@@ -6,15 +6,11 @@ import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.os.Bundle
 import androidx.palette.graphics.Palette
-import com.squareup.otto.Subscribe
 import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.entity.event.PictureSavedEvent
 import ru.magflayer.spectrum.domain.injection.InjectorManager
-import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
-import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
-import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
+import ru.magflayer.spectrum.domain.interactor.*
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
 import ru.magflayer.spectrum.domain.manager.CameraManager
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
@@ -32,7 +28,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @InjectViewState
-class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraView>() {
+class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
 
     companion object {
         private const val SURFACE_UPDATE_DELAY_MILLIS = 300
@@ -64,6 +60,12 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
 
     @Inject
     lateinit var fileManagerInteractor: FileManagerInteractor
+
+    @Inject
+    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
+
+    @Inject
+    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
 
     private var previousColor = -1
     private val changeObservable = BehaviorSubject.create<SurfaceInfo.Type>()
@@ -116,6 +118,12 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
         val maxZoom = cameraManager.getMaxZoom()
         viewState.changeMaxZoom(maxZoom)
         zoomStep = maxZoom / ZOOM_STEP_FACTOR
+    }
+
+    override fun attachView(view: ColorCameraView) {
+        super.attachView(view)
+        toolbarAppearanceInteractor.setToolbarAppearance(toolbarAppearance)
+        pageAppearanceInteractor.setPageAppearance(pageAppearance)
     }
 
     internal fun updateSurface(type: SurfaceInfo.Type) {
@@ -235,11 +243,6 @@ class ColorCameraPresenter internal constructor() : BasePresenter<ColorCameraVie
 
     internal fun openHistory() {
         mainRouter.openHistoryScreen()
-    }
-
-    @Subscribe
-    fun onPictureSaved(event: PictureSavedEvent) {
-        viewState.showPictureSavedToast()
     }
 
     @SuppressLint("DefaultLocale")
