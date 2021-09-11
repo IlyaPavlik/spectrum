@@ -2,9 +2,9 @@ package ru.magflayer.spectrum.presentation.pages.main.camera
 
 import androidx.palette.graphics.Palette
 import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.AddToEndSingleTagStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
-import ru.magflayer.spectrum.presentation.common.mvp.strategy.AddToEndSingleByTagStateStrategy
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 
 interface ColorCameraView : PageView {
@@ -28,25 +28,25 @@ interface ColorCameraView : PageView {
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun showColorName(name: String)
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = ERROR_MESSAGE_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = ERROR_MESSAGE_TAG)
     fun showErrorMessage()
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = ERROR_MESSAGE_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = ERROR_MESSAGE_TAG)
     fun hideErrorMessage()
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = CROSSHAIR_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = CROSSHAIR_TAG)
     fun showCrosshair()
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = CROSSHAIR_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = CROSSHAIR_TAG)
     fun hideCrosshair()
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = PANELS_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = PANELS_TAG)
     fun showPanels()
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = FLASH_VISIBILITY_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = FLASH_VISIBILITY_TAG)
     fun showFlash()
 
-    @StateStrategyType(value = AddToEndSingleByTagStateStrategy::class, tag = FLASH_VISIBILITY_TAG)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = FLASH_VISIBILITY_TAG)
     fun hideFlash()
 
     @StateStrategyType(AddToEndSingleStrategy::class)

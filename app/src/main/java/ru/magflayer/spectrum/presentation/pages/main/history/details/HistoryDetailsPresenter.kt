@@ -8,17 +8,17 @@ import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
+import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
+import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
-import rx.functions.Action1
 import javax.inject.Inject
 
 @InjectViewState
-class HistoryDetailsPresenter internal constructor(filePath: String) :
-    BasePresenter<HistoryDetailsView>() {
+class HistoryDetailsPresenter(filePath: String) : BasePresenter<HistoryDetailsView>() {
 
     @Inject
     lateinit var analyticsManager: AnalyticsManager
@@ -31,6 +31,12 @@ class HistoryDetailsPresenter internal constructor(filePath: String) :
 
     @Inject
     lateinit var colorPhotoInteractor: ColorPhotoInteractor
+
+    @Inject
+    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
+
+    @Inject
+    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
 
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
@@ -54,13 +60,15 @@ class HistoryDetailsPresenter internal constructor(filePath: String) :
     override fun attachView(view: HistoryDetailsView) {
         super.attachView(view)
         analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS)
+        toolbarAppearanceInteractor.setToolbarAppearance(toolbarAppearance)
+        pageAppearanceInteractor.setPageAppearance(pageAppearance)
     }
 
     private fun loadPicture(filePath: String) {
         execute<ColorPhotoEntity>(colorPhotoInteractor.loadColorPhoto(filePath)
             .filter { entity -> entity != null },
-            Action1 { entity -> viewState.showPhoto(entity) },
-            Action1 { error -> logger.warn("Error while loading photo: ", error) })
+            { entity -> viewState.showPhoto(entity) },
+            { error -> logger.warn("Error while loading photo: ", error) })
     }
 
     internal fun handleSelectedColor(color: Int) {
@@ -72,16 +80,19 @@ class HistoryDetailsPresenter internal constructor(filePath: String) :
         viewState.showLab(color)
 
         val hex = ColorHelper.dec2Hex(color)
-        execute(colorInfoInteractor.findNcsColorByHex(hex),
-            Action1 { ncsName -> viewState.showNcs(color, ncsName) })
+        execute(colorInfoInteractor.findNcsColorByHex(hex)) { ncsName ->
+            viewState.showNcs(color, ncsName)
+        }
 
         handleColorDetails(color)
     }
 
     private fun handleColorDetails(color: Int) {
         val hexColor = ColorHelper.dec2Hex(color)
-        execute(colorInfoInteractor.findColorNameByHex(hexColor),
-            Action1 { viewState.showColorName(it) },
-            Action1 { error -> logger.error("Error while finding color name: ", error) })
+        execute(
+            colorInfoInteractor.findColorNameByHex(hexColor),
+            { viewState.showColorName(it) },
+            { error -> logger.error("Error while finding color name: ", error) }
+        )
     }
 }

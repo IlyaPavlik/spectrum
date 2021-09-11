@@ -1,8 +1,8 @@
 package ru.magflayer.spectrum.presentation.pages.main.toolbar
 
-import com.squareup.otto.Subscribe
 import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.injection.InjectorManager
+import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
@@ -14,6 +14,16 @@ class ToolbarPresenter : BasePresenter<ToolbarView>() {
     @Inject
     lateinit var mainRouter: MainRouter
 
+    @Inject
+    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        execute(toolbarAppearanceInteractor.observeToolbarAppearance()) { toolbarAppearance ->
+            handleToolbarAppearance(toolbarAppearance)
+        }
+    }
+
     override fun inject() {
         InjectorManager.appComponent?.inject(this)
     }
@@ -22,18 +32,16 @@ class ToolbarPresenter : BasePresenter<ToolbarView>() {
         mainRouter.exit()
     }
 
-    @Subscribe
-    fun onToolbarAppearance(toolbarAppearance: ToolbarAppearance) {
-        val visibility = toolbarAppearance.visible
-        when (visibility) {
+    private fun handleToolbarAppearance(toolbarAppearance: ToolbarAppearance) {
+        when (toolbarAppearance.visible) {
             ToolbarAppearance.Visibility.VISIBLE -> viewState.showToolbar()
             ToolbarAppearance.Visibility.INVISIBLE -> viewState.hideToolbar()
             else -> {
-                //no influence
+                /* do nothing */
             }
         }
 
-        if (!toolbarAppearance.title.isEmpty()) {
+        if (toolbarAppearance.title.isNotEmpty()) {
             viewState.showTitle(toolbarAppearance.title)
         }
     }

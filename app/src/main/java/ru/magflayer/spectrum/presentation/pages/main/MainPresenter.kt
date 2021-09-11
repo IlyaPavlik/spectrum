@@ -1,9 +1,8 @@
 package ru.magflayer.spectrum.presentation.pages.main
 
-import com.squareup.otto.Subscribe
 import moxy.InjectViewState
-import ru.magflayer.spectrum.domain.entity.event.FabClickEvent
 import ru.magflayer.spectrum.domain.injection.InjectorManager
+import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.CameraManager
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
@@ -19,12 +18,18 @@ class MainPresenter : BasePresenter<MainView>() {
     @Inject
     lateinit var mainRouter: MainRouter
 
+    @Inject
+    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
+
     override fun inject() {
         InjectorManager.appComponent?.inject(this)
     }
 
     override fun onFirstViewAttach() {
         mainRouter.openCameraScreen()
+        execute(pageAppearanceInteractor.observePageAppearance()) { pageAppearance ->
+            handlePageAppearanceChanged(pageAppearance)
+        }
     }
 
     override fun attachView(view: MainView) {
@@ -46,11 +51,10 @@ class MainPresenter : BasePresenter<MainView>() {
     }
 
     internal fun handleFabClick() {
-        bus.post(FabClickEvent())
+        pageAppearanceInteractor.publishFabEvent()
     }
 
-    @Subscribe
-    fun onPageAppearanceChanged(pageAppearance: PageAppearance) {
+    private fun handlePageAppearanceChanged(pageAppearance: PageAppearance) {
         when (pageAppearance.floatingButtonState) {
             PageAppearance.FloatingButtonState.VISIBLE -> {
                 viewState.showFloatingButton(true)
@@ -59,7 +63,7 @@ class MainPresenter : BasePresenter<MainView>() {
                 viewState.showFloatingButton(false)
             }
             else -> {
-                //no influence
+                /* do nothing */
             }
         }
     }

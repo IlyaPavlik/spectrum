@@ -3,16 +3,14 @@ package ru.magflayer.spectrum.domain.injection
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
-import com.squareup.otto.Bus
-import com.squareup.otto.ThreadEnforcer
 import dagger.Module
 import dagger.Provides
 import ru.magflayer.spectrum.data.database.AppDatabase
 import ru.magflayer.spectrum.data.database.ColorInfoRepositoryImpl
+import ru.magflayer.spectrum.data.repository.PageAppearanceRepositoryImpl
+import ru.magflayer.spectrum.data.repository.ToolbarAppearanceRepositoryImpl
 import ru.magflayer.spectrum.data.system.LocalFileManager
-import ru.magflayer.spectrum.domain.repository.ColorInfoRepository
-import ru.magflayer.spectrum.domain.repository.FileManagerRepository
-import ru.magflayer.spectrum.domain.repository.PhotoRepository
+import ru.magflayer.spectrum.domain.repository.*
 import javax.inject.Singleton
 
 @Module
@@ -21,12 +19,6 @@ internal class AppModule(private val context: Context) {
     @Provides
     fun provideContext(): Context {
         return context
-    }
-
-    @Singleton
-    @Provides
-    fun provideBus(): Bus {
-        return Bus(ThreadEnforcer.ANY)
     }
 
     @Singleton
@@ -59,5 +51,17 @@ internal class AppModule(private val context: Context) {
     @Provides
     fun provideColorInfoRepository(appDatabase: AppDatabase): ColorInfoRepository {
         return ColorInfoRepositoryImpl(appDatabase)
+    }
+
+    @Singleton
+    @Provides
+    fun provideToolbarAppearanceRepository(): ToolbarAppearanceRepository {
+        return ToolbarAppearanceRepositoryImpl()
+    }
+
+    @Singleton
+    @Provides
+    fun providePageAppearanceRepository(): PageAppearanceRepository {
+        return PageAppearanceRepositoryImpl()
     }
 }

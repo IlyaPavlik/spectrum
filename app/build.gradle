@@ -109,8 +109,6 @@ dependencies {
     implementation library.dagger
     kapt library.daggerCompiler
 
-    implementation library.otto
-
     //Rx
     implementation library.rxjava
     implementation library.rxandroid

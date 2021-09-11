@@ -6,7 +6,6 @@ import android.graphics.*
 import android.hardware.Camera
 import android.view.Surface
 import android.view.WindowManager
-import com.squareup.otto.Bus
 import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.common.utils.RxUtils
 import rx.Observable
@@ -19,13 +18,9 @@ import kotlin.experimental.and
 
 @Suppress("DEPRECATION")
 @Singleton
-class CameraManager @Inject
-internal constructor(val context: Context) {
+class CameraManager @Inject constructor(val context: Context) {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
-    @Inject
-    lateinit var bus: Bus
 
     private var camera: Camera? = null
     var cameraBitmap: Bitmap? = null
@@ -167,7 +162,7 @@ internal constructor(val context: Context) {
     }
 
     fun takePicture(pictureCallback: OnTakePictureListener) {
-        camera?.takePicture(shutterCallback, rawCallback, Camera.PictureCallback { data, camera1 ->
+        camera?.takePicture(shutterCallback, rawCallback, { data, camera1 ->
             log.debug("onPictureTaken - jpeg")
 
             val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
@@ -197,8 +192,8 @@ internal constructor(val context: Context) {
     }
 
     fun updateCameraDisplayOrientation() {
-        val camInfo = android.hardware.Camera.CameraInfo()
-        android.hardware.Camera.getCameraInfo(backFacingCameraId, camInfo)
+        val camInfo = Camera.CameraInfo()
+        Camera.getCameraInfo(backFacingCameraId, camInfo)
 
         val display = windowManager.defaultDisplay
         val rotation = display.rotation
@@ -214,8 +209,8 @@ internal constructor(val context: Context) {
     }
 
     private fun updateCameraDisplayOrientation(degrees: Int) {
-        val camInfo = android.hardware.Camera.CameraInfo()
-        android.hardware.Camera.getCameraInfo(backFacingCameraId, camInfo)
+        val camInfo = Camera.CameraInfo()
+        Camera.getCameraInfo(backFacingCameraId, camInfo)
 
         var result: Int
         if (camInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
