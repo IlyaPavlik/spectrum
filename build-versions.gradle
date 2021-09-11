@@ -5,7 +5,7 @@ ext.config = [
                 name: "0.7.2"
         ],
         sdk    : [
-                min    : 26,
+                min    : 16,
                 target : 31,
                 compile: 31
         ]

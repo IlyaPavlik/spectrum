@@ -8,17 +8,8 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.DisplayMetrics
-import ru.magflayer.spectrum.presentation.common.android.layout.Layout
 
 object AppHelper {
-
-    fun getLayoutId(o: Any): Int? {
-        val cls = o.javaClass
-        if (!cls.isAnnotationPresent(Layout::class.java)) return null
-        val annotation = cls.getAnnotation(Layout::class.java)
-        val layout = annotation as Layout
-        return layout.value
-    }
 
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.

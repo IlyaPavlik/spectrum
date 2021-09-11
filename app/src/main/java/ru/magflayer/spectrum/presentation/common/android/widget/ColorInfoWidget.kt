@@ -3,15 +3,10 @@ package ru.magflayer.spectrum.presentation.common.android.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TableRow
-import android.widget.TextView
 import androidx.cardview.widget.CardView
-
-import butterknife.BindView
-import butterknife.ButterKnife
-import ru.magflayer.spectrum.R
+import ru.magflayer.spectrum.databinding.WidgetColorInfoBinding
+import ru.magflayer.spectrum.databinding.WidgetColorInfoItemBinding
 
 class ColorInfoWidget @JvmOverloads constructor(
     context: Context,
@@ -23,36 +18,32 @@ class ColorInfoWidget @JvmOverloads constructor(
         private const val MAX_COLUMNS = 3
     }
 
-    @BindView(R.id.color_info_title)
-    lateinit var titleView: TextView
-
-    @BindView(R.id.color_info_container)
-    lateinit var paramContainer: ViewGroup
-
-    private var inflater = LayoutInflater.from(context)
-
-    init {
-        val view = View.inflate(context, R.layout.widget_color_info, this)
-        ButterKnife.bind(this, view)
-    }
+    private val viewBinding = WidgetColorInfoBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
 
     fun setTitle(title: CharSequence) {
-        titleView.text = title
+        viewBinding.colorInfoTitle.text = title
     }
 
-    fun setParams(params: List<String>) {
-        paramContainer.removeAllViews()
+    fun setParams(params: List<String>) = with(viewBinding) {
+        colorInfoContainer.removeAllViews()
 
         var tableRow: TableRow? = null
         for (param in params) {
             if (tableRow == null || tableRow.childCount % MAX_COLUMNS == 0) {
                 tableRow = TableRow(context)
-                paramContainer.addView(tableRow)
+                colorInfoContainer.addView(tableRow)
             }
-            val paramTextView =
-                inflater?.inflate(R.layout.widget_color_info_item, tableRow, false) as TextView
-            paramTextView.text = param
-            tableRow.addView(paramTextView)
+            val itemViewBinding = WidgetColorInfoItemBinding.inflate(
+                LayoutInflater.from(context),
+                tableRow,
+                false
+            )
+            itemViewBinding.textView.text = param
+            tableRow.addView(itemViewBinding.root)
         }
     }
 

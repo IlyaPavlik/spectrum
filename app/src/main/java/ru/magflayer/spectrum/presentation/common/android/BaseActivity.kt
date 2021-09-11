@@ -2,42 +2,29 @@ package ru.magflayer.spectrum.presentation.common.android
 
 import android.os.Bundle
 import android.view.View
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.Unbinder
+import androidx.annotation.LayoutRes
 import moxy.MvpAppCompatActivity
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.android.navigation.holder.GlobalRouterHolder
 import ru.magflayer.spectrum.presentation.common.android.navigation.navigator.GlobalNavigator
-import ru.magflayer.spectrum.presentation.common.helper.AppHelper
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 import javax.inject.Inject
 
-abstract class BaseActivity : MvpAppCompatActivity(), PageView {
-
-    protected val logger = LoggerFactory.getLogger(javaClass)
+abstract class BaseActivity(
+    @LayoutRes contentLayoutId: Int
+) : MvpAppCompatActivity(contentLayoutId), PageView {
 
     @Inject
     lateinit var globalRouterHolder: GlobalRouterHolder
 
-    @BindView(R.id.progress_bar)
-    @JvmField
-    var progressBar: View? = null
+    protected val logger: Logger by lazy { LoggerFactory.getLogger(javaClass) }
 
-    private val globalNavigator = GlobalNavigator(this)
-
-    private var unbinder: Unbinder? = null
+    private val globalNavigator by lazy { GlobalNavigator(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val layoutId = AppHelper.getLayoutId(this)
-        if (layoutId != null) {
-            setContentView(layoutId)
-        }
-        unbinder = ButterKnife.bind(this)
-
         inject()
     }
 
@@ -53,16 +40,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), PageView {
         super.onPause()
     }
 
-    override fun onDestroy() {
-        unbinder?.unbind()
-        super.onDestroy()
-    }
-
     override fun showProgressBar() {
-        progressBar?.visibility = View.VISIBLE
+        findViewById<View>(R.id.progress_bar)?.visibility = View.VISIBLE
     }
 
     override fun hideProgressBar() {
-        progressBar?.visibility = View.GONE
+        findViewById<View>(R.id.progress_bar)?.visibility = View.GONE
     }
 }

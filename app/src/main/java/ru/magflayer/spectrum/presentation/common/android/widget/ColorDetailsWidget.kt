@@ -3,14 +3,12 @@ package ru.magflayer.spectrum.presentation.common.android.widget
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
-import butterknife.BindView
-import butterknife.ButterKnife
 import ru.magflayer.spectrum.R
+import ru.magflayer.spectrum.databinding.WidgetColorDetailsBinding
 import ru.magflayer.spectrum.presentation.common.extension.rotate
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 
@@ -20,93 +18,60 @@ class ColorDetailsWidget @JvmOverloads constructor(
     defStyleAttr: Int = -1
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    @BindView(R.id.color_container)
-    lateinit var colorContainer: View
+    private val viewBinding = WidgetColorDetailsBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
 
-    @BindView(R.id.color)
-    lateinit var colorView: View
-
-    @BindView(R.id.color_id)
-    lateinit var colorHexView: TextView
-
-    @BindView(R.id.color_name)
-    lateinit var colorNameView: TextView
-
-    @BindView(R.id.color_rgb)
-    lateinit var colorRGB: View
-
-    @BindView(R.id.red)
-    lateinit var redView: TextSeekBarView
-
-    @BindView(R.id.green)
-    lateinit var greenView: TextSeekBarView
-
-    @BindView(R.id.blue)
-    lateinit var blueView: TextSeekBarView
-
-    @BindView(R.id.color_hsv)
-    lateinit var colorHSV: View
-
-    @BindView(R.id.hue)
-    lateinit var hueView: TextView
-
-    @BindView(R.id.saturation)
-    lateinit var saturationView: TextView
-
-    @BindView(R.id.value)
-    lateinit var valueView: TextView
-
-    init {
-        init(context)
-    }
-
-    fun setColor(@ColorInt color: Int) {
-        colorView.setBackgroundColor(color)
-        colorHexView.text = ColorHelper.dec2Hex(color)
+    fun setColor(@ColorInt color: Int) = with(viewBinding) {
+        this.color.setBackgroundColor(color)
+        this.colorId.text = ColorHelper.dec2Hex(color)
 
         initRgbColor(color)
         initHsvColor(color)
     }
 
-    fun setColorName(colorName: String) {
-        colorNameView.text = colorName
+    fun setColorName(colorName: String) = with(viewBinding) {
+        this.colorName.text = colorName
     }
 
-    fun rotate(toDegree: Int) {
+    fun rotate(toDegree: Int) = with(viewBinding) {
         colorContainer.rotate(toDegree)
-        colorNameView.rotate(toDegree)
-        colorRGB.rotate(toDegree)
-        colorHSV.rotate(toDegree)
+        colorName.rotate(toDegree)
+        colorRgb.root.rotate(toDegree)
+        colorHsv.root.rotate(toDegree)
     }
 
-    private fun init(context: Context) {
-        val view = View.inflate(context, R.layout.widget_color_details, this)
-        ButterKnife.bind(this, view)
-    }
-
-    private fun initRgbColor(color: Int) {
+    private fun initRgbColor(color: Int) = with(viewBinding) {
         val maxValue = 255
         val red = Color.red(color)
         val green = Color.green(color)
         val blue = Color.blue(color)
 
-        redView.setText(red.toString())
-        redView.setMaxValue(maxValue)
-        redView.setValue(red)
-        redView.setColor(ContextCompat.getColor(context, R.color.red))
+        colorRgb.red.apply {
+            setText(red.toString())
+            setMaxValue(maxValue)
+            setValue(red)
+            setColor(ContextCompat.getColor(context, R.color.red))
+        }
 
-        greenView.setText(green.toString())
-        greenView.setMaxValue(maxValue)
-        greenView.setValue(green)
-        greenView.setColor(ContextCompat.getColor(context, R.color.green))
+        colorRgb.green.apply {
+            setText(green.toString())
+            setMaxValue(maxValue)
+            setValue(green)
+            setColor(ContextCompat.getColor(context, R.color.green))
+        }
 
-        blueView.setText(blue.toString())
-        blueView.setMaxValue(maxValue)
-        blueView.setValue(blue)
-        blueView.setColor(ContextCompat.getColor(context, R.color.blue))
+        colorRgb.blue.apply {
+            setText(blue.toString())
+            setMaxValue(maxValue)
+            setValue(blue)
+            setColor(ContextCompat.getColor(context, R.color.blue))
+        }
     }
 
-    private fun initHsvColor(color: Int) {
+    private fun initHsvColor(color: Int) = with(viewBinding) {
         val context = context
 
         val hsv = FloatArray(3)
@@ -115,8 +80,8 @@ class ColorDetailsWidget @JvmOverloads constructor(
         val saturation = (hsv[1] * 100).toInt()
         val value = (hsv[2] * 100).toInt()
 
-        hueView.text = context.getString(R.string.hue_format, hue)
-        saturationView.text = context.getString(R.string.saturation_format, saturation)
-        valueView.text = context.getString(R.string.value_format, value)
+        colorHsv.hue.text = context.getString(R.string.hue_format, hue)
+        colorHsv.saturation.text = context.getString(R.string.saturation_format, saturation)
+        colorHsv.value.text = context.getString(R.string.value_format, value)
     }
 }
