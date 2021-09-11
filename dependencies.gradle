@@ -1,0 +1,105 @@
+ext.versions = [
+        /* Plugins */
+        gradlePlugin       : "4.2.2",
+        googleServicePlugin: "4.3.8",
+        proguardPlugin     : "6.0.3",
+        kotlinPlugin       : "1.4.32",
+        crashlyticsPlugin  : "2.6.1",
+
+        /* Dependencies */
+        kotlin             : "1.5.30",
+        junit              : "4.13.1",
+        mockito            : "3.2.4",
+        powermock          : "1.7.4",
+        recyclerView       : "1.2.1",
+        appcompat          : "1.3.1",
+        palette            : "1.0.0",
+        cardview           : "1.0.0",
+        multidex           : "2.0.1",
+        material           : "1.4.0",
+        firebaseCore       : "19.0.0",
+        firebaseAnalytics  : "19.0.0",
+        firebaseCrashlytics: "18.2.0",
+        butterknife        : "10.2.0",
+        dagger             : "2.28.3",
+        otto               : "1.3.8",
+        rxjava             : "1.3.8",
+        rxandroid          : "1.2.1",
+        slf4j              : "1.7.30",
+        logback            : "1.1.1-6",
+        glide              : "4.12.0",
+        gson               : "2.8.6",
+        moxy               : "2.2.2",
+        cicerone           : "7.1",
+        room               : "2.3.0",
+]
+
+ext.plugin = [
+        gradle       : "com.android.tools.build:gradle:$versions.gradlePlugin",
+        googleService: "com.google.gms:google-services:$versions.googleServicePlugin",
+        proguard     : "net.sf.proguard:proguard-gradle:$versions.proguardPlugin",
+        kotlin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinPlugin",
+        crashlytics  : "com.google.firebase:firebase-crashlytics-gradle:$versions.crashlyticsPlugin"
+]
+
+ext.library = [
+        kotlin               : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin",
+
+        //Tests
+        junit                : "junit:junit:$versions.junit",
+        mockito              : "org.mockito:mockito-core:$versions.mockito",
+        powermockJunit       : "org.powermock:powermock-module-junit4:$versions.powermock",
+        powermockJunitRule   : "org.powermock:powermock-module-junit4-rule:$versions.powermock",
+        powermockMockito     : "org.powermock:powermock-api-mockito2:$versions.powermock",
+        powermockClassloading: "org.powermock:powermock-classloading-xstream:$versions.powermock",
+
+        //Google Support
+        recyclerView         : "androidx.recyclerview:recyclerview:$versions.recyclerView",
+        appcompat            : "androidx.appcompat:appcompat:$versions.appcompat",
+        palette              : "androidx.palette:palette-ktx:$versions.palette",
+        cardView             : "androidx.cardview:cardview:$versions.cardview",
+        multidex             : "androidx.multidex:multidex:$versions.multidex",
+        material             : "com.google.android.material:material:$versions.material",
+
+        //Google Firebase
+        firebaseCore         : "com.google.firebase:firebase-core:$versions.firebaseCore",
+        firebaseAnalytics    : "com.google.firebase:firebase-analytics:$versions.firebaseAnalytics",
+        firebaseCrashlytics  : "com.google.firebase:firebase-crashlytics:$versions.firebaseCrashlytics",
+
+        butterknife          : "com.jakewharton:butterknife:$versions.butterknife",
+        butterknifeCompiler  : "com.jakewharton:butterknife-compiler:$versions.butterknife",
+
+        //Dependency injection
+        dagger               : "com.google.dagger:dagger:$versions.dagger",
+        daggerCompiler       : "com.google.dagger:dagger-compiler:$versions.dagger",
+
+        otto                 : "com.squareup:otto:$versions.otto",
+
+        //Rx
+        rxjava               : "io.reactivex:rxjava:$versions.rxjava",
+        rxandroid            : "io.reactivex:rxandroid:$versions.rxandroid",
+
+        //Logger
+        slf4j                : "org.slf4j:slf4j-api:$versions.slf4j",
+        logbackCore          : "com.github.tony19:logback-android-core:$versions.logback",
+        logbackClassic       : "com.github.tony19:logback-android-classic:$versions.logback",
+
+        glide                : "com.github.bumptech.glide:glide:$versions.glide",
+        glideCompiler        : "com.github.bumptech.glide:compiler:$versions.glide",
+        gson                 : "com.google.code.gson:gson:$versions.gson",
+
+        //Moxy
+        moxy                 : "com.github.moxy-community:moxy:$versions.moxy",
+        moxyCompiler         : "com.github.moxy-community:moxy-compiler:$versions.moxy",
+        moxyAndroid          : "com.github.moxy-community:moxy-android:$versions.moxy",
+        moxyAndroidX         : "com.github.moxy-community:moxy-androidx:$versions.moxy",
+        moxyMaterial         : "com.github.moxy-community:moxy-material:$versions.moxy",
+
+        //Cicerone
+        cicerone             : "com.github.terrakok:cicerone:$versions.cicerone",
+
+        //Room
+        room                 : "androidx.room:room-runtime:$versions.room",
+        roomCompiler         : "androidx.room:room-compiler:$versions.room",
+        roomRxJava           : "androidx.room:room-rxjava2:$versions.room",
+]

@@ -9,13 +9,13 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
 
-    compileSdkVersion 30
+    compileSdkVersion config.sdk.compile
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 10
-        versionName "0.7.2"
+        minSdkVersion config.sdk.min
+        targetSdkVersion config.sdk.target
+        versionCode config.build.code
+        versionName config.build.name
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
@@ -74,68 +74,68 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     //Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.32"
+    implementation library.kotlin
 
     //Tests
-    testImplementation 'junit:junit:4.13.1'
-    testImplementation "org.mockito:mockito-core:3.2.4"
-    testImplementation "org.powermock:powermock-module-junit4:1.7.4"
-    testImplementation "org.powermock:powermock-module-junit4-rule:1.7.4"
-    testImplementation "org.powermock:powermock-api-mockito2:1.7.4"
-    testImplementation "org.powermock:powermock-classloading-xstream:1.7.4"
+    testImplementation library.junit
+    testImplementation library.mockito
+    testImplementation library.powermockJunit
+    testImplementation library.powermockJunitRule
+    testImplementation library.powermockMockito
+    testImplementation library.powermockClassloading
 
     //Google Support
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.palette:palette-ktx:1.0.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation library.recyclerView
+    implementation library.appcompat
+    implementation library.palette
+    implementation library.cardView
+    implementation library.multidex
+    implementation library.material
 
     //Google Firebase
-    implementation 'com.google.firebase:firebase-core:19.0.0'
-    implementation 'com.google.firebase:firebase-analytics:19.0.0'
-    implementation 'com.google.firebase:firebase-crashlytics:18.2.0'
+    implementation library.firebaseCore
+    implementation library.firebaseAnalytics
+    implementation library.firebaseCrashlytics
 
-    implementation 'com.jakewharton:butterknife:10.2.0'
-    kapt 'com.jakewharton:butterknife-compiler:10.2.0'
+    implementation library.butterknife
+    kapt library.butterknifeCompiler
 
     //Dependency injection
-    implementation 'com.google.dagger:dagger:2.28.3'
-    kapt 'com.google.dagger:dagger-compiler:2.28.3'
+    implementation library.dagger
+    kapt library.daggerCompiler
 
-    implementation 'com.squareup:otto:1.3.8'
+    implementation library.otto
 
     //Rx
-    implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'io.reactivex:rxjava:1.3.8'
+    implementation library.rxjava
+    implementation library.rxandroid
 
     //Logger
-    implementation 'org.slf4j:slf4j-api:1.7.30'
-    implementation 'com.github.tony19:logback-android-core:1.1.1-6'
-    implementation('com.github.tony19:logback-android-classic:1.1.1-6') {
+    implementation library.slf4j
+    implementation library.logbackCore
+    implementation(library.logbackClassic) {
         // workaround issue #73
         exclude group: 'com.google.android', module: 'android'
     }
 
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    kapt 'com.github.bumptech.glide:compiler:4.12.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation library.glide
+    kapt library.glideCompiler
+    implementation library.gson
 
     //Moxy
-    implementation "com.github.moxy-community:moxy:2.2.2"
-    kapt "com.github.moxy-community:moxy-compiler:2.2.2"
-    implementation "com.github.moxy-community:moxy-android:2.2.2"
-    implementation "com.github.moxy-community:moxy-androidx:2.2.2"
-    implementation "com.github.moxy-community:moxy-material:2.2.2"
+    implementation library.moxy
+    kapt library.moxyCompiler
+    implementation library.moxyAndroid
+    implementation library.moxyAndroidX
+    implementation library.moxyMaterial
 
     //Cicerone
-    implementation 'com.github.terrakok:cicerone:7.1'
+    implementation library.cicerone
 
     //Room
-    implementation 'androidx.room:room-runtime:2.3.0'
-    kapt 'androidx.room:room-compiler:2.3.0'
-    implementation 'androidx.room:room-rxjava2:2.3.0'
+    implementation library.room
+    kapt library.roomCompiler
+    implementation library.roomRxJava
 }
 
 apply plugin: 'com.google.gms.google-services'
