@@ -113,14 +113,6 @@ dependencies {
     implementation library.rxjava
     implementation library.rxandroid
 
-    //Logger
-    implementation library.slf4j
-    implementation library.logbackCore
-    implementation(library.logbackClassic) {
-        // workaround issue #73
-        exclude group: 'com.google.android', module: 'android'
-    }
-
     implementation library.glide
     kapt library.glideCompiler
     implementation library.gson
@@ -142,6 +134,10 @@ dependencies {
 
     /* Tools */
     implementation library.viewBindingDelegate
+
+    /* Logger */
+    implementation library.slf4j
+    implementation library.logback
 }
 
 apply plugin: 'com.google.gms.google-services'
