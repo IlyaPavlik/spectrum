@@ -2,16 +2,14 @@ package ru.magflayer.spectrum.domain.repository
 
 import android.net.Uri
 
-import rx.Observable
-
 interface FileManagerRepository {
 
-    fun saveFile(filePath: String, bytes: ByteArray): Observable<Uri>
+    suspend fun saveFile(filePath: String, bytes: ByteArray): Uri
 
-    fun saveFileToExternalStorage(fileName: String, bytes: ByteArray): Observable<Uri>
+    suspend fun saveFileToExternalStorage(fileName: String, bytes: ByteArray): Uri
 
-    fun isFileExists(filePath: String): Observable<Boolean>
+    suspend fun isFileExists(filePath: String): Boolean
 
-    fun copyFileToExternalEndpoint(sourceFilePath: Uri): Observable<Uri>
+    suspend fun copyFileToExternalEndpoint(sourceFilePath: Uri): Uri
 
 }

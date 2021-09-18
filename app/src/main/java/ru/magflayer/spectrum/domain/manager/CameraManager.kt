@@ -6,10 +6,8 @@ import android.graphics.*
 import android.hardware.Camera
 import android.view.Surface
 import android.view.WindowManager
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
-import ru.magflayer.spectrum.common.utils.RxUtils
-import rx.Observable
-import rx.Subscription
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import javax.inject.Inject
@@ -25,7 +23,7 @@ class CameraManager @Inject constructor(val context: Context) {
     private var camera: Camera? = null
     var cameraBitmap: Bitmap? = null
         private set
-    private var generateBitmapSubscription: Subscription? = null
+    private val cameraScope by lazy { CoroutineScope(Dispatchers.Default) }
     private val generateBitmapStream = ByteArrayOutputStream()
     private val windowManager: WindowManager =
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -71,17 +69,13 @@ class CameraManager @Inject constructor(val context: Context) {
         }
 
         camera?.setPreviewCallback { data, _ ->
-            if (generateBitmapSubscription == null || generateBitmapSubscription!!.isUnsubscribed) {
-                val size = camera?.parameters?.previewSize
-                generateBitmapSubscription =
-                    generateBitmapObservable(data, size!!, generateBitmapStream)
-                        .subscribe({ bitmap -> cameraBitmap = bitmap },
-                            { throwable ->
-                                log.error(
-                                    "Error while generating bitmap: ",
-                                    throwable
-                                )
-                            })
+            val errorHandler = CoroutineExceptionHandler { _, exception ->
+                log.warn("Error while generating bitmap: ", exception)
+            }
+            cameraScope.launch(errorHandler) {
+                camera?.parameters?.previewSize?.let { size ->
+                    cameraBitmap = generateBitmapObservable(data, size, generateBitmapStream)
+                }
             }
         }
     }
@@ -118,18 +112,26 @@ class CameraManager @Inject constructor(val context: Context) {
     }
 
     fun enabledFlash() {
-        camera?.let {
-            val params = it.parameters
-            params.flashMode = Camera.Parameters.FLASH_MODE_TORCH
-            it.parameters = params
+        try {
+            camera?.let {
+                val params = it.parameters
+                params.flashMode = Camera.Parameters.FLASH_MODE_TORCH
+                it.parameters = params
+            }
+        } catch (e: Exception) {
+            log.warn("Cannot set parameters: ", e)
         }
     }
 
     fun disableFlash() {
-        camera?.let {
-            val params = it.parameters
-            params.flashMode = Camera.Parameters.FLASH_MODE_OFF
-            it.parameters = params
+        try {
+            camera?.let {
+                val params = it.parameters
+                params.flashMode = Camera.Parameters.FLASH_MODE_OFF
+                it.parameters = params
+            }
+        } catch (e: Exception) {
+            log.warn("Cannot set parameters: ", e)
         }
     }
 
@@ -184,10 +186,7 @@ class CameraManager @Inject constructor(val context: Context) {
             release()
         }
         camera = null
-
-        generateBitmapSubscription?.apply { unsubscribe() }
-        generateBitmapSubscription = null
-
+        cameraScope.cancel()
         generateBitmapStream.reset()
     }
 
@@ -224,33 +223,25 @@ class CameraManager @Inject constructor(val context: Context) {
     }
 
     private fun generateBitmapObservable(
-        data: ByteArray, previewSize: Camera.Size,
+        data: ByteArray,
+        previewSize: Camera.Size,
         stream: ByteArrayOutputStream
-    ): Observable<Bitmap> {
-        return Observable.just(data)
-            .compose(
-                RxUtils.applySchedulers(
-                    RxUtils.ANDROID_THREAD_POOL_EXECUTOR,
-                    RxUtils.ANDROID_THREAD_POOL_EXECUTOR
-                )
-            )
-            .flatMap { bytes ->
-                //Convert YUV to RGB
-                val yuvImage =
-                    YuvImage(bytes, ImageFormat.NV21, previewSize.width, previewSize.height, null)
-                yuvImage.compressToJpeg(
-                    Rect(0, 0, previewSize.width, previewSize.height),
-                    50,
-                    stream
-                )
-                val jdata = stream.toByteArray()
-                stream.reset()
-                Observable.fromCallable { BitmapFactory.decodeByteArray(jdata, 0, jdata.size) }
+    ): Bitmap {
+        //Convert YUV to RGB
+        val yuvImage = YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null)
+        yuvImage.compressToJpeg(
+            Rect(0, 0, previewSize.width, previewSize.height),
+            50,
+            stream
+        )
+        val dataBytes = stream.toByteArray()
+        stream.reset()
+        return BitmapFactory.decodeByteArray(dataBytes, 0, dataBytes.size)
+            ?: Bitmap.createBitmap(CAMERA_WIDTH, CAMERA_HEIGHT, Bitmap.Config.ARGB_8888)
 
-                //TODO research decode Yuv data to RGB, below method very slow
-                // int[] imagePixels = convertYUV420_NV21toRGB8888(yuvimage.getYuvData(), previewSize.width, previewSize.height);
-                // return Observable.just(Bitmap.createBitmap(imagePixels, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888));
-            }
+        //TODO research decode Yuv data to RGB, below method very slow
+        // int[] imagePixels = convertYUV420_NV21toRGB8888(yuvimage.getYuvData(), previewSize.width, previewSize.height);
+        // return Observable.just(Bitmap.createBitmap(imagePixels, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888));
     }
 
     companion object {

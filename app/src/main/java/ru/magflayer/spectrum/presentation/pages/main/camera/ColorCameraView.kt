@@ -10,10 +10,11 @@ import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 interface ColorCameraView : PageView {
 
     companion object {
-        const val ERROR_MESSAGE_TAG = "error_message"
-        const val CROSSHAIR_TAG = "crosshair"
-        const val PANELS_TAG = "panels"
-        const val FLASH_VISIBILITY_TAG = "flash_visibility"
+        private const val ERROR_MESSAGE_TAG = "error_message"
+        private const val CROSSHAIR_TAG = "crosshair"
+        private const val PANELS_TAG = "panels"
+        private const val FLASH_VISIBILITY_TAG = "flash_visibility"
+        private const val COLOR_MODE = "color_mode"
     }
 
     @StateStrategyType(OneExecutionStateStrategy::class)
@@ -54,5 +55,11 @@ interface ColorCameraView : PageView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun changeZoomProgress(progress: Int)
+
+    @StateStrategyType(AddToEndSingleTagStrategy::class, tag = COLOR_MODE)
+    fun showSingleColorMode()
+
+    @StateStrategyType(AddToEndSingleTagStrategy::class, tag = COLOR_MODE)
+    fun showMultipleColorMode()
 
 }

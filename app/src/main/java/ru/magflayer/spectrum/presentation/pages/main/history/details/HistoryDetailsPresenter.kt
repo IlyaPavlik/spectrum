@@ -1,10 +1,11 @@
 package ru.magflayer.spectrum.presentation.pages.main.history.details
 
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import moxy.InjectViewState
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
-import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
@@ -65,10 +66,13 @@ class HistoryDetailsPresenter(filePath: String) : BasePresenter<HistoryDetailsVi
     }
 
     private fun loadPicture(filePath: String) {
-        execute<ColorPhotoEntity>(colorPhotoInteractor.loadColorPhoto(filePath)
-            .filter { entity -> entity != null },
-            { entity -> viewState.showPhoto(entity) },
-            { error -> logger.warn("Error while loading photo: ", error) })
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while loading photo: ", exception)
+        }
+        presenterScope.launch(errorHandler) {
+            val colorPhoto = colorPhotoInteractor.loadColorPhoto(filePath)
+            viewState.showPhoto(colorPhoto)
+        }
     }
 
     internal fun handleSelectedColor(color: Int) {
@@ -80,7 +84,11 @@ class HistoryDetailsPresenter(filePath: String) : BasePresenter<HistoryDetailsVi
         viewState.showLab(color)
 
         val hex = ColorHelper.dec2Hex(color)
-        execute(colorInfoInteractor.findNcsColorByHex(hex)) { ncsName ->
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while finding ncs color: ", exception)
+        }
+        presenterScope.launch(errorHandler) {
+            val ncsName = colorInfoInteractor.findNcsColorByHex(hex)
             viewState.showNcs(color, ncsName)
         }
 
@@ -89,10 +97,12 @@ class HistoryDetailsPresenter(filePath: String) : BasePresenter<HistoryDetailsVi
 
     private fun handleColorDetails(color: Int) {
         val hexColor = ColorHelper.dec2Hex(color)
-        execute(
-            colorInfoInteractor.findColorNameByHex(hexColor),
-            { viewState.showColorName(it) },
-            { error -> logger.error("Error while finding color name: ", error) }
-        )
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while finding hex color: ", exception)
+        }
+        presenterScope.launch(errorHandler) {
+            val colorNameHex = colorInfoInteractor.findColorNameByHex(hexColor)
+            viewState.showColorName(colorNameHex)
+        }
     }
 }

@@ -19,9 +19,10 @@ class ToolbarPresenter : BasePresenter<ToolbarView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        execute(toolbarAppearanceInteractor.observeToolbarAppearance()) { toolbarAppearance ->
-            handleToolbarAppearance(toolbarAppearance)
-        }
+        execute(
+            toolbarAppearanceInteractor.observeToolbarAppearance(),
+            onSuccess = { toolbarAppearance -> handleToolbarAppearance(toolbarAppearance) }
+        )
     }
 
     override fun inject() {

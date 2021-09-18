@@ -1,8 +1,8 @@
 package ru.magflayer.spectrum.domain.interactor
 
+import kotlinx.coroutines.flow.Flow
 import ru.magflayer.spectrum.domain.repository.ToolbarAppearanceRepository
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
-import rx.Observable
 import javax.inject.Inject
 
 class ToolbarAppearanceInteractor @Inject constructor(
@@ -13,11 +13,7 @@ class ToolbarAppearanceInteractor @Inject constructor(
         toolbarAppearanceRepository.setToolbarAppearance(toolbarAppearance)
     }
 
-    fun getToolbarAppearance(): ToolbarAppearance? {
-        return toolbarAppearanceRepository.getToolbarAppearance()
-    }
-
-    fun observeToolbarAppearance(): Observable<ToolbarAppearance> {
+    fun observeToolbarAppearance(): Flow<ToolbarAppearance> {
         return toolbarAppearanceRepository.observeToolbarAppearance()
     }
 }

@@ -81,8 +81,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    //Kotlin
+    /* Kotlin */
     implementation library.kotlin
+    implementation library.coroutines
 
     //Tests
     testImplementation library.junit
@@ -109,10 +110,6 @@ dependencies {
     implementation library.dagger
     kapt library.daggerCompiler
 
-    //Rx
-    implementation library.rxjava
-    implementation library.rxandroid
-
     implementation library.glide
     kapt library.glideCompiler
     implementation library.gson
@@ -130,7 +127,7 @@ dependencies {
     //Room
     implementation library.room
     kapt library.roomCompiler
-    implementation library.roomRxJava
+    implementation library.roomKtx
 
     /* Tools */
     implementation library.viewBindingDelegate

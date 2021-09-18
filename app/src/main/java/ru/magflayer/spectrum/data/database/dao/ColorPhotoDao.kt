@@ -7,15 +7,15 @@ import ru.magflayer.spectrum.data.entity.ColorPhoto
 interface ColorPhotoDao {
 
     @Query("SELECT * FROM ColorPhoto")
-    fun loadPhotos(): List<ColorPhoto>
+    suspend fun loadPhotos(): List<ColorPhoto>
 
     @Query("SELECT * FROM ColorPhoto WHERE file_path LIKE :path")
-    fun loadPhoto(path: String): ColorPhoto
+    suspend fun loadPhoto(path: String): ColorPhoto
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun savePhoto(colorPhoto: ColorPhoto): Long
+    suspend fun savePhoto(colorPhoto: ColorPhoto): Long
 
     @Delete
-    fun deletePhoto(colorPhoto: ColorPhoto): Int
+    suspend fun deletePhoto(colorPhoto: ColorPhoto): Int
 
 }

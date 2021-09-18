@@ -3,11 +3,12 @@ package ru.magflayer.spectrum.data.system
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.magflayer.spectrum.BuildConfig
 import ru.magflayer.spectrum.domain.repository.FileManagerRepository
-import rx.Observable
-import java.io.Closeable
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,66 +21,51 @@ class LocalFileManager @Inject constructor(private val context: Context) : FileM
         private const val URI_AUTHORITY = BuildConfig.APPLICATION_ID + ".provider"
     }
 
-    override fun saveFile(filePath: String, bytes: ByteArray): Observable<Uri> {
-        return Observable.fromCallable {
-            var out: FileOutputStream? = null
-            try {
-                out = FileOutputStream(filePath)
-                out.write(bytes)
-            } finally {
-                closeQuietly(out)
+    override suspend fun saveFile(filePath: String, bytes: ByteArray): Uri {
+        return withContext(Dispatchers.IO) {
+            FileOutputStream(filePath).use { outputStream ->
+                outputStream.write(bytes)
             }
             Uri.parse(filePath)
         }
     }
 
-    override fun saveFileToExternalStorage(fileName: String, bytes: ByteArray): Observable<Uri> {
-        return Observable.fromCallable {
-            File(
-                context.getExternalFilesDir(null),
-                fileName
-            ).absolutePath
+    override suspend fun saveFileToExternalStorage(fileName: String, bytes: ByteArray): Uri {
+        return withContext(Dispatchers.IO) {
+            val externalFile = File(context.getExternalFilesDir(null), fileName).absolutePath
+            saveFile(externalFile, bytes)
         }
-            .flatMap { saveFile(it, bytes) }
     }
 
-    override fun isFileExists(filePath: String): Observable<Boolean> {
+    override suspend fun isFileExists(filePath: String): Boolean {
         return if (filePath.startsWith(CONTENT_PREFIX)) {
-            try {
-                val uri = Uri.parse(filePath)
-                context.contentResolver.openInputStream(uri)
-                Observable.just(true)
-            } catch (e: Exception) {
-                Observable.just(false)
+            withContext(Dispatchers.IO) {
+                try {
+                    val uri = Uri.parse(filePath)
+                    context.contentResolver.openInputStream(uri)
+                    true
+                } catch (e: Throwable) {
+                    false
+                }
             }
         } else {
-            Observable.just(File(filePath).exists())
+            File(filePath).exists()
         }
     }
 
-    override fun copyFileToExternalEndpoint(sourceFilePath: Uri): Observable<Uri> {
-        return Observable.fromCallable { context.contentResolver.openInputStream(sourceFilePath) }
-            .map { inputStream ->
+    override suspend fun copyFileToExternalEndpoint(sourceFilePath: Uri): Uri {
+        return withContext(Dispatchers.IO) {
+            context.contentResolver.openInputStream(sourceFilePath)?.use { inputStream ->
                 val fileName = File(sourceFilePath.toString()).name
                 val outputFile = File(
                     context.getExternalFilesDir(null),
                     fileName
                 )
-                val fileOutputStream = FileOutputStream(outputFile)
-
-                inputStream?.use {
-                    fileOutputStream.use {
-                        inputStream.copyTo(fileOutputStream)
-                    }
+                FileOutputStream(outputFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
                 }
                 getUriForFile(outputFile)
-            }
-    }
-
-    private fun closeQuietly(closeable: Closeable?) {
-        try {
-            closeable?.close()
-        } catch (ignore: Exception) {
+            } ?: throw FileNotFoundException("File '$sourceFilePath' is not found")
         }
     }
 

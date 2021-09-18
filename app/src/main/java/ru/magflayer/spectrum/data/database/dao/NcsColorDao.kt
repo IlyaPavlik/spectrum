@@ -13,12 +13,12 @@ interface NcsColorDao {
     val rowCount: Int
 
     @Query("SELECT * FROM NcsColor")
-    fun loadNcsColors(): List<NcsColor>
+    suspend fun loadNcsColors(): List<NcsColor>
 
     @Query("SELECT * FROM NcsColor WHERE hex=:hex")
-    fun loadNcsColorByHex(hex: String): NcsColor
+    suspend fun loadNcsColorByHex(hex: String): NcsColor
 
     @Insert(onConflict = REPLACE)
-    fun saveNcsColors(vararg ncsColors: NcsColor): LongArray
+    suspend fun saveNcsColors(vararg ncsColors: NcsColor): LongArray
 
 }
