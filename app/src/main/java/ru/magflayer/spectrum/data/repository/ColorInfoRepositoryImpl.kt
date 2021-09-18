@@ -1,8 +1,9 @@
-package ru.magflayer.spectrum.data.database
+package ru.magflayer.spectrum.data.repository
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.magflayer.spectrum.data.database.AppDatabase
 import ru.magflayer.spectrum.data.entity.ColorName
 import ru.magflayer.spectrum.data.entity.NcsColor
 import ru.magflayer.spectrum.data.entity.converter.ColorNameConverter
