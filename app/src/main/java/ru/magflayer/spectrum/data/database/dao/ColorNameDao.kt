@@ -13,12 +13,12 @@ interface ColorNameDao {
     val rowCount: Int
 
     @Query("SELECT * FROM ColorName")
-    fun loadColorNames(): List<ColorName>
+    suspend fun loadColorNames(): List<ColorName>
 
     @Query("SELECT * FROM ColorName WHERE hex=:hex")
-    fun loadColorNameByHex(hex: String): ColorName
+    suspend fun loadColorNameByHex(hex: String): ColorName
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveColorNames(vararg colorNames: ColorName): LongArray
+    suspend fun saveColorNames(vararg colorNames: ColorName): LongArray
 
 }

@@ -3,6 +3,8 @@ package ru.magflayer.spectrum.presentation.pages.main.history
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.palette.graphics.Palette
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import moxy.InjectViewState
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
@@ -18,7 +20,6 @@ import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainR
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
-import rx.Observable
 import javax.inject.Inject
 
 @InjectViewState
@@ -66,74 +67,77 @@ class HistoryPresenter : BasePresenter<HistoryView>() {
         super.onFirstViewAttach()
         loadHistory()
         analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY)
+        execute(
+            pageAppearanceInteractor.observeFabEvent(),
+            onSuccess = { handleFabClicked() }
+        )
     }
 
     override fun attachView(view: HistoryView) {
         super.attachView(view)
         toolbarAppearanceInteractor.setToolbarAppearance(toolbarAppearance)
         pageAppearanceInteractor.setPageAppearance(pageAppearance)
-        execute(pageAppearanceInteractor.observeFabEvent()) { handleFabClicked() }
     }
 
-    internal fun removeColor(entity: ColorPhotoEntity) {
-        execute(colorPhotoInteractor.removeColorPhoto(entity),
-            { success ->
-                logger.debug("Photo removed {}", if (success) "successfully" else "unsuccessfully")
-                entities.remove(entity)
-                viewState.showHistory(entities)
-            },
-            { error -> logger.warn("Error while removing photo: ", error) })
+    fun removeColor(entity: ColorPhotoEntity) {
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while removing photo: ", exception)
+        }
+
+        presenterScope.launch(errorHandler) {
+            val success = colorPhotoInteractor.removeColorPhoto(entity)
+            logger.debug("Photo removed {}", if (success) "successfully" else "unsuccessfully")
+            entities.remove(entity)
+            viewState.showHistory(entities)
+        }
     }
 
-    internal fun handleColorSelected(entity: ColorPhotoEntity) {
+    fun handleColorSelected(entity: ColorPhotoEntity) {
         mainRouter.openHistoryDetailsScreen(entity.filePath)
     }
 
-    internal fun handleSelectedImage(fileUri: Uri, bitmap: Bitmap) {
+    fun handleSelectedImage(fileUri: Uri, bitmap: Bitmap) {
         logger.debug("Image selected: {}", fileUri)
         viewState.showProgressBar()
-        execute<Boolean>(Observable.just(bitmap)
-            .flatMap { b -> Observable.fromCallable { Palette.from(b).generate() } }
-            .flatMap { palette ->
-                fileManagerInteractor.copyToLocalStorage(fileUri)
-                    .map { it to palette }
+
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while saving image: ", exception)
+            viewState.hideProgressBar()
+        }
+        presenterScope.launch(errorHandler) {
+            val palette = Palette.from(bitmap).generate()
+            val cacheFileUri = fileManagerInteractor.copyToLocalStorage(fileUri)
+            val swatches = ArrayList(palette.swatches)
+
+            //filtered by brightness
+            swatches.sortWith { lhs, rhs ->
+                lhs.hsl[2].compareTo(rhs.hsl[2])
             }
-            .map { filePalette ->
-                val colors = ArrayList(filePalette.second.swatches)
-                //filtered by brightness
-                colors.sortWith { lhs, rhs ->
-                    lhs.hsl[2].compareTo(rhs.hsl[2])
-                }
-                filePalette.first to colors
-            }
-            .flatMap { fileSwatches ->
-                val rgbColors = convertSwatches(fileSwatches.second)
-                val entity = ColorPhotoEntity(
-                    ColorPhotoEntity.Type.EXTERNAL,
-                    fileSwatches.first.toString(),
-                    rgbColors
-                )
-                colorPhotoInteractor.saveColorPhoto(entity)
-            },
-            { success ->
-                logger.debug("Image saved: {}", success)
-                viewState.hideProgressBar()
-                if (success) loadHistory()
-            },
-            { error ->
-                logger.warn("Error while saving image: ", error)
-                viewState.hideProgressBar()
-            })
+
+            val rgbColors = convertSwatches(swatches)
+            val entity = ColorPhotoEntity(
+                ColorPhotoEntity.Type.EXTERNAL,
+                cacheFileUri.toString(),
+                rgbColors
+            )
+            val success = colorPhotoInteractor.saveColorPhoto(entity)
+
+            logger.debug("Image saved: {}", success)
+            viewState.hideProgressBar()
+            if (success) loadHistory()
+        }
     }
 
     private fun loadHistory() {
-        execute(colorPhotoInteractor.loadColorPhotos(),
-            { entities ->
-                this.entities.clear()
-                this.entities.addAll(entities)
-                viewState.showHistory(entities)
-            },
-            { error -> logger.warn("Error while loading color photos: ", error) })
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while loading color photos: ", exception)
+        }
+        presenterScope.launch(errorHandler) {
+            val loadedEntities = colorPhotoInteractor.loadColorPhotos()
+            entities.clear()
+            entities.addAll(loadedEntities)
+            viewState.showHistory(loadedEntities)
+        }
     }
 
     private fun convertSwatches(swatches: List<Palette.Swatch>): List<Int> {

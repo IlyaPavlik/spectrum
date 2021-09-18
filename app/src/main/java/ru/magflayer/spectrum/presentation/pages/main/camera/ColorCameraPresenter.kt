@@ -1,11 +1,11 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.os.Bundle
 import androidx.palette.graphics.Palette
+import kotlinx.coroutines.*
 import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
@@ -20,24 +20,17 @@ import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
-import rx.Observable
-import rx.functions.Func1
-import rx.subjects.BehaviorSubject
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @InjectViewState
 class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
 
     companion object {
-        private const val SURFACE_UPDATE_DELAY_MILLIS = 300
+        private const val SURFACE_UPDATE_DELAY_MILLIS = 300L
 
         private const val SAVE_IMAGE_WIDTH = 640
         private const val SAVE_IMAGE_HEIGHT = 360
-
-        private const val TAG_SINGLE_COLOR = "TAG_SINGLE_COLOR"
-        private const val TAG_MULTIPLE_COLOR = "TAG_MULTIPLE_COLOR"
 
         private const val SAVE_FILE_FORMAT = "spectre_%d.png"
         private const val ZOOM_STEP_FACTOR = 20
@@ -67,11 +60,11 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
     @Inject
     lateinit var pageAppearanceInteractor: PageAppearanceInteractor
 
+    private val swatches = Collections.synchronizedList(ArrayList<Palette.Swatch>())
     private var previousColor = -1
-    private val changeObservable = BehaviorSubject.create<SurfaceInfo.Type>()
     private var currentDetailsColor: Int = 0
-    private var swatches: List<Palette.Swatch> = ArrayList()
     private var zoomStep = 1
+    private var colorMode: SurfaceInfo.Type = SurfaceInfo.Type.SINGLE
 
     override val pageAppearance: PageAppearance
         get() = PageAppearance.builder()
@@ -83,26 +76,6 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
             ToolbarAppearance.Visibility.INVISIBLE,
             ""
         )
-
-    init {
-        execute<SurfaceInfo>(changeObservable
-            .sample(SURFACE_UPDATE_DELAY_MILLIS.toLong(), TimeUnit.MILLISECONDS)
-            .flatMap { type ->
-                val bitmap = cameraManager.cameraBitmap
-                Observable.just(SurfaceInfo(type, bitmap!!))
-            },
-            {
-                val bitmap = it.bitmap
-                if (it.type === SurfaceInfo.Type.MULTIPLE) {
-                    handleCameraSurface(bitmap)
-                } else {
-                    handleColorDetails(bitmap)
-                }
-            },
-            {
-                logger.error("Error occurred while listening changing", it)
-            })
-    }
 
     override fun inject() {
         InjectorManager.appComponent?.inject(this)
@@ -126,11 +99,21 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         pageAppearanceInteractor.setPageAppearance(pageAppearance)
     }
 
-    internal fun updateSurface(type: SurfaceInfo.Type) {
-        changeObservable.onNext(type)
+    fun handleSurfaceUpdated() {
+        presenterScope.launch {
+            // add some delay to reduce CPU load
+            delay(SURFACE_UPDATE_DELAY_MILLIS)
+
+            cameraManager.cameraBitmap?.let { bitmap ->
+                when (colorMode) {
+                    SurfaceInfo.Type.SINGLE -> handleSingleColorImage(bitmap)
+                    SurfaceInfo.Type.MULTIPLE -> handleMultipleColorImage(bitmap)
+                }
+            }
+        }
     }
 
-    internal fun handleSurfaceAvailable(surface: SurfaceTexture) {
+    fun handleSurfaceAvailable(surface: SurfaceTexture) {
         try {
             cameraManager.startCamera(surface)
             cameraManager.updateCameraDisplayOrientation()
@@ -146,20 +129,39 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         }
     }
 
-    internal fun handleSurfaceDestroyed() {
+    fun handleSurfaceDestroyed() {
         cameraManager.stopPreview()
     }
 
-    internal fun handleFocusClicked() {
+    fun handleColorModeChanged(checked: Boolean) {
+        colorMode = when (checked) {
+            true -> {
+                viewState.showSingleColorMode()
+                SurfaceInfo.Type.SINGLE
+            }
+            false -> {
+                viewState.showMultipleColorMode()
+                SurfaceInfo.Type.MULTIPLE
+            }
+        }
+    }
+
+    fun handleFocusClicked() {
         cameraManager.autoFocus()
     }
 
-    internal fun handleSaveClicked(rotationDegree: Int) {
-        val bitmap = cameraManager.cameraBitmap
-        saveColorPicture(bitmap, swatches, rotationDegree)
+    fun handleSaveClicked(rotationDegree: Int) {
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.warn("Error while saving photo: ", exception)
+        }
+        presenterScope.launch(errorHandler) {
+            cameraManager.cameraBitmap?.let { bitmap ->
+                saveColorPicture(bitmap, swatches, rotationDegree)
+            }
+        }
     }
 
-    internal fun handleFlashClick(checked: Boolean) {
+    fun handleFlashClick(checked: Boolean) {
         if (checked) {
             cameraManager.enabledFlash()
         } else {
@@ -167,7 +169,7 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         }
     }
 
-    internal fun handleCameraZoom(direction: Int) {
+    fun handleCameraZoom(direction: Int) {
         if (!cameraManager.isZoomSupported()) return
 
         val maxZoom = cameraManager.getMaxZoom()
@@ -191,97 +193,106 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         viewState.changeZoomProgress(zoom)
     }
 
-    private fun handleCameraSurface(bitmap: Bitmap) {
-        execute<List<Palette.Swatch>>(TAG_MULTIPLE_COLOR, Observable.just(bitmap)
-            .flatMap { bitmap1 -> Observable.just(Palette.from(bitmap1).generate()) }
-            .filter { palette ->
-                //to reduce times of updating
-                val dominantSwatch = palette.dominantSwatch
-                if (dominantSwatch != null) {
-                    val currentColor = dominantSwatch.rgb
-                    val needRefresh = currentColor != previousColor
-                    if (currentColor != previousColor) {
-                        previousColor = currentColor
-                    }
-                    needRefresh
-                } else {
-                    true
-                }
-            }
-            .map { palette ->
-                val colors = ArrayList(palette.swatches)
-                //filtered by brightness
-                colors.sortWith { lhs, rhs ->
-                    lhs.hsl[2].compareTo(rhs.hsl[2])
-                }
-                colors
-            }
-        ) {
-            viewState.showColors(it)
-            swatches = ArrayList(it)
-        }
-    }
+    private suspend fun handleSingleColorImage(bitmap: Bitmap) = withContext(Dispatchers.Default) {
+        val centerX = bitmap.width / 2
+        val centerY = bitmap.height / 2
 
-    private fun handleColorDetails(bmp: Bitmap) {
-        val centerX = bmp.width / 2
-        val centerY = bmp.height / 2
+        val pixel = bitmap.getPixel(centerX, centerY)
+        val colorSwatch = Palette.Swatch(pixel, 1)
+        if (colorSwatch.rgb != 0) {
+            val hexColor = ColorHelper.dec2Hex(colorSwatch.rgb)
+            val errorHandler = CoroutineExceptionHandler { _, exception ->
+                logger.error("Error while finding color name: ", exception)
+            }
+            presenterScope.launch(errorHandler) {
+                val colorName = colorInfoInteractor.findColorNameByHex(hexColor)
+                currentDetailsColor = colorSwatch.rgb
 
-        val color = Palette.Swatch(bmp.getPixel(centerX, centerY), 1)
-        if (color.rgb != 0) {
-            val hexColor = ColorHelper.dec2Hex(color.rgb)
-            execute(TAG_SINGLE_COLOR, colorInfoInteractor.findColorNameByHex(hexColor),
-                { colorName ->
-                    currentDetailsColor = color.rgb
-                    viewState.showColorDetails(color.rgb, color.titleTextColor)
+                swatches.clear()
+                swatches.addAll(listOf(Palette.Swatch(colorSwatch.rgb, Integer.MAX_VALUE)))
+
+                presenterScope.launch {
+                    viewState.showColorDetails(colorSwatch.rgb, colorSwatch.titleTextColor)
                     viewState.showColorName(colorName)
-
-                    swatches = listOf(Palette.Swatch(color.rgb, Integer.MAX_VALUE))
-                },
-                { error -> logger.error("Error while finding color name: ", error) })
+                }
+            }
         }
     }
 
-    internal fun openHistory() {
+    private suspend fun handleMultipleColorImage(bitmap: Bitmap) =
+        withContext(Dispatchers.Default) {
+            val palette = Palette.from(bitmap).generate()
+
+            if (palette.swatches.isEmpty()) {
+                return@withContext
+            }
+
+            //to reduce times of updating
+            val dominantSwatch = palette.dominantSwatch
+            if (dominantSwatch != null) {
+                val currentColor = dominantSwatch.rgb
+                val needRefresh = currentColor != previousColor
+                if (currentColor != previousColor) {
+                    previousColor = currentColor
+                }
+                if (!needRefresh) {
+                    return@withContext
+                }
+            }
+            val colors = ArrayList(palette.swatches)
+
+            //filtered by brightness
+            colors.sortWith { lhs, rhs -> lhs.hsl[2].compareTo(rhs.hsl[2]) }
+
+            swatches.clear()
+            swatches.addAll(colors)
+
+            presenterScope.launch {
+                viewState.showColors(colors)
+            }
+        }
+
+    internal fun handleMenuClicked() {
         mainRouter.openHistoryScreen()
     }
 
-    @SuppressLint("DefaultLocale")
-    private fun saveColorPicture(
-        bitmap: Bitmap?,
+    private suspend fun saveColorPicture(
+        bitmap: Bitmap,
         swatches: List<Palette.Swatch>,
         rotationDegree: Int
-    ) {
-        viewState.showProgressBar()
+    ) = withContext(Dispatchers.Default) {
+        presenterScope.launch { viewState.showProgressBar() }
 
         sendTakePhotoAnalytics()
 
-        execute<Boolean>(Observable.just<Bitmap>(bitmap)
-            .map(scaleBitmapWithRotate(rotationDegree))
-            .flatMap { bitmap1 -> Observable.fromCallable { bitmap1.convertBitmapToBytes() } }
-            .flatMap { bytes ->
-                val fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis())
-                fileManagerInteractor.saveFileToExternalStorage(fileName, bytes)
-            }
-            .flatMap { uri ->
-                val rgbColors = convertSwatches(swatches)
-                val entity =
-                    ColorPhotoEntity(ColorPhotoEntity.Type.INTERNAL, uri.path ?: "", rgbColors)
-                colorPhotoInteractor.saveColorPhoto(entity)
-            },
-            {
-                viewState.hideProgressBar()
-                viewState.showPictureSavedToast()
-            },
-            { error -> logger.warn("Error while saving photo: ", error) })
+        val scaledBitmap = scaleBitmapWithRotate(bitmap, rotationDegree)
+        val bitmapBytes = scaledBitmap.convertBitmapToBytes()
+        val fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis())
+        val savedFileUri = fileManagerInteractor.saveFileToExternalStorage(
+            fileName,
+            bitmapBytes
+        )
+        val rgbColors = convertSwatches(swatches)
+        val entity = ColorPhotoEntity(
+            ColorPhotoEntity.Type.INTERNAL,
+            savedFileUri.path ?: "",
+            rgbColors
+        )
+
+        colorPhotoInteractor.saveColorPhoto(entity)
+
+        presenterScope.launch {
+            viewState.hideProgressBar()
+            viewState.showPictureSavedToast()
+        }
     }
 
     private fun sendTakePhotoAnalytics() {
         val bundle = Bundle()
-        val mode =
-            if (changeObservable.hasValue() && changeObservable.value === SurfaceInfo.Type.MULTIPLE)
-                AnalyticsEvent.TAKE_PHOTO_MODE_MULTIPLE
-            else
-                AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE
+        val mode = when (colorMode) {
+            SurfaceInfo.Type.SINGLE -> AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE
+            SurfaceInfo.Type.MULTIPLE -> AnalyticsEvent.TAKE_PHOTO_MODE_MULTIPLE
+        }
         bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode)
         bundle.putBoolean(AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT, cameraManager.isFlashlightEnabled())
         bundle.putString(AnalyticsEvent.TAKE_PHOTO_ZOOM, "${cameraManager.getZoomRatio()}%")
@@ -293,21 +304,19 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         return swatches.map { it.rgb }
     }
 
-    private fun scaleBitmapWithRotate(degrees: Int): Func1<Bitmap, Bitmap> {
-        return Func1 { bitmap ->
-            val matrix = Matrix()
-            matrix.postRotate(degrees.toFloat())
-            val scaledBitmap =
-                Bitmap.createScaledBitmap(bitmap, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false)
-            Bitmap.createBitmap(
-                scaledBitmap,
-                0,
-                0,
-                scaledBitmap.width,
-                scaledBitmap.height,
-                matrix,
-                true
-            )
-        }
+    private fun scaleBitmapWithRotate(sourceBitmap: Bitmap, degrees: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees.toFloat())
+        val scaledBitmap =
+            Bitmap.createScaledBitmap(sourceBitmap, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false)
+        return Bitmap.createBitmap(
+            scaledBitmap,
+            0,
+            0,
+            scaledBitmap.width,
+            scaledBitmap.height,
+            matrix,
+            true
+        )
     }
 }

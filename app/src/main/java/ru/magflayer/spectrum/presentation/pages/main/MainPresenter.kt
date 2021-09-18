@@ -27,9 +27,10 @@ class MainPresenter : BasePresenter<MainView>() {
 
     override fun onFirstViewAttach() {
         mainRouter.openCameraScreen()
-        execute(pageAppearanceInteractor.observePageAppearance()) { pageAppearance ->
-            handlePageAppearanceChanged(pageAppearance)
-        }
+        execute(
+            pageAppearanceInteractor.observePageAppearance(),
+            onSuccess = { pageAppearance -> handlePageAppearanceChanged(pageAppearance) }
+        )
     }
 
     override fun attachView(view: MainView) {

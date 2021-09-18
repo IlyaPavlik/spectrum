@@ -1,5 +1,8 @@
 package ru.magflayer.spectrum.data.database
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.magflayer.spectrum.data.entity.ColorName
 import ru.magflayer.spectrum.data.entity.NcsColor
 import ru.magflayer.spectrum.data.entity.converter.ColorNameConverter
@@ -8,51 +11,47 @@ import ru.magflayer.spectrum.domain.entity.ColorInfoEntity
 import ru.magflayer.spectrum.domain.repository.ColorInfoRepository
 
 class ColorInfoRepositoryImpl(private val appDatabase: AppDatabase) : ColorInfoRepository {
+
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     private val colorNameConverter = ColorNameConverter()
     private val ncsColorConverter = NcsColorConverter()
 
-    @Synchronized
-    override fun uploadColorNames(hexName: Map<String, String>): Boolean {
-        val colorNames = hexName.map { ColorName(it.key, it.value) }.toTypedArray()
-        return appDatabase.colorNameDao().saveColorNames(*colorNames).isNotEmpty()
+    override suspend fun uploadColorNames(hexName: Map<String, String>): Boolean =
+        withContext(dispatcher) {
+            val colorNames = hexName.map { ColorName(it.key, it.value) }.toTypedArray()
+            appDatabase.colorNameDao().saveColorNames(*colorNames).isNotEmpty()
+        }
+
+    override suspend fun isColorNamesUploaded(): Boolean = withContext(dispatcher) {
+        appDatabase.colorNameDao().rowCount > 0
     }
 
-    @Synchronized
-    override fun isColorNamesUploaded(): Boolean {
-        return appDatabase.colorNameDao().rowCount > 0
-    }
-
-    @Synchronized
-    override fun loadColorNames(): List<ColorInfoEntity> {
+    override suspend fun loadColorNames(): List<ColorInfoEntity> = withContext(dispatcher) {
         val colorNames = appDatabase.colorNameDao().loadColorNames()
-        return colorNameConverter.convertToEntities(colorNames)
+        colorNameConverter.convertToEntities(colorNames)
     }
 
-    @Synchronized
-    override fun loadColorNameByHex(hex: String): String {
-        return appDatabase.colorNameDao().loadColorNameByHex(hex).name
+    override suspend fun loadColorNameByHex(hex: String): String = withContext(dispatcher) {
+        appDatabase.colorNameDao().loadColorNameByHex(hex).name
     }
 
-    @Synchronized
-    override fun uploadNcsColors(hexName: Map<String, String>): Boolean {
-        val ncsColors = hexName.map { NcsColor(it.key, it.value) }.toTypedArray()
-        return appDatabase.ncsColorDao().saveNcsColors(*ncsColors).isNotEmpty()
+    override suspend fun uploadNcsColors(hexName: Map<String, String>): Boolean =
+        withContext(dispatcher) {
+            val ncsColors = hexName.map { NcsColor(it.key, it.value) }.toTypedArray()
+            appDatabase.ncsColorDao().saveNcsColors(*ncsColors).isNotEmpty()
+        }
+
+    override suspend fun isNcsColorUploaded(): Boolean = withContext(dispatcher) {
+        appDatabase.ncsColorDao().rowCount > 0
     }
 
-    @Synchronized
-    override fun isNcsColorUploaded(): Boolean {
-        return appDatabase.ncsColorDao().rowCount > 0
-    }
-
-    @Synchronized
-    override fun loadNcsColors(): List<ColorInfoEntity> {
+    override suspend fun loadNcsColors(): List<ColorInfoEntity> = withContext(dispatcher) {
         val ncsColors = appDatabase.ncsColorDao().loadNcsColors()
-        return ncsColorConverter.convertToEntities(ncsColors)
+        ncsColorConverter.convertToEntities(ncsColors)
     }
 
-    @Synchronized
-    override fun loadNcsColorByHex(hex: String): String {
+    override suspend fun loadNcsColorByHex(hex: String): String = withContext(dispatcher) {
         val (_, name) = appDatabase.ncsColorDao().loadNcsColorByHex(hex)
-        return name
+        name
     }
 }

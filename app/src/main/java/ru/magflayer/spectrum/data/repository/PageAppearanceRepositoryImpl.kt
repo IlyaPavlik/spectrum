@@ -1,34 +1,36 @@
 package ru.magflayer.spectrum.data.repository
 
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.magflayer.spectrum.domain.entity.event.FabClickEvent
 import ru.magflayer.spectrum.domain.repository.PageAppearanceRepository
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
-import rx.Observable
-import rx.subjects.BehaviorSubject
-import rx.subjects.PublishSubject
 
-class PageAppearanceRepositoryImpl : PageAppearanceRepository {
+class PageAppearanceRepositoryImpl : BaseSingleModelRepository<PageAppearance>(),
+    PageAppearanceRepository {
 
-    private val pageAppearanceBehavior = BehaviorSubject.create<PageAppearance>()
-    private val fabEventPublish = PublishSubject.create<FabClickEvent>()
+    private val fabSharedFlow by lazy {
+        MutableSharedFlow<FabClickEvent>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+    }
 
     override fun setPageAppearance(pageAppearance: PageAppearance) {
-        pageAppearanceBehavior.onNext(pageAppearance)
+        emitModel(pageAppearance)
     }
 
-    override fun getPageAppearance(): PageAppearance? {
-        return pageAppearanceBehavior.value
-    }
-
-    override fun observePageAppearance(): Observable<PageAppearance> {
-        return pageAppearanceBehavior
+    override fun observePageAppearance(): Flow<PageAppearance> {
+        return modelNotNullStateFlow
     }
 
     override fun publishFabEvent() {
-        fabEventPublish.onNext(FabClickEvent())
+        fabSharedFlow.tryEmit(FabClickEvent())
     }
 
-    override fun observeFabEvent(): Observable<FabClickEvent> {
-        return fabEventPublish
+    override fun observeFabEvent(): Flow<FabClickEvent> {
+        return fabSharedFlow
     }
 }

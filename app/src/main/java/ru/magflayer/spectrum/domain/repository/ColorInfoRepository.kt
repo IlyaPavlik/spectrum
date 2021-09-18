@@ -4,20 +4,20 @@ import ru.magflayer.spectrum.domain.entity.ColorInfoEntity
 
 interface ColorInfoRepository {
 
-    fun isColorNamesUploaded(): Boolean
+    suspend fun isColorNamesUploaded(): Boolean
 
-    fun isNcsColorUploaded(): Boolean
+    suspend fun isNcsColorUploaded(): Boolean
 
-    fun uploadColorNames(hexName: Map<String, String>): Boolean
+    suspend fun uploadColorNames(hexName: Map<String, String>): Boolean
 
-    fun loadColorNames(): List<ColorInfoEntity>
+    suspend fun loadColorNames(): List<ColorInfoEntity>
 
-    fun loadColorNameByHex(hex: String): String
+    suspend fun loadColorNameByHex(hex: String): String
 
-    fun uploadNcsColors(hexName: Map<String, String>): Boolean
+    suspend fun uploadNcsColors(hexName: Map<String, String>): Boolean
 
-    fun loadNcsColors(): List<ColorInfoEntity>
+    suspend fun loadNcsColors(): List<ColorInfoEntity>
 
-    fun loadNcsColorByHex(hex: String): String
+    suspend fun loadNcsColorByHex(hex: String): String
 
 }

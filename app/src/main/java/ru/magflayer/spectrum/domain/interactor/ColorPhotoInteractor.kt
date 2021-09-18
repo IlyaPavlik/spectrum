@@ -3,7 +3,6 @@ package ru.magflayer.spectrum.domain.interactor
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.repository.FileManagerRepository
 import ru.magflayer.spectrum.domain.repository.PhotoRepository
-import rx.Observable
 import java.io.File
 import javax.inject.Inject
 
@@ -12,37 +11,32 @@ class ColorPhotoInteractor @Inject constructor(
     private val fileManagerRepository: FileManagerRepository
 ) {
 
-    fun saveColorPhoto(entity: ColorPhotoEntity): Observable<Boolean> {
+    suspend fun saveColorPhoto(entity: ColorPhotoEntity): Boolean {
         return photoRepository.savePhoto(entity)
     }
 
-    fun loadColorPhotos(): Observable<List<ColorPhotoEntity>> {
+    suspend fun loadColorPhotos(): List<ColorPhotoEntity> {
         return photoRepository.loadPhotos()
-            .flatMap { photos -> Observable.from(photos) }
-            .flatMap { photo -> // filter whether a file is exists
-                fileManagerRepository.isFileExists(photo.filePath)
-                    .filter { it }
-                    .flatMap { exists ->
-                        if (!exists) {
-                            photoRepository.removePhoto(photo)
-                        } else Observable.just(true)
+            .map { colorPhoto ->
+                colorPhoto.also {
+                    val fileExists = fileManagerRepository.isFileExists(colorPhoto.filePath)
+                    if (!fileExists) {
+                        photoRepository.removePhoto(colorPhoto)
                     }
-                    .map { photo }
-            }
-            .toSortedList { photo1, photo2 -> photo2.millis.compareTo(photo1.millis) }
-    }
-
-    fun removeColorPhoto(entity: ColorPhotoEntity): Observable<Boolean> {
-        return photoRepository.removePhoto(entity)
-            .map { success ->
-                if (entity.type === ColorPhotoEntity.Type.INTERNAL) {
-                    File(entity.filePath).delete()
                 }
-                success
             }
+            .sortedByDescending { colorPhoto -> colorPhoto.millis }
     }
 
-    fun loadColorPhoto(filePath: String): Observable<ColorPhotoEntity> {
+    suspend fun removeColorPhoto(entity: ColorPhotoEntity): Boolean {
+        val success = photoRepository.removePhoto(entity)
+        if (entity.type === ColorPhotoEntity.Type.INTERNAL) {
+            File(entity.filePath).delete()
+        }
+        return success
+    }
+
+    suspend fun loadColorPhoto(filePath: String): ColorPhotoEntity {
         return photoRepository.loadPhoto(filePath)
     }
 

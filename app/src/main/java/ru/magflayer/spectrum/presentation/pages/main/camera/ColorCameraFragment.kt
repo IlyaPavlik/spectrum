@@ -18,7 +18,6 @@ import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
 import ru.magflayer.spectrum.presentation.common.extension.rotate
 import ru.magflayer.spectrum.presentation.common.extension.visible
-import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo
 
 class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
     TextureView.SurfaceTextureListener, ColorCameraView {
@@ -74,11 +73,13 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
             orientationEventListener?.disable()
         }
 
-        updateMode(viewBinding.toggleMode.isChecked)
         setOrientation(currentOrientation)
 
+        viewBinding.toggleMode.setOnCheckedChangeListener { _, checked ->
+            presenter.handleColorModeChanged(checked)
+        }
         viewBinding.camera.setOnClickListener { presenter.handleFocusClicked() }
-        viewBinding.menu.setOnClickListener { presenter.openHistory() }
+        viewBinding.menu.setOnClickListener { presenter.handleMenuClicked() }
         viewBinding.save.setOnClickListener { presenter.handleSaveClicked(if (currentOrientation == Orientation.LANDSCAPE) 0 else 90) }
         viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
     }
@@ -125,9 +126,6 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
                 }
             }
         }
-        viewBinding.colorRecycler.visibility =
-            if (viewBinding.toggleMode.isChecked) View.GONE else View.VISIBLE
-        viewBinding.toggleMode.setOnCheckedChangeListener { _, isChecked -> updateMode(isChecked) }
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
@@ -146,7 +144,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-        presenter.updateSurface(if (viewBinding.toggleMode.isChecked) SurfaceInfo.Type.SINGLE else SurfaceInfo.Type.MULTIPLE)
+        presenter.handleSurfaceUpdated()
     }
 
     override fun showPictureSavedToast() {
@@ -208,6 +206,18 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
         }
     }
 
+    override fun showSingleColorMode() = with(viewBinding) {
+        colorDetails.visible(true)
+        pointDetector.visible(true)
+        colorRecycler.visible(false)
+    }
+
+    override fun showMultipleColorMode() = with(viewBinding) {
+        colorDetails.visible(false)
+        pointDetector.visible(false)
+        colorRecycler.visible(true)
+    }
+
     private fun showTopMenu() = with(viewBinding) {
         if (rightMenu.visibility != View.VISIBLE) {
             rightMenu.visibility = View.VISIBLE
@@ -257,25 +267,12 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
 
     private fun isPortrait(orientation: Int): Boolean {
         return (orientation <= ROTATION_INTERVAL || orientation >= 360 - ROTATION_INTERVAL // [350 : 10]
-
                 || orientation <= 180 + ROTATION_INTERVAL && orientation >= 180 - ROTATION_INTERVAL) //[170 : 190]
     }
 
     private fun isLandscape(orientation: Int): Boolean {
         return (orientation <= 90 + ROTATION_INTERVAL && orientation >= 90 - ROTATION_INTERVAL // [100 : 80]
                 || orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL) // [280 : 260]
-    }
-
-    private fun updateMode(single: Boolean) = with(viewBinding) {
-        if (single) {
-            colorDetails.visible(true)
-            pointDetector.visible(true)
-            colorRecycler.visible(false)
-        } else {
-            colorDetails.visible(false)
-            pointDetector.visible(false)
-            colorRecycler.visible(true)
-        }
     }
 
     private enum class Orientation(val degree: Int) {

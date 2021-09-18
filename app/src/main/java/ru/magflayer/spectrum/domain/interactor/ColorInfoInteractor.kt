@@ -1,7 +1,6 @@
 package ru.magflayer.spectrum.domain.interactor
 
 import com.google.gson.Gson
-import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.ColorInfoEntity
 import ru.magflayer.spectrum.domain.entity.ColorInfoState
@@ -9,17 +8,15 @@ import ru.magflayer.spectrum.domain.entity.ListType
 import ru.magflayer.spectrum.domain.entity.NcsColorEntity
 import ru.magflayer.spectrum.domain.repository.ColorInfoRepository
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
-import rx.Observable
-import rx.functions.Func1
 import java.io.InputStream
 import java.nio.charset.Charset
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @Singleton
-class ColorInfoInteractor @Inject
-internal constructor(
+class ColorInfoInteractor @Inject constructor(
     private val colorInfoRepository: ColorInfoRepository,
     private val resourceManager: ResourceManager,
     private val gson: Gson
@@ -30,30 +27,23 @@ internal constructor(
         private const val NCS_COLORS_ASSET_NAME = "ncs.json"
     }
 
-    private val log = LoggerFactory.getLogger(javaClass)
-
-    fun uploadColorInfo(): Observable<ColorInfoState> {
-        val observables = Arrays.asList(
-            uploadColorNamesObservable(),
-            uploadNcsColorsObservable()
-        )
-        return Observable.merge(observables)
+    suspend fun uploadColorInfo(): ColorInfoState {
+        val colorNamesState = uploadColorNames()
+        val ncsColorsState = uploadNcsColors()
+        return if (colorNamesState == ColorInfoState.SUCCESS && ncsColorsState == ColorInfoState.SUCCESS) {
+            ColorInfoState.SUCCESS
+        } else {
+            ColorInfoState.ERROR
+        }
     }
 
-    fun findColorNameByHex(hex: String): Observable<String> {
-        val sourceColorRgb: IntArray
-        try {
-            val sourceColor = ColorHelper.parseHex2Dec(hex)
-            sourceColorRgb = ColorHelper.dec2Rgb(sourceColor)
-        } catch (e: Exception) {
-            return Observable.error(e)
-        }
-
-        return Observable.fromCallable<List<ColorInfoEntity>> { colorInfoRepository.loadColorNames() }
-            .flatMap { Observable.from(it) }
-            .map { it.id }
-            .reduce(ColorError("", java.lang.Double.MAX_VALUE)) { currentMin, s ->
-                var colorNameHex = s
+    suspend fun findColorNameByHex(hex: String): String {
+        val sourceColor = ColorHelper.parseHex2Dec(hex)
+        val sourceColorRgb = ColorHelper.dec2Rgb(sourceColor)
+        val colorError = colorInfoRepository.loadColorNames()
+            .map { ColorError(it.id, java.lang.Double.MAX_VALUE) }
+            .reduce { currentMin, colorError ->
+                var colorNameHex = colorError.id
                 if (colorNameHex.isEmpty()) colorNameHex = "#000000"
 
                 val ncsColor = ColorHelper.parseHex2Dec(colorNameHex)
@@ -64,117 +54,91 @@ internal constructor(
                 val colorHex = if (currentMin.error > error) colorNameHex else currentMin.id
                 ColorError(colorHex, result)
             }
-            .filter { currentMin -> currentMin.error != Integer.MAX_VALUE.toDouble() }
-            .map { stringIntegerPair -> stringIntegerPair.id }
-            .flatMap { h -> Observable.fromCallable { colorInfoRepository.loadColorNameByHex(h) } }
+
+        return if (colorError.error != Integer.MAX_VALUE.toDouble()) {
+            colorInfoRepository.loadColorNameByHex(colorError.id)
+        } else {
+            throw Exception("Color name is not found")
+        }
     }
 
-    fun findNcsColorByHex(hex: String): Observable<String> {
-        val sourceColorRgb: IntArray
-        try {
-            val sourceColor = ColorHelper.parseHex2Dec(hex)
-            sourceColorRgb = ColorHelper.dec2Rgb(sourceColor)
-        } catch (e: Exception) {
-            return Observable.error(e)
-        }
-
-        return Observable.fromCallable<List<ColorInfoEntity>> { colorInfoRepository.loadNcsColors() }
-            .flatMap { Observable.from(it) }
-            .map { it.id }
-            .reduce(ColorError("", java.lang.Double.MAX_VALUE)) { currentMin, s ->
-                val ncsColor = ColorHelper.parseHex2Dec(s)
+    suspend fun findNcsColorByHex(hex: String): String {
+        val sourceColor = ColorHelper.parseHex2Dec(hex)
+        val sourceColorRgb = ColorHelper.dec2Rgb(sourceColor)
+        val colorError = colorInfoRepository.loadNcsColors()
+            .map { ColorError(it.id, java.lang.Double.MAX_VALUE) }
+            .reduce { currentMin, colorError ->
+                val ncsColor = ColorHelper.parseHex2Dec(colorError.id)
                 val ncsColorRgb = ColorHelper.dec2Rgb(ncsColor)
 
                 val error = calculateColorDifference(sourceColorRgb, ncsColorRgb)
                 val result = if (currentMin.error > error) error else currentMin.error
-                val colorHex = if (currentMin.error > error) s else currentMin.id
+                val colorHex = if (currentMin.error > error) colorError.id else currentMin.id
                 ColorError(colorHex, result)
             }
-            .filter { currentMin -> currentMin.error != Integer.MAX_VALUE.toDouble() }
-            .map { stringIntegerPair -> stringIntegerPair.id }
-            .flatMap { h -> Observable.fromCallable { colorInfoRepository.loadNcsColorByHex(h) } }
+
+        return if (colorError.error != Integer.MAX_VALUE.toDouble()) {
+            colorInfoRepository.loadNcsColorByHex(colorError.id)
+        } else {
+            throw Exception("NCS color is not found")
+        }
     }
 
-    private fun uploadColorNamesObservable(): Observable<ColorInfoState> {
-        return Observable.fromCallable<Boolean> { colorInfoRepository.isColorNamesUploaded() }
-            .flatMap { colorNamesUploaded ->
-                if (colorNamesUploaded) {
-                    Observable.just(ColorInfoState.SUCCESS)
-                } else {
-                    loadColorNames()
-                        .flatMap { Observable.from(it) }
-                        .toMap({ it.id }, { it.name })
-                        .map { hexName ->
-                            if (colorInfoRepository.uploadColorNames(hexName))
-                                ColorInfoState.SUCCESS
-                            else
-                                ColorInfoState.ERROR
-                        }
-                }
-            }
-            .onErrorReturn { error ->
-                log.warn("Error while uploading color names: ", error)
+    private suspend fun uploadColorNames(): ColorInfoState {
+        val colorNamesUploaded = colorInfoRepository.isColorNamesUploaded()
+        return if (colorNamesUploaded) {
+            ColorInfoState.SUCCESS
+        } else {
+            val colorNames = loadColorNames().map { it.id to it.name }.toMap()
+            if (colorInfoRepository.uploadColorNames(colorNames)) {
+                ColorInfoState.SUCCESS
+            } else {
                 ColorInfoState.ERROR
-            }
-    }
-
-    private fun uploadNcsColorsObservable(): Observable<ColorInfoState> {
-        return Observable.fromCallable<Boolean> { colorInfoRepository.isNcsColorUploaded() }
-            .flatMap { ncsColorUploaded ->
-                if (ncsColorUploaded) {
-                    Observable.just(ColorInfoState.SUCCESS)
-                } else {
-                    loadNscColors()
-                        .flatMap { Observable.from(it) }
-                        .toMap({ it.value }, { it.name })
-                        .map { hexName ->
-                            if (colorInfoRepository.uploadNcsColors(hexName))
-                                ColorInfoState.SUCCESS
-                            else
-                                ColorInfoState.ERROR
-                        }
-                }
-            }
-            .onErrorReturn { error ->
-                log.warn("Error while uploading ncs colors: ", error)
-                ColorInfoState.ERROR
-            }
-    }
-
-    private fun loadColorNames(): Observable<List<ColorInfoEntity>> {
-        return Observable.fromCallable { resourceManager.getAsset(COLOR_NAMES_ASSET_NAME) }
-            .flatMap(convertInputStreamToString())
-            .map(fromJsonToList(ColorInfoEntity::class.java))
-    }
-
-    private fun loadNscColors(): Observable<List<NcsColorEntity>> {
-        return Observable.fromCallable { resourceManager.getAsset(NCS_COLORS_ASSET_NAME) }
-            .flatMap(convertInputStreamToString())
-            .map(fromJsonToList(NcsColorEntity::class.java))
-    }
-
-    private fun convertInputStreamToString(): Func1<InputStream, Observable<String>> {
-        return Func1 {
-            Observable.fromCallable {
-                val size = it.available()
-                val buffer = ByteArray(size)
-                it.read(buffer)
-                it.close()
-                String(buffer, Charset.forName("UTF-8"))
             }
         }
     }
 
-    private fun <T> fromJsonToList(clazz: Class<T>): Func1<String, List<T>> {
-        return Func1 { gson.fromJson<List<T>>(it, ListType(clazz)) }
+    private suspend fun uploadNcsColors(): ColorInfoState {
+        val ncsColorsUploaded = colorInfoRepository.isNcsColorUploaded()
+        return if (ncsColorsUploaded) {
+            ColorInfoState.SUCCESS
+        } else {
+            val nscColors = loadNscColors().map { it.value to it.name }.toMap()
+
+            if (colorInfoRepository.uploadNcsColors(nscColors)) {
+                ColorInfoState.SUCCESS
+            } else {
+                ColorInfoState.ERROR
+            }
+        }
+    }
+
+    private fun loadColorNames(): List<ColorInfoEntity> {
+        val inputStream = resourceManager.getAsset(COLOR_NAMES_ASSET_NAME)
+        val jsonColorNames = convertInputStreamToString(inputStream)
+        return gson.fromJson(jsonColorNames, ListType(ColorInfoEntity::class.java))
+    }
+
+    private fun loadNscColors(): List<NcsColorEntity> {
+        val inputStream = resourceManager.getAsset(NCS_COLORS_ASSET_NAME)
+        val jsonNcsColors = convertInputStreamToString(inputStream)
+        return gson.fromJson(jsonNcsColors, ListType(NcsColorEntity::class.java))
+    }
+
+    private fun convertInputStreamToString(inputStream: InputStream): String {
+        val size = inputStream.available()
+        val buffer = ByteArray(size)
+        inputStream.read(buffer)
+        inputStream.close()
+        return String(buffer, Charset.forName("UTF-8"))
     }
 
     private fun calculateColorDifference(colorOneRgb: IntArray, colorTwoRgb: IntArray): Double {
-        val error = (Math.pow((colorTwoRgb[0] - colorOneRgb[0]).toDouble(), 2.0)
-                + Math.pow((colorTwoRgb[1] - colorOneRgb[1]).toDouble(), 2.0)
-                + Math.pow((colorTwoRgb[2] - colorOneRgb[2]).toDouble(), 2.0))
-        return Math.sqrt(error)
+        val error = ((colorTwoRgb[0] - colorOneRgb[0]).toDouble().pow(2.0)
+                + (colorTwoRgb[1] - colorOneRgb[1]).toDouble().pow(2.0)
+                + (colorTwoRgb[2] - colorOneRgb[2]).toDouble().pow(2.0))
+        return sqrt(error)
     }
 
-    private class ColorError internal constructor(val id: String, val error: Double)
+    private class ColorError(val id: String, val error: Double)
 }
