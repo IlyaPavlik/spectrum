@@ -12,19 +12,36 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.databinding.FragmentHistoryDetailsBinding
 import ru.magflayer.spectrum.databinding.ItemHistoryColorBinding
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 
 class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), HistoryDetailsView {
+
+    companion object {
+
+        private const val PHOTO_PATH_KEY = "PHOTO_PATH_KEY"
+
+        fun newInstance(filePath: String): HistoryDetailsFragment {
+            val args = Bundle()
+            args.putString(PHOTO_PATH_KEY, filePath)
+
+            val fragment = HistoryDetailsFragment()
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     private val viewBinding by viewBinding(FragmentHistoryDetailsBinding::bind)
 
@@ -33,14 +50,20 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
 
     private lateinit var colorAdapter: ColorAdapter
 
-    @ProvidePresenter
-    fun providePresenter(): HistoryDetailsPresenter {
-        val arguments = arguments
-        return HistoryDetailsPresenter(arguments!!.getString(PHOTO_PATH_KEY)!!)
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface HistoryDetailsEntryPoint {
+        fun historyDetailsPresenter(): HistoryDetailsPresenter
     }
 
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
+    @ProvidePresenter
+    fun providePresenter(): HistoryDetailsPresenter {
+        return EntryPointAccessors.fromActivity(
+            requireActivity(),
+            HistoryDetailsEntryPoint::class.java
+        ).historyDetailsPresenter().apply {
+            filePath = requireArguments().getString(PHOTO_PATH_KEY)!!
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -245,21 +268,6 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
 
             val colorView: ImageView
                 get() = viewBinding.color
-        }
-    }
-
-    companion object {
-
-        private const val PHOTO_PATH_KEY = "PHOTO_PATH_KEY"
-
-        fun newInstance(filePath: String): HistoryDetailsFragment {
-
-            val args = Bundle()
-            args.putString(PHOTO_PATH_KEY, filePath)
-
-            val fragment = HistoryDetailsFragment()
-            fragment.arguments = args
-            return fragment
         }
     }
 }

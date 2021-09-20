@@ -1,10 +1,13 @@
-package ru.magflayer.spectrum.domain.injection
+package ru.magflayer.spectrum.di
 
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import ru.magflayer.spectrum.data.database.AppDatabase
 import ru.magflayer.spectrum.data.repository.ColorInfoRepositoryImpl
 import ru.magflayer.spectrum.data.repository.PageAppearanceRepositoryImpl
@@ -15,53 +18,47 @@ import ru.magflayer.spectrum.domain.repository.*
 import javax.inject.Singleton
 
 @Module
-class AppModule(private val context: Context) {
+@InstallIn(SingletonComponent::class)
+object AppModule {
 
     @Provides
-    fun provideContext(): Context {
-        return context
-    }
-
     @Singleton
-    @Provides
-    fun provideGson(): Gson {
-        return Gson()
-    }
+    fun provideGson(): Gson = Gson()
 
-    @Singleton
     @Provides
-    fun provideAppDatabase(): AppDatabase {
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
             .fallbackToDestructiveMigration()
             .build()
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun providePhotoRepository(appDatabase: AppDatabase): PhotoRepository {
         return PhotoRepositoryImpl(appDatabase)
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideFileManagerRepository(localFileManager: LocalFileManager): FileManagerRepository {
         return localFileManager
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideColorInfoRepository(appDatabase: AppDatabase): ColorInfoRepository {
         return ColorInfoRepositoryImpl(appDatabase)
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideToolbarAppearanceRepository(): ToolbarAppearanceRepository {
         return ToolbarAppearanceRepositoryImpl()
     }
 
-    @Singleton
     @Provides
+    @Singleton
     fun providePageAppearanceRepository(): PageAppearanceRepository {
         return PageAppearanceRepositoryImpl()
     }

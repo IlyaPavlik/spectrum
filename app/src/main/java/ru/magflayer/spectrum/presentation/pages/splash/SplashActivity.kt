@@ -7,13 +7,17 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import moxy.presenter.InjectPresenter
-import ru.magflayer.spectrum.R
-
-import ru.magflayer.spectrum.domain.injection.InjectorManager
+import moxy.presenter.ProvidePresenter
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity
 
-class SplashActivity : BaseActivity(R.layout.activity_splash), SplashView {
+@AndroidEntryPoint
+class SplashActivity : BaseActivity(), SplashView {
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST = 111
@@ -21,11 +25,22 @@ class SplashActivity : BaseActivity(R.layout.activity_splash), SplashView {
         fun newIntent(context: Context): Intent {
             return Intent(context, SplashActivity::class.java)
         }
+    }
 
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface SplashEntryPoint {
+        fun splashPresenter(): SplashPresenter
     }
 
     @InjectPresenter
     lateinit var presenter: SplashPresenter
+
+    @ProvidePresenter
+    fun providePresenter(): SplashPresenter {
+        return EntryPointAccessors.fromActivity(this, SplashEntryPoint::class.java)
+            .splashPresenter()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +55,6 @@ class SplashActivity : BaseActivity(R.layout.activity_splash), SplashView {
             return
         }
         presenter.openMainPage()
-    }
-
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
     }
 
     override fun onRequestPermissionsResult(

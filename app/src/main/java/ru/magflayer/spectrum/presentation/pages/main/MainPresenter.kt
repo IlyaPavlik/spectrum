@@ -1,7 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main
 
 import moxy.InjectViewState
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.CameraManager
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
@@ -10,20 +9,11 @@ import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
 import javax.inject.Inject
 
 @InjectViewState
-class MainPresenter : BasePresenter<MainView>() {
-
-    @Inject
-    lateinit var cameraManager: CameraManager
-
-    @Inject
-    lateinit var mainRouter: MainRouter
-
-    @Inject
-    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
-
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
-    }
+class MainPresenter @Inject constructor(
+    private val cameraManager: CameraManager,
+    private val mainRouter: MainRouter,
+    private val pageAppearanceInteractor: PageAppearanceInteractor
+) : BasePresenter<MainView>() {
 
     override fun onFirstViewAttach() {
         mainRouter.openCameraScreen()
@@ -51,7 +41,7 @@ class MainPresenter : BasePresenter<MainView>() {
         super.detachView(view)
     }
 
-    internal fun handleFabClick() {
+    fun handleFabClick() {
         pageAppearanceInteractor.publishFabEvent()
     }
 

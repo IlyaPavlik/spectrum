@@ -3,14 +3,16 @@ package ru.magflayer.spectrum.data.android
 import android.content.Context
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ResourceManager @Inject
-constructor(context: Context) {
+class ResourceManager @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     private val resources = context.resources
 

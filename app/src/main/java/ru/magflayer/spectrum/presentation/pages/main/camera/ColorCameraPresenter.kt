@@ -9,7 +9,6 @@ import kotlinx.coroutines.*
 import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.*
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
 import ru.magflayer.spectrum.domain.manager.CameraManager
@@ -24,7 +23,16 @@ import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
-class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
+class ColorCameraPresenter @Inject constructor(
+    private val analyticsManager: AnalyticsManager,
+    private val colorInfoInteractor: ColorInfoInteractor,
+    private val cameraManager: CameraManager,
+    private val mainRouter: MainRouter,
+    private val colorPhotoInteractor: ColorPhotoInteractor,
+    private val fileManagerInteractor: FileManagerInteractor,
+    private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
+    private val pageAppearanceInteractor: PageAppearanceInteractor
+) : BasePresenter<ColorCameraView>() {
 
     companion object {
         private const val SURFACE_UPDATE_DELAY_MILLIS = 300L
@@ -35,30 +43,6 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         private const val SAVE_FILE_FORMAT = "spectre_%d.png"
         private const val ZOOM_STEP_FACTOR = 20
     }
-
-    @Inject
-    lateinit var analyticsManager: AnalyticsManager
-
-    @Inject
-    lateinit var colorInfoInteractor: ColorInfoInteractor
-
-    @Inject
-    lateinit var cameraManager: CameraManager
-
-    @Inject
-    lateinit var mainRouter: MainRouter
-
-    @Inject
-    lateinit var colorPhotoInteractor: ColorPhotoInteractor
-
-    @Inject
-    lateinit var fileManagerInteractor: FileManagerInteractor
-
-    @Inject
-    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
-
-    @Inject
-    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
 
     private val swatches = Collections.synchronizedList(ArrayList<Palette.Swatch>())
     private var previousColor = -1
@@ -76,10 +60,6 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
             ToolbarAppearance.Visibility.INVISIBLE,
             ""
         )
-
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
-    }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -100,7 +80,10 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
     }
 
     fun handleSurfaceUpdated() {
-        presenterScope.launch {
+        val errorHandler = CoroutineExceptionHandler { _, exception ->
+            logger.error("Error while handle image: ", exception)
+        }
+        presenterScope.launch(errorHandler) {
             // add some delay to reduce CPU load
             delay(SURFACE_UPDATE_DELAY_MILLIS)
 
@@ -201,20 +184,15 @@ class ColorCameraPresenter : BasePresenter<ColorCameraView>() {
         val colorSwatch = Palette.Swatch(pixel, 1)
         if (colorSwatch.rgb != 0) {
             val hexColor = ColorHelper.dec2Hex(colorSwatch.rgb)
-            val errorHandler = CoroutineExceptionHandler { _, exception ->
-                logger.error("Error while finding color name: ", exception)
-            }
-            presenterScope.launch(errorHandler) {
-                val colorName = colorInfoInteractor.findColorNameByHex(hexColor)
-                currentDetailsColor = colorSwatch.rgb
+            val colorName = colorInfoInteractor.findColorNameByHex(hexColor)
+            currentDetailsColor = colorSwatch.rgb
 
-                swatches.clear()
-                swatches.addAll(listOf(Palette.Swatch(colorSwatch.rgb, Integer.MAX_VALUE)))
+            swatches.clear()
+            swatches.addAll(listOf(Palette.Swatch(colorSwatch.rgb, Integer.MAX_VALUE)))
 
-                presenterScope.launch {
-                    viewState.showColorDetails(colorSwatch.rgb, colorSwatch.titleTextColor)
-                    viewState.showColorName(colorName)
-                }
+            presenterScope.launch {
+                viewState.showColorDetails(colorSwatch.rgb, colorSwatch.titleTextColor)
+                viewState.showColorName(colorName)
             }
         }
     }

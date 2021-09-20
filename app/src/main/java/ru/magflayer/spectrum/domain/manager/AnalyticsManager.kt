@@ -3,13 +3,15 @@ package ru.magflayer.spectrum.domain.manager
 import android.content.Context
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AnalyticsManager @Inject
-internal constructor(context: Context) {
+class AnalyticsManager @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     private val log = LoggerFactory.getLogger(javaClass)
     private val analytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(context)

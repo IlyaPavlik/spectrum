@@ -10,11 +10,15 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
 import by.kirich1409.viewbindingdelegate.viewBinding
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.databinding.FragmentHistoryBinding
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
 import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.helper.SwipeToDeleteCallback
@@ -39,8 +43,18 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
 
     private lateinit var historyAdapter: HistoryAdapter
 
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface HistoryEntryPoint {
+        fun historyPresenter(): HistoryPresenter
+    }
+
+    @ProvidePresenter
+    fun providePresenter(): HistoryPresenter {
+        return EntryPointAccessors.fromActivity(
+            requireActivity(),
+            HistoryEntryPoint::class.java
+        ).historyPresenter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

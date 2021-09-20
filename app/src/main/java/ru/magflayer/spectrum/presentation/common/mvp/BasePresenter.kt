@@ -32,16 +32,10 @@ abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
             .showFloatingButton(PageAppearance.FloatingButtonState.NO_INFLUENCE)
             .build()
 
-    init {
-        inject()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         presenterScope.cancel()
     }
-
-    protected abstract fun inject()
 
     protected fun <T> execute(
         flow: Flow<T>,

@@ -6,7 +6,6 @@ import moxy.InjectViewState
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
@@ -19,26 +18,16 @@ import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
 import javax.inject.Inject
 
 @InjectViewState
-class HistoryDetailsPresenter(filePath: String) : BasePresenter<HistoryDetailsView>() {
+class HistoryDetailsPresenter @Inject constructor(
+    private val analyticsManager: AnalyticsManager,
+    private val colorInfoInteractor: ColorInfoInteractor,
+    private val resourceManager: ResourceManager,
+    private val colorPhotoInteractor: ColorPhotoInteractor,
+    private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
+    private val pageAppearanceInteractor: PageAppearanceInteractor
+) : BasePresenter<HistoryDetailsView>() {
 
-    @Inject
-    lateinit var analyticsManager: AnalyticsManager
-
-    @Inject
-    lateinit var colorInfoInteractor: ColorInfoInteractor
-
-    @Inject
-    lateinit var resourceManager: ResourceManager
-
-    @Inject
-    lateinit var colorPhotoInteractor: ColorPhotoInteractor
-
-    @Inject
-    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
-
-    @Inject
-    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
-
+    lateinit var filePath: String
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
             ToolbarAppearance.Visibility.VISIBLE,
@@ -50,12 +39,9 @@ class HistoryDetailsPresenter(filePath: String) : BasePresenter<HistoryDetailsVi
             .showFloatingButton(PageAppearance.FloatingButtonState.INVISIBLE)
             .build()
 
-    init {
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
         loadPicture(filePath)
-    }
-
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
     }
 
     override fun attachView(view: HistoryDetailsView) {

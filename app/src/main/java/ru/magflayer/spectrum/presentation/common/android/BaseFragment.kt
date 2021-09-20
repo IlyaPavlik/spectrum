@@ -24,13 +24,6 @@ abstract class BaseFragment(
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        inject()
-    }
-
-    protected abstract fun inject()
-
     override fun showProgressBar() {
         view?.findViewById<View>(R.id.progress_bar)?.visibility = View.VISIBLE
     }

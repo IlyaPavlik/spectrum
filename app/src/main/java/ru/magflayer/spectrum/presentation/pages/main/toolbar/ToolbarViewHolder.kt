@@ -3,10 +3,18 @@ package ru.magflayer.spectrum.presentation.pages.main.toolbar
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import moxy.MvpDelegate
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 
-class ToolbarViewHolder(activity: AppCompatActivity, private val toolbar: Toolbar) : ToolbarView {
+class ToolbarViewHolder(
+    private val activity: AppCompatActivity,
+    private val toolbar: Toolbar
+) : ToolbarView {
 
     @InjectPresenter
     lateinit var presenter: ToolbarPresenter
@@ -22,6 +30,20 @@ class ToolbarViewHolder(activity: AppCompatActivity, private val toolbar: Toolba
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         toolbar.setNavigationOnClickListener { presenter.handleBack() }
+    }
+
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface ToolbarEntryPoint {
+        fun presenter(): ToolbarPresenter
+    }
+
+    @ProvidePresenter
+    fun providePresenter(): ToolbarPresenter {
+        return EntryPointAccessors.fromActivity(
+            activity,
+            ToolbarEntryPoint::class.java
+        ).presenter()
     }
 
     override fun showToolbar() {
