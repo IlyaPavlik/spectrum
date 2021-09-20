@@ -1,4 +1,4 @@
-package ru.magflayer.spectrum.domain.injection
+package ru.magflayer.spectrum.di
 
 import dagger.Component
 import ru.magflayer.spectrum.presentation.pages.main.MainActivity

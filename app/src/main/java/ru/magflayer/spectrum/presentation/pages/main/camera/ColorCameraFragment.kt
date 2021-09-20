@@ -11,10 +11,14 @@ import android.widget.Toast
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.databinding.FragmentColorCameraBinding
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
 import ru.magflayer.spectrum.presentation.common.extension.rotate
 import ru.magflayer.spectrum.presentation.common.extension.visible
@@ -27,6 +31,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
         private const val ROTATION_INTERVAL = 5
         private const val ZOOM_VISIBLE_DELAY = 1000L
         private const val ZOOM_TOUCH_SPAN = 30
+        private const val COLOR_SPAN_COUNT = 2
 
         fun newInstance(): ColorCameraFragment {
             return ColorCameraFragment()
@@ -41,16 +46,28 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
     private lateinit var adapter: ColorCameraAdapter
     private var orientationEventListener: OrientationEventListener? = null
     private var currentOrientation = Orientation.PORTRAIT
-    private var prevZoomValue = 0.toFloat()
+    private var prevZoomValue = 0F
 
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
+    @EntryPoint
+    @InstallIn(ActivityComponent::class)
+    interface ColorCameraEntryPoint {
+        fun colorCameraPresenter(): ColorCameraPresenter
     }
 
+    @ProvidePresenter
+    fun providePresenter(): ColorCameraPresenter {
+        return EntryPointAccessors.fromActivity(
+            requireActivity(),
+            ColorCameraEntryPoint::class.java
+        ).colorCameraPresenter()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = ColorCameraAdapter(requireContext())
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         orientationEventListener = object : OrientationEventListener(context) {
             override fun onOrientationChanged(orientation: Int) {
                 if (isLandscape(orientation) && currentOrientation != Orientation.LANDSCAPE) {
@@ -82,19 +99,10 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
         viewBinding.menu.setOnClickListener { presenter.handleMenuClicked() }
         viewBinding.save.setOnClickListener { presenter.handleSaveClicked(if (currentOrientation == Orientation.LANDSCAPE) 0 else 90) }
         viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
-    }
 
-    override fun onDestroyView() {
-        orientationEventListener?.disable()
-        super.onDestroyView()
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        val layoutManager = GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+        adapter = ColorCameraAdapter(requireContext())
+        val layoutManager =
+            GridLayoutManager(context, COLOR_SPAN_COUNT, GridLayoutManager.HORIZONTAL, false)
         viewBinding.colorRecycler.layoutManager = layoutManager
         viewBinding.colorRecycler.adapter = adapter
         viewBinding.camera.surfaceTextureListener = this
@@ -126,6 +134,12 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        orientationEventListener?.disable()
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {

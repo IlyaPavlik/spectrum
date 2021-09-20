@@ -3,6 +3,7 @@ package ru.magflayer.spectrum.data.system
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.magflayer.spectrum.BuildConfig
@@ -14,7 +15,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LocalFileManager @Inject constructor(private val context: Context) : FileManagerRepository {
+class LocalFileManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) : FileManagerRepository {
 
     companion object {
         private const val CONTENT_PREFIX = "content://"

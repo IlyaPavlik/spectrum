@@ -1,6 +1,5 @@
 package ru.magflayer.spectrum.presentation.common.android
 
-import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import moxy.MvpAppCompatActivity
@@ -12,9 +11,7 @@ import ru.magflayer.spectrum.presentation.common.android.navigation.navigator.Gl
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 import javax.inject.Inject
 
-abstract class BaseActivity(
-    @LayoutRes contentLayoutId: Int
-) : MvpAppCompatActivity(contentLayoutId), PageView {
+abstract class BaseActivity : MvpAppCompatActivity, PageView {
 
     @Inject
     lateinit var globalRouterHolder: GlobalRouterHolder
@@ -23,12 +20,9 @@ abstract class BaseActivity(
 
     private val globalNavigator by lazy { GlobalNavigator(this) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        inject()
-    }
+    constructor() : super()
 
-    protected abstract fun inject()
+    constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
     override fun onResume() {
         super.onResume()

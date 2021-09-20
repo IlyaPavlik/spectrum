@@ -10,7 +10,6 @@ import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.injection.InjectorManager
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
 import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
@@ -23,28 +22,15 @@ import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
 import javax.inject.Inject
 
 @InjectViewState
-class HistoryPresenter : BasePresenter<HistoryView>() {
-
-    @Inject
-    lateinit var analyticsManager: AnalyticsManager
-
-    @Inject
-    lateinit var resourceManager: ResourceManager
-
-    @Inject
-    lateinit var mainRouter: MainRouter
-
-    @Inject
-    lateinit var colorPhotoInteractor: ColorPhotoInteractor
-
-    @Inject
-    lateinit var fileManagerInteractor: FileManagerInteractor
-
-    @Inject
-    lateinit var toolbarAppearanceInteractor: ToolbarAppearanceInteractor
-
-    @Inject
-    lateinit var pageAppearanceInteractor: PageAppearanceInteractor
+class HistoryPresenter @Inject constructor(
+    private val analyticsManager: AnalyticsManager,
+    private val resourceManager: ResourceManager,
+    private val mainRouter: MainRouter,
+    private val colorPhotoInteractor: ColorPhotoInteractor,
+    private val fileManagerInteractor: FileManagerInteractor,
+    private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
+    private val pageAppearanceInteractor: PageAppearanceInteractor
+) : BasePresenter<HistoryView>() {
 
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
@@ -58,10 +44,6 @@ class HistoryPresenter : BasePresenter<HistoryView>() {
             .build()
 
     private val entities = ArrayList<ColorPhotoEntity>()
-
-    override fun inject() {
-        InjectorManager.appComponent?.inject(this)
-    }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()

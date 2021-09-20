@@ -1,7 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.firebase.crashlytics'
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-kapt")
+    id("com.google.firebase.crashlytics")
+    id("dagger.hilt.android.plugin")
+}
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -106,10 +109,6 @@ dependencies {
     implementation library.firebaseAnalytics
     implementation library.firebaseCrashlytics
 
-    //Dependency injection
-    implementation library.dagger
-    kapt library.daggerCompiler
-
     implementation library.glide
     kapt library.glideCompiler
     implementation library.gson
@@ -128,6 +127,10 @@ dependencies {
     implementation library.room
     kapt library.roomCompiler
     implementation library.roomKtx
+
+    /* Dependency injection */
+    implementation library.hilt
+    kapt library.hiltCompiler
 
     /* Tools */
     implementation library.viewBindingDelegate

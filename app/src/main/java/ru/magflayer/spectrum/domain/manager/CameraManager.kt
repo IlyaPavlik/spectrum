@@ -6,6 +6,7 @@ import android.graphics.*
 import android.hardware.Camera
 import android.view.Surface
 import android.view.WindowManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
@@ -16,14 +17,16 @@ import kotlin.experimental.and
 
 @Suppress("DEPRECATION")
 @Singleton
-class CameraManager @Inject constructor(val context: Context) {
+class CameraManager @Inject constructor(
+    @ApplicationContext val context: Context
+) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     private var camera: Camera? = null
     var cameraBitmap: Bitmap? = null
         private set
-    private val cameraScope by lazy { CoroutineScope(Dispatchers.Default) }
+    private var cameraScope: CoroutineScope? = null
     private val generateBitmapStream = ByteArrayOutputStream()
     private val windowManager: WindowManager =
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -56,6 +59,7 @@ class CameraManager @Inject constructor(val context: Context) {
 
     fun open() {
         camera = Camera.open(backFacingCameraId)
+        cameraScope = CoroutineScope(Dispatchers.Default)
 
         if (camera == null) {
             throw RuntimeException("Camera not available")
@@ -72,7 +76,7 @@ class CameraManager @Inject constructor(val context: Context) {
             val errorHandler = CoroutineExceptionHandler { _, exception ->
                 log.warn("Error while generating bitmap: ", exception)
             }
-            cameraScope.launch(errorHandler) {
+            cameraScope?.launch(errorHandler) {
                 camera?.parameters?.previewSize?.let { size ->
                     cameraBitmap = generateBitmapObservable(data, size, generateBitmapStream)
                 }
@@ -186,7 +190,7 @@ class CameraManager @Inject constructor(val context: Context) {
             release()
         }
         camera = null
-        cameraScope.cancel()
+        cameraScope?.cancel()
         generateBitmapStream.reset()
     }
 
