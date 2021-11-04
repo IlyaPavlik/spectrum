@@ -61,4 +61,6 @@
     <string name="camera_not_available">Камера не доступна.\nВероятно она используется другим приложением</string>
 
     <string name="select_image_title">Выбор изображения</string>
+
+    <string name="camera_required">Для работы приложения необходимо разрешение для камеры</string>
 </resources>

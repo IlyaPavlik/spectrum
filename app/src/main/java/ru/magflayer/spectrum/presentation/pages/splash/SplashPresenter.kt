@@ -14,7 +14,7 @@ class SplashPresenter @Inject constructor(
     private val colorInfoInteractor: ColorInfoInteractor
 ) : BasePresenter<SplashView>() {
 
-    internal fun openMainPage() {
+    internal fun handlePermissionsGranted() {
         val errorHandler = CoroutineExceptionHandler { _, exception ->
             logger.warn("Error while uploaded color info: ", exception)
             globalRouter.startMain()

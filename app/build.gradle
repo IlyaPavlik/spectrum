@@ -133,6 +133,9 @@ dependencies {
     kapt library.hiltCompiler
 
     /* Tools */
+    implementation library.camera
+    implementation library.cameraLifecycle
+    implementation library.cameraView
     implementation library.viewBindingDelegate
 
     /* Logger */

@@ -20,6 +20,10 @@ fun View.rotate(degree: Int) {
         .start()
 }
 
+fun View.show() = visible(true)
+
+fun View.hide() = visible(false)
+
 fun View.visible(visible: Boolean) {
     visibility = if (visible) View.VISIBLE else View.GONE
 }

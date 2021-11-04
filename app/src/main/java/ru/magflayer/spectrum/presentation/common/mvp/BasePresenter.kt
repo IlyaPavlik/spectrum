@@ -1,7 +1,7 @@
 package ru.magflayer.spectrum.presentation.common.mvp
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -10,14 +10,14 @@ import kotlinx.coroutines.launch
 import moxy.MvpPresenter
 import moxy.MvpView
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import ru.magflayer.spectrum.presentation.common.extension.logger
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 
 abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
 
-    protected val logger: Logger by lazy { LoggerFactory.getLogger(javaClass.simpleName) }
-    protected val presenterScope: CoroutineScope by lazy { CoroutineScope(Dispatchers.Main) }
+    protected val logger: Logger by logger()
+    protected val presenterScope: CoroutineScope by lazy { MainScope() }
 
     private val defaultErrorHandler: (Throwable) -> Unit = { logger.warn("Error: ", it) }
 

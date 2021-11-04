@@ -1,13 +1,13 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
 import android.annotation.SuppressLint
-import android.graphics.SurfaceTexture
 import android.os.Bundle
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
+import androidx.core.view.GestureDetectorCompat
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -20,33 +20,62 @@ import moxy.presenter.ProvidePresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.databinding.FragmentColorCameraBinding
 import ru.magflayer.spectrum.presentation.common.android.BaseFragment
+import ru.magflayer.spectrum.presentation.common.extension.hide
 import ru.magflayer.spectrum.presentation.common.extension.rotate
-import ru.magflayer.spectrum.presentation.common.extension.visible
+import ru.magflayer.spectrum.presentation.common.extension.show
+import ru.magflayer.spectrum.presentation.pages.main.camera.holder.ColorAnalyzer
+import ru.magflayer.spectrum.presentation.pages.main.camera.holder.ColorCameraHolder
 
-class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
-    TextureView.SurfaceTextureListener, ColorCameraView {
+class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorCameraView {
 
     companion object {
 
-        private const val ROTATION_INTERVAL = 5
-        private const val ZOOM_VISIBLE_DELAY = 1000L
-        private const val ZOOM_TOUCH_SPAN = 30
+        private const val ZOOM_VISIBLE_DELAY = 1000L //ms
         private const val COLOR_SPAN_COUNT = 2
+        private const val MENU_ANIMATION_DURATION = 800L
 
         fun newInstance(): ColorCameraFragment {
             return ColorCameraFragment()
         }
     }
 
-    private val viewBinding by viewBinding(FragmentColorCameraBinding::bind)
-
     @InjectPresenter
     lateinit var presenter: ColorCameraPresenter
 
+    private val viewBinding by viewBinding(FragmentColorCameraBinding::bind)
+    private val cameraHolder by lazy { ColorCameraHolder(requireContext()) }
+    private val gestureDetector by lazy {
+        GestureDetectorCompat(
+            requireContext(),
+            gestureDetectorListener
+        )
+    }
+    private val gestureDetectorListener = object : GestureDetector.SimpleOnGestureListener() {
+
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
+            presenter.handleCameraZoom(distanceX, distanceY)
+            return super.onScroll(e1, e2, distanceX, distanceY)
+        }
+    }
+    private val orientationEventListener by lazy {
+        object : OrientationEventListener(requireContext()) {
+            override fun onOrientationChanged(orientationDegree: Int) {
+                presenter.handleOrientationChanged(orientationDegree)
+            }
+        }
+    }
+    private val colorAnalyzer by lazy {
+        ColorAnalyzer().apply {
+            analyzeResultListener = { presenter.handleAnalyzeImage(it) }
+        }
+    }
+
     private lateinit var adapter: ColorCameraAdapter
-    private var orientationEventListener: OrientationEventListener? = null
-    private var currentOrientation = Orientation.PORTRAIT
-    private var prevZoomValue = 0F
 
     @EntryPoint
     @InstallIn(ActivityComponent::class)
@@ -68,97 +97,52 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
 
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        orientationEventListener = object : OrientationEventListener(context) {
-            override fun onOrientationChanged(orientation: Int) {
-                if (isLandscape(orientation) && currentOrientation != Orientation.LANDSCAPE) {
-                    currentOrientation = Orientation.LANDSCAPE
-                    setOrientation(currentOrientation)
-                    viewBinding.colorRecycler.layoutManager =
-                        GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, true)
-                } else if (isPortrait(orientation) && currentOrientation != Orientation.PORTRAIT) {
-                    currentOrientation = Orientation.PORTRAIT
-                    setOrientation(currentOrientation)
-                    viewBinding.colorRecycler.layoutManager =
-                        GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
-                }
-            }
-        }
-
-        if (orientationEventListener!!.canDetectOrientation()) {
-            orientationEventListener?.enable()
+        if (orientationEventListener.canDetectOrientation()) {
+            orientationEventListener.enable()
         } else {
-            orientationEventListener?.disable()
+            orientationEventListener.disable()
         }
-
-        setOrientation(currentOrientation)
 
         viewBinding.toggleMode.setOnCheckedChangeListener { _, checked ->
             presenter.handleColorModeChanged(checked)
         }
-        viewBinding.camera.setOnClickListener { presenter.handleFocusClicked() }
         viewBinding.menu.setOnClickListener { presenter.handleMenuClicked() }
-        viewBinding.save.setOnClickListener { presenter.handleSaveClicked(if (currentOrientation == Orientation.LANDSCAPE) 0 else 90) }
+        viewBinding.save.setOnClickListener {
+            cameraHolder.takePicture(
+                onSuccess = { presenter.handlePictureCaptureSucceed(it) },
+                onError = { presenter.handlePictureCaptureFailed(it) }
+            )
+        }
         viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
 
         adapter = ColorCameraAdapter(requireContext())
-        val layoutManager =
-            GridLayoutManager(context, COLOR_SPAN_COUNT, GridLayoutManager.HORIZONTAL, false)
+        val layoutManager = GridLayoutManager(
+            requireContext(),
+            COLOR_SPAN_COUNT,
+            GridLayoutManager.HORIZONTAL,
+            false
+        )
         viewBinding.colorRecycler.layoutManager = layoutManager
         viewBinding.colorRecycler.adapter = adapter
-        viewBinding.camera.surfaceTextureListener = this
-        viewBinding.camera.setOnTouchListener { _, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_MOVE -> {
-                    val value = if (currentOrientation == Orientation.PORTRAIT) {
-                        event.y
-                    } else {
-                        event.x
-                    }
-                    val direction = if (currentOrientation == Orientation.PORTRAIT) {
-                        (prevZoomValue - value).toInt()
-                    } else {
-                        (value - prevZoomValue).toInt()
-                    }
-                    if (prevZoomValue > 0 && (value / ZOOM_TOUCH_SPAN).toInt() != (prevZoomValue / ZOOM_TOUCH_SPAN).toInt()) {
-                        presenter.handleCameraZoom(direction)
-                    }
-                    prevZoomValue = value
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    prevZoomValue = -1F
-                    false
-                }
-                else -> {
-                    false
-                }
-            }
+
+        viewBinding.cameraPreview.setOnClickListener { presenter.handleFocusClicked() }
+        viewBinding.cameraPreview.setOnTouchListener { _, motionEvent ->
+            gestureDetector.onTouchEvent(motionEvent)
+        }
+
+        cameraHolder.startCamera(
+            viewLifecycleOwner,
+            viewBinding.cameraPreview,
+            colorAnalyzer
+        ) { cameraInfo ->
+            presenter.handleCameraInitialized(cameraInfo)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        orientationEventListener?.disable()
+        orientationEventListener.disable()
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
-
-    override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        logger.debug("onSurfaceTextureAvailable")
-        presenter.handleSurfaceAvailable(surface)
-    }
-
-    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-        //do nothing
-    }
-
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        logger.debug("onSurfaceTextureDestroyed")
-        presenter.handleSurfaceDestroyed()
-        return true
-    }
-
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-        presenter.handleSurfaceUpdated()
     }
 
     override fun showPictureSavedToast() {
@@ -179,19 +163,19 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
     }
 
     override fun showErrorMessage() {
-        viewBinding.message.visibility = View.VISIBLE
+        viewBinding.message.show()
     }
 
     override fun hideErrorMessage() {
-        viewBinding.message.visibility = View.GONE
+        viewBinding.message.hide()
     }
 
     override fun showCrosshair() {
-        viewBinding.pointDetector.visibility = View.VISIBLE
+        viewBinding.pointDetector.show()
     }
 
     override fun hideCrosshair() {
-        viewBinding.pointDetector.visibility = View.GONE
+        viewBinding.pointDetector.hide()
     }
 
     override fun showPanels() {
@@ -200,36 +184,64 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
     }
 
     override fun showFlash() {
-        viewBinding.flash.visible(true)
+        viewBinding.flash.show()
     }
 
     override fun hideFlash() {
-        viewBinding.flash.visible(false)
+        viewBinding.flash.hide()
     }
 
-    override fun changeMaxZoom(max: Int) {
-        viewBinding.zoomSeek.max = max
+    override fun enableFlash() {
+        cameraHolder.enabledFlash()
     }
 
-    override fun changeZoomProgress(progress: Int) = with(viewBinding) {
-        zoomSeek.progress = progress
+    override fun disableFlash() {
+        cameraHolder.disableFlash()
+    }
+
+    override fun showZoom(zoom: Float, maxZoom: Int) = with(viewBinding) {
+        zoomSeek.max = maxZoom
+        zoomSeek.progress = zoom.toInt()
 
         if (zoomSeek.visibility != View.VISIBLE) {
-            zoomSeek.visibility = View.VISIBLE
-            zoomSeek.postDelayed({ zoomSeek.visibility = View.GONE }, ZOOM_VISIBLE_DELAY)
+            zoomSeek.show()
+            zoomSeek.postDelayed({ zoomSeek.hide() }, ZOOM_VISIBLE_DELAY)
         }
+
+        cameraHolder.setZoomRatio(zoom)
     }
 
     override fun showSingleColorMode() = with(viewBinding) {
-        colorDetails.visible(true)
-        pointDetector.visible(true)
-        colorRecycler.visible(false)
+        colorDetails.show()
+        pointDetector.show()
+        colorRecycler.hide()
+        colorAnalyzer.analyzerType = ColorAnalyzer.Type.CENTER
     }
 
     override fun showMultipleColorMode() = with(viewBinding) {
-        colorDetails.visible(false)
-        pointDetector.visible(false)
-        colorRecycler.visible(true)
+        colorDetails.hide()
+        pointDetector.hide()
+        colorRecycler.show()
+        colorAnalyzer.analyzerType = ColorAnalyzer.Type.SWATCHES
+    }
+
+    override fun updateViewOrientation(orientation: CameraOrientation) = with(viewBinding) {
+        menu.rotate(orientation.degree)
+        toggleMode.rotate(orientation.degree)
+        flash.rotate(orientation.degree)
+        colorDetails.rotate(orientation.degree)
+        zoomContainer.rotate((orientation.degree - 90).rem(360))
+        viewBinding.colorRecycler.layoutManager =
+            GridLayoutManager(
+                context,
+                COLOR_SPAN_COUNT,
+                GridLayoutManager.HORIZONTAL,
+                orientation == CameraOrientation.LANDSCAPE
+            )
+    }
+
+    override fun autoFocus() {
+        cameraHolder.autoFocus(viewBinding.cameraPreview)
     }
 
     private fun showTopMenu() = with(viewBinding) {
@@ -241,7 +253,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
 
     private fun showBottomMenu() = with(viewBinding) {
         if (leftMenu.visibility != View.VISIBLE) {
-            leftMenu.visibility = View.VISIBLE
+            leftMenu.show()
             leftMenu.startAnimation(inFromBottomAnimation())
         }
     }
@@ -253,7 +265,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
             Animation.RELATIVE_TO_PARENT, +1.0f,
             Animation.RELATIVE_TO_PARENT, 0.0f
         )
-        inFromTop.duration = 800
+        inFromTop.duration = MENU_ANIMATION_DURATION
         inFromTop.interpolator = AccelerateInterpolator()
         return inFromTop
     }
@@ -265,32 +277,8 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera),
             Animation.RELATIVE_TO_PARENT, -1.0f,
             Animation.RELATIVE_TO_PARENT, 0.0f
         )
-        inFromBottom.duration = 800
+        inFromBottom.duration = MENU_ANIMATION_DURATION
         inFromBottom.interpolator = AccelerateInterpolator()
         return inFromBottom
-    }
-
-    private fun setOrientation(orientation: Orientation) = with(viewBinding) {
-        logger.debug("Orientation changed: {}", orientation)
-        menu.rotate(orientation.degree)
-        toggleMode.rotate(orientation.degree)
-        flash.rotate(orientation.degree)
-        colorDetails.rotate(orientation.degree)
-        zoomContainer.rotate((orientation.degree - 90).rem(360))
-    }
-
-    private fun isPortrait(orientation: Int): Boolean {
-        return (orientation <= ROTATION_INTERVAL || orientation >= 360 - ROTATION_INTERVAL // [350 : 10]
-                || orientation <= 180 + ROTATION_INTERVAL && orientation >= 180 - ROTATION_INTERVAL) //[170 : 190]
-    }
-
-    private fun isLandscape(orientation: Int): Boolean {
-        return (orientation <= 90 + ROTATION_INTERVAL && orientation >= 90 - ROTATION_INTERVAL // [100 : 80]
-                || orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL) // [280 : 260]
-    }
-
-    private enum class Orientation(val degree: Int) {
-        PORTRAIT(0),
-        LANDSCAPE(90)
     }
 }
