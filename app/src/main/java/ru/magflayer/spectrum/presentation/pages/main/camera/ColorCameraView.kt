@@ -14,6 +14,7 @@ interface ColorCameraView : PageView {
         private const val CROSSHAIR_TAG = "crosshair"
         private const val PANELS_TAG = "panels"
         private const val FLASH_VISIBILITY_TAG = "flash_visibility"
+        private const val FLASH_ENABLED_TAG = "flash_enabled"
         private const val COLOR_MODE = "color_mode"
     }
 
@@ -50,16 +51,25 @@ interface ColorCameraView : PageView {
     @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = FLASH_VISIBILITY_TAG)
     fun hideFlash()
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
-    fun changeMaxZoom(max: Int)
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = FLASH_ENABLED_TAG)
+    fun enableFlash()
+
+    @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = FLASH_ENABLED_TAG)
+    fun disableFlash()
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun changeZoomProgress(progress: Int)
+    fun showZoom(zoom: Float, maxZoom: Int)
 
     @StateStrategyType(AddToEndSingleTagStrategy::class, tag = COLOR_MODE)
     fun showSingleColorMode()
 
     @StateStrategyType(AddToEndSingleTagStrategy::class, tag = COLOR_MODE)
     fun showMultipleColorMode()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun updateViewOrientation(orientation: CameraOrientation)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun autoFocus()
 
 }

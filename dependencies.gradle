@@ -30,6 +30,8 @@ ext.versions = [
         cicerone           : "7.1",
         room               : "2.3.0",
         viewBindingDelegate: "1.5.0-beta01",
+        camera             : "1.1.0-alpha09",
+        cameraView         : "1.0.0-alpha27",
 ]
 
 ext.plugin = [
@@ -90,6 +92,9 @@ ext.library = [
         roomKtx              : "androidx.room:room-ktx:$versions.room",
 
         /* Tools */
+        camera               : "androidx.camera:camera-camera2:$versions.camera",
+        cameraLifecycle      : "androidx.camera:camera-lifecycle:$versions.camera",
+        cameraView           : "androidx.camera:camera-view:$versions.cameraView",
         viewBindingDelegate  : "com.github.kirich1409:viewbindingpropertydelegate-noreflection:$versions.viewBindingDelegate",
 
         /* Dependency injection */

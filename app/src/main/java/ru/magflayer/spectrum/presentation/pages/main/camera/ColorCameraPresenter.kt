@@ -2,8 +2,8 @@ package ru.magflayer.spectrum.presentation.pages.main.camera
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.graphics.SurfaceTexture
 import android.os.Bundle
+import androidx.camera.core.CameraInfo
 import androidx.palette.graphics.Palette
 import kotlinx.coroutines.*
 import moxy.InjectViewState
@@ -11,7 +11,6 @@ import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.interactor.*
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
-import ru.magflayer.spectrum.domain.manager.CameraManager
 import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.extension.convertBitmapToBytes
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
@@ -19,14 +18,18 @@ import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
+import ru.magflayer.spectrum.presentation.pages.main.camera.holder.CenterColorResult
+import ru.magflayer.spectrum.presentation.pages.main.camera.holder.ColorAnalyzerResult
+import ru.magflayer.spectrum.presentation.pages.main.camera.holder.SwatchesResult
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
+import kotlin.math.sign
 
 @InjectViewState
 class ColorCameraPresenter @Inject constructor(
     private val analyticsManager: AnalyticsManager,
     private val colorInfoInteractor: ColorInfoInteractor,
-    private val cameraManager: CameraManager,
     private val mainRouter: MainRouter,
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val fileManagerInteractor: FileManagerInteractor,
@@ -35,20 +38,21 @@ class ColorCameraPresenter @Inject constructor(
 ) : BasePresenter<ColorCameraView>() {
 
     companion object {
-        private const val SURFACE_UPDATE_DELAY_MILLIS = 300L
-
         private const val SAVE_IMAGE_WIDTH = 640
         private const val SAVE_IMAGE_HEIGHT = 360
 
         private const val SAVE_FILE_FORMAT = "spectre_%d.png"
-        private const val ZOOM_STEP_FACTOR = 20
+        private const val ROTATION_INTERVAL = 5
+        private const val ZOOM_STEP_FACTOR = 50
     }
 
     private val swatches = Collections.synchronizedList(ArrayList<Palette.Swatch>())
     private var previousColor = -1
     private var currentDetailsColor: Int = 0
-    private var zoomStep = 1
+    private var zoomState: ZoomState = ZoomState()
     private var colorMode: SurfaceInfo.Type = SurfaceInfo.Type.SINGLE
+    private var orientation: CameraOrientation = CameraOrientation.PORTRAIT
+    private var flashEnabled: Boolean = false
 
     override val pageAppearance: PageAppearance
         get() = PageAppearance.builder()
@@ -61,59 +65,48 @@ class ColorCameraPresenter @Inject constructor(
             ""
         )
 
-    override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
-        if (cameraManager.isFlashAvailable()) {
-            viewState.showFlash()
-        } else {
-            viewState.hideFlash()
-        }
-        val maxZoom = cameraManager.getMaxZoom()
-        viewState.changeMaxZoom(maxZoom)
-        zoomStep = maxZoom / ZOOM_STEP_FACTOR
-    }
-
     override fun attachView(view: ColorCameraView) {
         super.attachView(view)
         toolbarAppearanceInteractor.setToolbarAppearance(toolbarAppearance)
         pageAppearanceInteractor.setPageAppearance(pageAppearance)
     }
 
-    fun handleSurfaceUpdated() {
+    fun handleCameraInitialized(cameraInfo: CameraInfo) {
+        if (cameraInfo.hasFlashUnit()) {
+            viewState.showFlash()
+        } else {
+            viewState.hideFlash()
+        }
+
+        zoomState = cameraInfo.zoomState.value?.let {
+            ZoomState(it.minZoomRatio, it.maxZoomRatio, it.zoomRatio)
+        } ?: zoomState
+
+        viewState.hideErrorMessage()
+        viewState.showCrosshair()
+        viewState.showPanels()
+        viewState.hideProgressBar()
+    }
+
+    fun handleAnalyzeImage(analyzerResult: ColorAnalyzerResult) {
         val errorHandler = CoroutineExceptionHandler { _, exception ->
             logger.error("Error while handle image: ", exception)
         }
         presenterScope.launch(errorHandler) {
-            // add some delay to reduce CPU load
-            delay(SURFACE_UPDATE_DELAY_MILLIS)
-
-            cameraManager.cameraBitmap?.let { bitmap ->
-                when (colorMode) {
-                    SurfaceInfo.Type.SINGLE -> handleSingleColorImage(bitmap)
-                    SurfaceInfo.Type.MULTIPLE -> handleMultipleColorImage(bitmap)
-                }
+            when (analyzerResult) {
+                is CenterColorResult -> handleSingleColorImage(analyzerResult)
+                is SwatchesResult -> handleMultipleColorImage(analyzerResult)
             }
         }
     }
 
-    fun handleSurfaceAvailable(surface: SurfaceTexture) {
-        try {
-            cameraManager.startCamera(surface)
-            cameraManager.updateCameraDisplayOrientation()
-            viewState.hideErrorMessage()
-            viewState.showCrosshair()
-            viewState.showPanels()
-        } catch (e: Exception) {
-            logger.error("Error occurred while starting camera ", e)
-            viewState.showErrorMessage()
-            viewState.hideCrosshair()
-        } finally {
-            viewState.hideProgressBar()
+    fun handleOrientationChanged(orientationDegree: Int) {
+        if (isLandscape(orientationDegree) && orientation != CameraOrientation.LANDSCAPE) {
+            orientation = CameraOrientation.LANDSCAPE
+        } else if (isPortrait(orientationDegree) && orientation != CameraOrientation.PORTRAIT) {
+            orientation = CameraOrientation.PORTRAIT
         }
-    }
-
-    fun handleSurfaceDestroyed() {
-        cameraManager.stopPreview()
+        viewState.updateViewOrientation(orientation)
     }
 
     fun handleColorModeChanged(checked: Boolean) {
@@ -130,76 +123,75 @@ class ColorCameraPresenter @Inject constructor(
     }
 
     fun handleFocusClicked() {
-        cameraManager.autoFocus()
+        viewState.autoFocus()
     }
 
-    fun handleSaveClicked(rotationDegree: Int) {
+    fun handlePictureCaptureSucceed(bitmap: Bitmap) {
+        val orientationDegree = if (orientation == CameraOrientation.LANDSCAPE) 0 else 90
         val errorHandler = CoroutineExceptionHandler { _, exception ->
             logger.warn("Error while saving photo: ", exception)
         }
         presenterScope.launch(errorHandler) {
-            cameraManager.cameraBitmap?.let { bitmap ->
-                saveColorPicture(bitmap, swatches, rotationDegree)
-            }
+            saveColorPicture(bitmap, swatches, orientationDegree)
         }
+    }
+
+    fun handlePictureCaptureFailed(exception: Exception) {
+        logger.warn("Error while capturing a picture: ", exception)
     }
 
     fun handleFlashClick(checked: Boolean) {
+        flashEnabled = checked
         if (checked) {
-            cameraManager.enabledFlash()
+            viewState.enableFlash()
         } else {
-            cameraManager.disableFlash()
+            viewState.disableFlash()
         }
     }
 
-    fun handleCameraZoom(direction: Int) {
-        if (!cameraManager.isZoomSupported()) return
-
-        val maxZoom = cameraManager.getMaxZoom()
-        var zoom = cameraManager.getZoom()
-
-        if (direction > 0 && zoom < maxZoom) {
-            zoom += if ((zoom + zoomStep) > maxZoom) {
-                maxZoom - zoom
-            } else {
-                zoomStep
-            }
-        } else if (direction < 0 && zoom > 0) {
-            zoom -= if ((zoom - zoomStep) < 0) {
-                zoom
-            } else {
-                zoomStep
-            }
+    fun handleCameraZoom(distanceX: Float, distanceY: Float) {
+        val distance = if (orientation == CameraOrientation.PORTRAIT) {
+            distanceY
+        } else {
+            -distanceX
         }
-        logger.debug("Zoom: {}", zoom)
-        cameraManager.setZoom(zoom)
-        viewState.changeZoomProgress(zoom)
+
+        val step = ((zoomState.maxZoom - zoomState.minZoom) / ZOOM_STEP_FACTOR) * distance.sign
+        val zoom = (zoomState.zoom + step).coerceIn(zoomState.minZoom, zoomState.maxZoom)
+        zoomState = zoomState.copy(zoom = zoom)
+
+        showZoom()
     }
 
-    private suspend fun handleSingleColorImage(bitmap: Bitmap) = withContext(Dispatchers.Default) {
-        val centerX = bitmap.width / 2
-        val centerY = bitmap.height / 2
-
-        val pixel = bitmap.getPixel(centerX, centerY)
-        val colorSwatch = Palette.Swatch(pixel, 1)
-        if (colorSwatch.rgb != 0) {
-            val hexColor = ColorHelper.dec2Hex(colorSwatch.rgb)
-            val colorName = colorInfoInteractor.findColorNameByHex(hexColor)
-            currentDetailsColor = colorSwatch.rgb
-
-            swatches.clear()
-            swatches.addAll(listOf(Palette.Swatch(colorSwatch.rgb, Integer.MAX_VALUE)))
-
-            presenterScope.launch {
-                viewState.showColorDetails(colorSwatch.rgb, colorSwatch.titleTextColor)
-                viewState.showColorName(colorName)
-            }
-        }
+    private fun showZoom() {
+        val zoom = zoomState.zoom - zoomState.minZoom
+        val maxZoom = (zoomState.maxZoom - zoomState.minZoom).roundToInt()
+        viewState.showZoom(zoom, maxZoom)
     }
 
-    private suspend fun handleMultipleColorImage(bitmap: Bitmap) =
+    private suspend fun handleSingleColorImage(centerColorResult: CenterColorResult) =
         withContext(Dispatchers.Default) {
-            val palette = Palette.from(bitmap).generate()
+            val colorSwatch = Palette.Swatch(centerColorResult.color, 1)
+            if (colorSwatch.rgb != 0) {
+                val hexColor = ColorHelper.dec2Hex(colorSwatch.rgb)
+                val colorName = colorInfoInteractor.findColorNameByHex(hexColor)
+                currentDetailsColor = colorSwatch.rgb
+
+                swatches.clear()
+                swatches.addAll(listOf(Palette.Swatch(colorSwatch.rgb, Integer.MAX_VALUE)))
+
+                presenterScope.launch {
+                    viewState.showColorDetails(colorSwatch.rgb, colorSwatch.titleTextColor)
+                    viewState.showColorName(colorName)
+                }
+            }
+        }
+
+    private suspend fun handleMultipleColorImage(swatchesResult: SwatchesResult) =
+        withContext(Dispatchers.Default) {
+            val paletteSwatches =
+                swatchesResult.swatches.map { Palette.Swatch(it.color, it.population) }
+            val palette = Palette.from(paletteSwatches)
 
             if (palette.swatches.isEmpty()) {
                 return@withContext
@@ -271,9 +263,12 @@ class ColorCameraPresenter @Inject constructor(
             SurfaceInfo.Type.SINGLE -> AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE
             SurfaceInfo.Type.MULTIPLE -> AnalyticsEvent.TAKE_PHOTO_MODE_MULTIPLE
         }
+        val zoom = zoomState.zoom - zoomState.minZoom
+        val maxZoom = (zoomState.maxZoom - zoomState.minZoom).roundToInt()
+        val zoomRatio = (zoom * 100 / maxZoom).roundToInt()
         bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode)
-        bundle.putBoolean(AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT, cameraManager.isFlashlightEnabled())
-        bundle.putString(AnalyticsEvent.TAKE_PHOTO_ZOOM, "${cameraManager.getZoomRatio()}%")
+        bundle.putBoolean(AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT, flashEnabled)
+        bundle.putString(AnalyticsEvent.TAKE_PHOTO_ZOOM, "$zoomRatio%")
 
         analyticsManager.logEvent(AnalyticsEvent.TAKE_PHOTO, bundle)
     }
@@ -297,4 +292,20 @@ class ColorCameraPresenter @Inject constructor(
             true
         )
     }
+
+    private fun isPortrait(orientation: Int): Boolean {
+        return (orientation <= ROTATION_INTERVAL || orientation >= 360 - ROTATION_INTERVAL // [350 : 10]
+                || orientation <= 180 + ROTATION_INTERVAL && orientation >= 180 - ROTATION_INTERVAL) //[170 : 190]
+    }
+
+    private fun isLandscape(orientation: Int): Boolean {
+        return (orientation <= 90 + ROTATION_INTERVAL && orientation >= 90 - ROTATION_INTERVAL // [100 : 80]
+                || orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL) // [280 : 260]
+    }
+
+    private data class ZoomState(
+        val minZoom: Float = 0F,
+        val maxZoom: Float = 0F,
+        val zoom: Float = 0F
+    )
 }
