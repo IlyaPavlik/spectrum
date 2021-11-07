@@ -19,7 +19,6 @@ android {
         targetSdkVersion config.sdk.target
         versionCode config.build.code
         versionName config.build.name
-        vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
 
