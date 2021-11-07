@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.EntryPoint
@@ -83,7 +84,7 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
 
         historyAdapter.itemSelectListener = object : BaseRecyclerAdapter.OnItemSelectListener {
             override fun onItemSelect(position: Int) {
-                historyAdapter.getItem(position)?.let { presenter.handleColorSelected(it) }
+                historyAdapter.getItem(position)?.let { openHistoryDetailsScreen(it.filePath) }
             }
         }
 
@@ -124,6 +125,11 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(pickIntent))
 
         startActivityForResult(chooserIntent, REQUEST_PICK_IMAGE)
+    }
+
+    override fun openHistoryDetailsScreen(filePath: String) {
+        val action = HistoryFragmentDirections.nextAction(filePath)
+        findNavController().navigate(action)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

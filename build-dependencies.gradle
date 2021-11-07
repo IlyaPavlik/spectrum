@@ -5,6 +5,7 @@ ext.versions = [
         proguardPlugin     : "6.0.3",
         kotlinPlugin       : "1.4.32",
         crashlyticsPlugin  : "2.6.1",
+        navigationArgs     : "2.1.0",
 
         /* Dependencies */
         kotlin             : "1.5.30",
@@ -27,20 +28,21 @@ ext.versions = [
         glide              : "4.12.0",
         gson               : "2.8.6",
         moxy               : "2.2.2",
-        cicerone           : "7.1",
         room               : "2.3.0",
         viewBindingDelegate: "1.5.0-beta01",
         camera             : "1.1.0-alpha09",
         cameraView         : "1.0.0-alpha27",
+        navigation         : "2.3.5",
 ]
 
 ext.plugin = [
-        gradle       : "com.android.tools.build:gradle:$versions.gradlePlugin",
-        googleService: "com.google.gms:google-services:$versions.googleServicePlugin",
-        proguard     : "net.sf.proguard:proguard-gradle:$versions.proguardPlugin",
-        kotlin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinPlugin",
-        crashlytics  : "com.google.firebase:firebase-crashlytics-gradle:$versions.crashlyticsPlugin",
-        hilt         : "com.google.dagger:hilt-android-gradle-plugin:$versions.hilt"
+        gradle        : "com.android.tools.build:gradle:$versions.gradlePlugin",
+        googleService : "com.google.gms:google-services:$versions.googleServicePlugin",
+        proguard      : "net.sf.proguard:proguard-gradle:$versions.proguardPlugin",
+        kotlin        : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinPlugin",
+        crashlytics   : "com.google.firebase:firebase-crashlytics-gradle:$versions.crashlyticsPlugin",
+        hilt          : "com.google.dagger:hilt-android-gradle-plugin:$versions.hilt",
+        navigationArgs: "androidx.navigation:navigation-safe-args-gradle-plugin:$versions.navigationArgs",
 ]
 
 ext.library = [
@@ -83,9 +85,6 @@ ext.library = [
         moxyAndroidX         : "com.github.moxy-community:moxy-androidx:$versions.moxy",
         moxyMaterial         : "com.github.moxy-community:moxy-material:$versions.moxy",
 
-        //Cicerone
-        cicerone             : "com.github.terrakok:cicerone:$versions.cicerone",
-
         //Room
         room                 : "androidx.room:room-runtime:$versions.room",
         roomCompiler         : "androidx.room:room-compiler:$versions.room",
@@ -100,4 +99,8 @@ ext.library = [
         /* Dependency injection */
         hilt                 : "com.google.dagger:hilt-android:$versions.hilt",
         hiltCompiler         : "com.google.dagger:hilt-android-compiler:$versions.hilt",
+
+        /* Navigation */
+        navigation           : "androidx.navigation:navigation-fragment-ktx:$versions.navigation",
+        navigationUi         : "androidx.navigation:navigation-ui-ktx:$versions.navigation",
 ]

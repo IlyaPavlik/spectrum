@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
@@ -62,7 +63,8 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
             requireActivity(),
             HistoryDetailsEntryPoint::class.java
         ).historyDetailsPresenter().apply {
-            filePath = requireArguments().getString(PHOTO_PATH_KEY)!!
+            val safeArgs: HistoryDetailsFragmentArgs by navArgs()
+            filePath = safeArgs.filePath
         }
     }
 

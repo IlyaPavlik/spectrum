@@ -16,7 +16,7 @@ import ru.magflayer.spectrum.presentation.pages.splash.SplashPresenter
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AppModule::class, NavigationModule::class])
+@Component(modules = [AppModule::class])
 interface AppComponent {
 
     //ACTIVITY

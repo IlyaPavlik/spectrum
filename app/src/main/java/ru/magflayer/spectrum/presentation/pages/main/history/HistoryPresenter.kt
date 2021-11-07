@@ -15,7 +15,6 @@ import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
-import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
@@ -25,7 +24,6 @@ import javax.inject.Inject
 class HistoryPresenter @Inject constructor(
     private val analyticsManager: AnalyticsManager,
     private val resourceManager: ResourceManager,
-    private val mainRouter: MainRouter,
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val fileManagerInteractor: FileManagerInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
@@ -72,10 +70,6 @@ class HistoryPresenter @Inject constructor(
             entities.remove(entity)
             viewState.showHistory(entities)
         }
-    }
-
-    fun handleColorSelected(entity: ColorPhotoEntity) {
-        mainRouter.openHistoryDetailsScreen(entity.filePath)
     }
 
     fun handleSelectedImage(fileUri: Uri, bitmap: Bitmap) {

@@ -72,4 +72,7 @@ interface ColorCameraView : PageView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun autoFocus()
 
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun openHistoryScreen()
+
 }
