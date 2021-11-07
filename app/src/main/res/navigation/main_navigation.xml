@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation"
+    app:startDestination="@+id/color_camera_dest">
+
+    <fragment
+        android:id="@+id/color_camera_dest"
+        android:name="ru.magflayer.spectrum.presentation.pages.main.camera.ColorCameraFragment"
+        tools:layout="@layout/fragment_color_camera">
+
+        <action
+            android:id="@+id/next_action"
+            app:destination="@+id/color_history_dest" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/color_history_dest"
+        android:name="ru.magflayer.spectrum.presentation.pages.main.history.HistoryFragment"
+        tools:layout="@layout/fragment_history">
+
+        <action
+            android:id="@+id/next_action"
+            app:destination="@+id/color_history_details_dest"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/color_history_details_dest"
+        android:name="ru.magflayer.spectrum.presentation.pages.main.history.details.HistoryDetailsFragment"
+        tools:layout="@layout/fragment_history_details">
+
+        <argument
+            android:name="filePath"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

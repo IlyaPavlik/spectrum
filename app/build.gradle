@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.firebase.crashlytics")
     id("dagger.hilt.android.plugin")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -119,8 +120,9 @@ dependencies {
     implementation library.moxyAndroidX
     implementation library.moxyMaterial
 
-    //Cicerone
-    implementation library.cicerone
+    //Navigation
+    implementation library.navigation
+    implementation library.navigationUi
 
     //Room
     implementation library.room

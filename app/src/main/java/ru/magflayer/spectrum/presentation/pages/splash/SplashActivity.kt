@@ -1,8 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.splash
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -17,6 +15,7 @@ import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.android.BaseActivity
+import ru.magflayer.spectrum.presentation.pages.main.MainActivity
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity(), SplashView {
@@ -26,9 +25,6 @@ class SplashActivity : BaseActivity(), SplashView {
         private const val CAMERA_PERMISSION_REQUEST = 111
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
-        fun newIntent(context: Context): Intent {
-            return Intent(context, SplashActivity::class.java)
-        }
     }
 
     @EntryPoint
@@ -76,8 +72,9 @@ class SplashActivity : BaseActivity(), SplashView {
         }
     }
 
-    override fun closeScreen() {
+    override fun openMainScreen() {
         finish()
+        startActivity(MainActivity.newIntent(this))
     }
 
     private fun allPermissionsGranted(): Boolean = REQUIRED_PERMISSIONS.all { permission ->

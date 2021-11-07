@@ -26,10 +26,6 @@ class ToolbarViewHolder(
         getMvpDelegate().onAttach()
 
         activity.setSupportActionBar(toolbar)
-        val actionBar = activity.supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-
-        toolbar.setNavigationOnClickListener { presenter.handleBack() }
     }
 
     @EntryPoint

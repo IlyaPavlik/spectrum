@@ -11,7 +11,6 @@ import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.interactor.*
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
-import ru.magflayer.spectrum.presentation.common.android.navigation.router.MainRouter
 import ru.magflayer.spectrum.presentation.common.extension.convertBitmapToBytes
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
@@ -30,7 +29,6 @@ import kotlin.math.sign
 class ColorCameraPresenter @Inject constructor(
     private val analyticsManager: AnalyticsManager,
     private val colorInfoInteractor: ColorInfoInteractor,
-    private val mainRouter: MainRouter,
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val fileManagerInteractor: FileManagerInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
@@ -221,10 +219,6 @@ class ColorCameraPresenter @Inject constructor(
                 viewState.showColors(colors)
             }
         }
-
-    internal fun handleMenuClicked() {
-        mainRouter.openHistoryScreen()
-    }
 
     private suspend fun saveColorPicture(
         bitmap: Bitmap,

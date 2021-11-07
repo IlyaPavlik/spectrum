@@ -7,6 +7,6 @@ import ru.magflayer.spectrum.presentation.common.mvp.view.BaseView
 interface SplashView : BaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun closeScreen()
+    fun openMainScreen()
 
 }

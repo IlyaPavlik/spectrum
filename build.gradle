@@ -1,8 +1,8 @@
-apply from: 'dependencies.gradle'
+apply from: 'build-dependencies.gradle'
 apply from: 'build-versions.gradle'
 
 buildscript {
-    apply from: 'dependencies.gradle'
+    apply from: 'build-dependencies.gradle'
 
     repositories {
         google()
@@ -16,6 +16,7 @@ buildscript {
         classpath plugin.kotlin
         classpath plugin.crashlytics
         classpath plugin.hilt
+        classpath plugin.navigationArgs
     }
 }
 

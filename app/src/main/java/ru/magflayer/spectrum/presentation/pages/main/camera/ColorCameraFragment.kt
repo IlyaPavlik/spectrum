@@ -8,6 +8,7 @@ import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import androidx.core.view.GestureDetectorCompat
+import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -106,7 +107,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         viewBinding.toggleMode.setOnCheckedChangeListener { _, checked ->
             presenter.handleColorModeChanged(checked)
         }
-        viewBinding.menu.setOnClickListener { presenter.handleMenuClicked() }
+        viewBinding.menu.setOnClickListener { openHistoryScreen() }
         viewBinding.save.setOnClickListener {
             cameraHolder.takePicture(
                 onSuccess = { presenter.handlePictureCaptureSucceed(it) },
@@ -242,6 +243,10 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
 
     override fun autoFocus() {
         cameraHolder.autoFocus(viewBinding.cameraPreview)
+    }
+
+    override fun openHistoryScreen() {
+        findNavController().navigate(R.id.next_action)
     }
 
     private fun showTopMenu() = with(viewBinding) {

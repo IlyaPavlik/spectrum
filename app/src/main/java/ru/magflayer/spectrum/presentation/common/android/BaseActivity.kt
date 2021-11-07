@@ -4,21 +4,15 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import moxy.MvpAppCompatActivity
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import ru.magflayer.spectrum.R
-import ru.magflayer.spectrum.presentation.common.android.navigation.holder.GlobalRouterHolder
-import ru.magflayer.spectrum.presentation.common.android.navigation.navigator.GlobalNavigator
+import ru.magflayer.spectrum.presentation.common.extension.hide
+import ru.magflayer.spectrum.presentation.common.extension.logger
+import ru.magflayer.spectrum.presentation.common.extension.show
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
-import javax.inject.Inject
 
 abstract class BaseActivity : MvpAppCompatActivity, PageView {
 
-    @Inject
-    lateinit var globalRouterHolder: GlobalRouterHolder
-
-    protected val logger: Logger by lazy { LoggerFactory.getLogger(javaClass) }
-
-    private val globalNavigator by lazy { GlobalNavigator(this) }
+    protected val logger: Logger by logger()
 
     constructor() : super()
 
@@ -26,19 +20,19 @@ abstract class BaseActivity : MvpAppCompatActivity, PageView {
 
     override fun onResume() {
         super.onResume()
-        globalRouterHolder.setNavigator(globalNavigator)
+        logger.debug("onResume")
     }
 
     override fun onPause() {
-        globalRouterHolder.removeNavigator()
         super.onPause()
+        logger.debug("onPause")
     }
 
     override fun showProgressBar() {
-        findViewById<View>(R.id.progress_bar)?.visibility = View.VISIBLE
+        findViewById<View>(R.id.progress_bar)?.show()
     }
 
     override fun hideProgressBar() {
-        findViewById<View>(R.id.progress_bar)?.visibility = View.GONE
+        findViewById<View>(R.id.progress_bar)?.hide()
     }
 }
