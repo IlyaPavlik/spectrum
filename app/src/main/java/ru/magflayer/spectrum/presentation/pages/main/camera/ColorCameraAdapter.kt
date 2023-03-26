@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.palette.graphics.Palette
-
 import by.kirich1409.viewbindingdelegate.viewBinding
 import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.databinding.ItemColorCameraBinding
@@ -12,7 +11,7 @@ import ru.magflayer.spectrum.presentation.common.android.BaseRecyclerAdapter
 import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 
 class ColorCameraAdapter constructor(
-    context: Context
+    context: Context,
 ) : BaseRecyclerAdapter<ColorCameraAdapter.ColorViewHolder, Palette.Swatch>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorViewHolder {

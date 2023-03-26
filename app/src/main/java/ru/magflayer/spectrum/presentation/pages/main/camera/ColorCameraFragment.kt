@@ -2,7 +2,11 @@ package ru.magflayer.spectrum.presentation.pages.main.camera
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.OrientationEventListener
+import android.view.View
+import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
@@ -31,7 +35,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
 
     companion object {
 
-        private const val ZOOM_VISIBLE_DELAY = 1000L //ms
+        private const val ZOOM_VISIBLE_DELAY = 1000L // ms
         private const val COLOR_SPAN_COUNT = 2
         private const val MENU_ANIMATION_DURATION = 800L
 
@@ -48,7 +52,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
     private val gestureDetector by lazy {
         GestureDetectorCompat(
             requireContext(),
-            gestureDetectorListener
+            gestureDetectorListener,
         )
     }
     private val gestureDetectorListener = object : GestureDetector.SimpleOnGestureListener() {
@@ -57,7 +61,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
             e1: MotionEvent,
             e2: MotionEvent,
             distanceX: Float,
-            distanceY: Float
+            distanceY: Float,
         ): Boolean {
             presenter.handleCameraZoom(distanceX, distanceY)
             return super.onScroll(e1, e2, distanceX, distanceY)
@@ -88,7 +92,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
     fun providePresenter(): ColorCameraPresenter {
         return EntryPointAccessors.fromActivity(
             requireActivity(),
-            ColorCameraEntryPoint::class.java
+            ColorCameraEntryPoint::class.java,
         ).colorCameraPresenter()
     }
 
@@ -111,7 +115,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         viewBinding.save.setOnClickListener {
             cameraHolder.takePicture(
                 onSuccess = { presenter.handlePictureCaptureSucceed(it) },
-                onError = { presenter.handlePictureCaptureFailed(it) }
+                onError = { presenter.handlePictureCaptureFailed(it) },
             )
         }
         viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
@@ -121,7 +125,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
             requireContext(),
             COLOR_SPAN_COUNT,
             GridLayoutManager.HORIZONTAL,
-            false
+            false,
         )
         viewBinding.colorRecycler.layoutManager = layoutManager
         viewBinding.colorRecycler.adapter = adapter
@@ -134,7 +138,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         cameraHolder.startCamera(
             viewLifecycleOwner,
             viewBinding.cameraPreview,
-            colorAnalyzer
+            colorAnalyzer,
         ) { cameraInfo ->
             presenter.handleCameraInitialized(cameraInfo)
         }
@@ -237,7 +241,7 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
                 context,
                 COLOR_SPAN_COUNT,
                 GridLayoutManager.HORIZONTAL,
-                orientation == CameraOrientation.LANDSCAPE
+                orientation == CameraOrientation.LANDSCAPE,
             )
     }
 
@@ -265,10 +269,14 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
 
     private fun inFromTopAnimation(): Animation {
         val inFromTop = TranslateAnimation(
-            Animation.RELATIVE_TO_PARENT, 0.0f,
-            Animation.RELATIVE_TO_PARENT, 0.0f,
-            Animation.RELATIVE_TO_PARENT, +1.0f,
-            Animation.RELATIVE_TO_PARENT, 0.0f
+            Animation.RELATIVE_TO_PARENT,
+            0.0f,
+            Animation.RELATIVE_TO_PARENT,
+            0.0f,
+            Animation.RELATIVE_TO_PARENT,
+            +1.0f,
+            Animation.RELATIVE_TO_PARENT,
+            0.0f,
         )
         inFromTop.duration = MENU_ANIMATION_DURATION
         inFromTop.interpolator = AccelerateInterpolator()
@@ -277,10 +285,14 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
 
     private fun inFromBottomAnimation(): Animation {
         val inFromBottom = TranslateAnimation(
-            Animation.RELATIVE_TO_PARENT, 0.0f,
-            Animation.RELATIVE_TO_PARENT, 0.0f,
-            Animation.RELATIVE_TO_PARENT, -1.0f,
-            Animation.RELATIVE_TO_PARENT, 0.0f
+            Animation.RELATIVE_TO_PARENT,
+            0.0f,
+            Animation.RELATIVE_TO_PARENT,
+            0.0f,
+            Animation.RELATIVE_TO_PARENT,
+            -1.0f,
+            Animation.RELATIVE_TO_PARENT,
+            0.0f,
         )
         inFromBottom.duration = MENU_ANIMATION_DURATION
         inFromBottom.interpolator = AccelerateInterpolator()

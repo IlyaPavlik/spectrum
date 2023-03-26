@@ -6,7 +6,7 @@ import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import javax.inject.Inject
 
 class ToolbarAppearanceInteractor @Inject constructor(
-    private val toolbarAppearanceRepository: ToolbarAppearanceRepository
+    private val toolbarAppearanceRepository: ToolbarAppearanceRepository,
 ) {
 
     fun setToolbarAppearance(toolbarAppearance: ToolbarAppearance) {

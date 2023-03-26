@@ -50,7 +50,7 @@ object AppHelper {
         // DocumentProvider
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(
                 context,
-                uri
+                uri,
             )
         ) {
             // ExternalStorageProvider
@@ -65,7 +65,8 @@ object AppHelper {
             } else if (isDownloadsDocument(uri)) {
                 val id = DocumentsContract.getDocumentId(uri)
                 val contentUri = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
+                    Uri.parse("content://downloads/public_downloads"),
+                    java.lang.Long.valueOf(id),
                 )
 
                 return getDataColumn(context, contentUri, null, null)
@@ -85,13 +86,13 @@ object AppHelper {
                 val selectionArgs = arrayOf(split[1])
 
                 return getDataColumn(context, contentUri, selection, selectionArgs)
-            }// MediaProvider
+            } // MediaProvider
             // DownloadsProvider
         } else if ("content".equals(uri.scheme!!, ignoreCase = true)) {
             return getDataColumn(context, uri, null, null)
         } else if ("file".equals(uri.scheme!!, ignoreCase = true)) {
             return uri.path ?: ""
-        }// File
+        } // File
         // MediaStore (and general)
         return ""
     }
@@ -107,8 +108,10 @@ object AppHelper {
      * @return The value of the _data column, which is typically a file path.
      */
     private fun getDataColumn(
-        context: Context, uri: Uri, selection: String?,
-        selectionArgs: Array<String>?
+        context: Context,
+        uri: Uri,
+        selection: String?,
+        selectionArgs: Array<String>?,
     ): String {
         val column = "_data"
         val projection = arrayOf(column)
@@ -124,7 +127,6 @@ object AppHelper {
         }
         return ""
     }
-
 
     /**
      * @param uri The Uri to check.
@@ -149,5 +151,4 @@ object AppHelper {
     private fun isMediaDocument(uri: Uri): Boolean {
         return "com.android.providers.media.documents" == uri.authority
     }
-
 }

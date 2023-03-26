@@ -14,5 +14,4 @@ interface PageView : BaseView {
 
     @StateStrategyType(value = AddToEndSingleTagStrategy::class, tag = PROGRESS_TAG)
     fun hideProgressBar()
-
 }

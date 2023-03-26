@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 class ColorAnalyzer : ImageAnalysis.Analyzer {
 
     companion object {
-        private const val ANALYZE_DELAY = 200L //ms
+        private const val ANALYZE_DELAY = 200L // ms
         private const val MAX_SWATCHES_COLORS = 16
     }
 
@@ -33,7 +33,7 @@ class ColorAnalyzer : ImageAnalysis.Analyzer {
 
     private fun calculateCenterRGBFromYUV(
         image: ImageProxy,
-        analyzerType: Type
+        analyzerType: Type,
     ): ColorAnalyzerResult {
         val planes = image.planes
 
@@ -100,7 +100,7 @@ class ColorAnalyzer : ImageAnalysis.Analyzer {
                 val quantizer = ColorCutQuantizer(
                     pixels.array(),
                     MAX_SWATCHES_COLORS,
-                    arrayOf(paletteFilter)
+                    arrayOf(paletteFilter),
                 )
 
                 val swatches = quantizer.quantizedColors?.map {
@@ -113,22 +113,22 @@ class ColorAnalyzer : ImageAnalysis.Analyzer {
     }
 
     private fun ByteBuffer.toByteArray(): ByteArray {
-        rewind()    // Rewind the buffer to zero
+        rewind() // Rewind the buffer to zero
         val data = ByteArray(remaining())
-        get(data)   // Copy the buffer into a byte array
+        get(data) // Copy the buffer into a byte array
         return data // Return the byte array
     }
 
     private fun convertYUVToRGB(y: Int, u: Int, v: Int): Triple<Int, Int, Int> =
         Triple(
-            (y + (1.370705 * v)).toInt(), //red
-            (y - (0.698001 * v) - (0.337633 * u)).toInt(), //green
-            (y + (1.732446 * u)).toInt() //blue
+            (y + (1.370705 * v)).toInt(), // red
+            (y - (0.698001 * v) - (0.337633 * u)).toInt(), // green
+            (y + (1.732446 * u)).toInt(), // blue
         )
 
     enum class Type {
         CENTER,
-        SWATCHES
+        SWATCHES,
     }
 
     private fun buildPaletteFilter(): Palette.Filter = object : Palette.Filter {

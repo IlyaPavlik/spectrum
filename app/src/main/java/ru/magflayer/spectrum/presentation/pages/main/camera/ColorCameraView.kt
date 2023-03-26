@@ -74,5 +74,4 @@ interface ColorCameraView : PageView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun openHistoryScreen()
-
 }

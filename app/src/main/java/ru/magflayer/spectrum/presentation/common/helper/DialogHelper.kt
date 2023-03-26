@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-
 import ru.magflayer.spectrum.R
 
 object DialogHelper {
@@ -21,7 +20,7 @@ object DialogHelper {
         context: Context,
         title: String,
         message: String,
-        clickListener: DialogInterface.OnClickListener
+        clickListener: DialogInterface.OnClickListener,
     ): Dialog {
         val builder = AlertDialog.Builder(context)
 
@@ -37,7 +36,7 @@ object DialogHelper {
         context: Context,
         title: String,
         view: View,
-        clickListener: DialogInterface.OnClickListener
+        clickListener: DialogInterface.OnClickListener,
     ): Dialog {
         val builder = AlertDialog.Builder(context)
 

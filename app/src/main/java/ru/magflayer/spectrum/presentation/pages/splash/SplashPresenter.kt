@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @InjectViewState
 class SplashPresenter @Inject constructor(
-    private val colorInfoInteractor: ColorInfoInteractor
+    private val colorInfoInteractor: ColorInfoInteractor,
 ) : BasePresenter<SplashView>() {
 
     internal fun handlePermissionsGranted() {

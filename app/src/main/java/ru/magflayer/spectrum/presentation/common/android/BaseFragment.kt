@@ -10,7 +10,7 @@ import ru.magflayer.spectrum.R
 import ru.magflayer.spectrum.presentation.common.mvp.view.PageView
 
 abstract class BaseFragment(
-    @LayoutRes contentLayoutId: Int
+    @LayoutRes contentLayoutId: Int,
 ) : MvpAppCompatFragment(contentLayoutId), PageView {
 
     protected val logger: Logger by lazy { LoggerFactory.getLogger(javaClass.simpleName) }
@@ -33,6 +33,6 @@ abstract class BaseFragment(
     }
 
     protected fun handleArguments(arguments: Bundle) {
-        //do nothing
+        // do nothing
     }
 }

@@ -19,5 +19,4 @@ interface ToolbarView : BaseView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun showTitle(title: String)
-
 }

@@ -14,7 +14,11 @@ import ru.magflayer.spectrum.data.repository.PageAppearanceRepositoryImpl
 import ru.magflayer.spectrum.data.repository.PhotoRepositoryImpl
 import ru.magflayer.spectrum.data.repository.ToolbarAppearanceRepositoryImpl
 import ru.magflayer.spectrum.data.system.LocalFileManager
-import ru.magflayer.spectrum.domain.repository.*
+import ru.magflayer.spectrum.domain.repository.ColorInfoRepository
+import ru.magflayer.spectrum.domain.repository.FileManagerRepository
+import ru.magflayer.spectrum.domain.repository.PageAppearanceRepository
+import ru.magflayer.spectrum.domain.repository.PhotoRepository
+import ru.magflayer.spectrum.domain.repository.ToolbarAppearanceRepository
 import javax.inject.Singleton
 
 @Module

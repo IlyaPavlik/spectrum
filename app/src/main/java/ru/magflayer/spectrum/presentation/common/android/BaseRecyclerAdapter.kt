@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import java.util.*
 
 abstract class BaseRecyclerAdapter<VH : BaseViewHolder, T>(
     val context: Context,
-    val inflater: LayoutInflater = LayoutInflater.from(context)
+    val inflater: LayoutInflater = LayoutInflater.from(context),
 ) : RecyclerView.Adapter<VH>() {
 
     val data = ArrayList<T>()
@@ -46,10 +45,11 @@ abstract class BaseRecyclerAdapter<VH : BaseViewHolder, T>(
     }
 
     fun getItem(position: Int): T? {
-        return if (position >= 0 && position < data.size)
+        return if (position >= 0 && position < data.size) {
             data[position]
-        else
+        } else {
             null
+        }
     }
 
     override fun onBindViewHolder(holder: VH, position: Int, payloads: List<Any>) {

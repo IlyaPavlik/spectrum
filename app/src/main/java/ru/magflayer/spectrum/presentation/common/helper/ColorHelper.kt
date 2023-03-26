@@ -35,13 +35,15 @@ object ColorHelper {
         val previousRgb = intArrayOf(
             Color.red(previousColor),
             Color.green(previousColor),
-            Color.blue(previousColor)
+            Color.blue(previousColor),
         )
         val newRgb = intArrayOf(Color.red(newColor), Color.green(newColor), Color.blue(newColor))
 
-        return (Math.abs(previousRgb[0] - newRgb[0]) >= COLOR_ERROR
-                || Math.abs(previousRgb[1] - newRgb[1]) >= COLOR_ERROR
-                || Math.abs(previousRgb[2] - newRgb[2]) >= COLOR_ERROR)
+        return (
+            Math.abs(previousRgb[0] - newRgb[0]) >= COLOR_ERROR ||
+                Math.abs(previousRgb[1] - newRgb[1]) >= COLOR_ERROR ||
+                Math.abs(previousRgb[2] - newRgb[2]) >= COLOR_ERROR
+            )
     }
 
     fun dec2Rgb(color: Int): IntArray {
@@ -52,10 +54,10 @@ object ColorHelper {
 
     fun dec2Rgba(color: Int): IntArray {
         val rgba = IntArray(4)
-        rgba[0] = color shr 16 and 0xFF //red
-        rgba[1] = color shr 8 and 0xFF //green
-        rgba[2] = color and 0xFF //blue
-        rgba[3] = color.ushr(24) //alpha
+        rgba[0] = color shr 16 and 0xFF // red
+        rgba[1] = color shr 8 and 0xFF // green
+        rgba[2] = color and 0xFF // blue
+        rgba[3] = color.ushr(24) // alpha
         return rgba
     }
 
@@ -67,7 +69,7 @@ object ColorHelper {
     fun rgb2Hsl(
         @IntRange(from = 0x0, to = 0xFF) r: Int,
         @IntRange(from = 0x0, to = 0xFF) g: Int,
-        @IntRange(from = 0x0, to = 0xFF) b: Int
+        @IntRange(from = 0x0, to = 0xFF) b: Int,
     ): FloatArray {
         val outHsl = FloatArray(3)
 
@@ -115,7 +117,9 @@ object ColorHelper {
     fun hex2Dec(hex: String?): Int {
         return if (!TextUtils.isEmpty(hex)) {
             Integer.parseInt(hex!!.substring(1), 16)
-        } else Color.TRANSPARENT
+        } else {
+            Color.TRANSPARENT
+        }
     }
 
     fun dec2Cmyk(color: Int): IntArray {
@@ -125,7 +129,7 @@ object ColorHelper {
             Math.round(cmyk[0]) * 100,
             Math.round(cmyk[1]) * 100,
             Math.round(cmyk[2]) * 100,
-            Math.round(cmyk[3]) * 100
+            Math.round(cmyk[3]) * 100,
         )
     }
 
@@ -172,27 +176,30 @@ object ColorHelper {
             0.0722f,
             0.0193f,
             0.1192f,
-            0.9505f
+            0.9505f,
         )
 
         var r = rgba[0] / 255.0
         var g = rgba[1] / 255.0
         var b = rgba[2] / 255.0
 
-        r = if (r > 0.04045)
+        r = if (r > 0.04045) {
             Math.pow((r + 0.055) / 1.055, 2.4)
-        else
+        } else {
             r / 12.92
+        }
 
-        g = if (g > 0.04045)
+        g = if (g > 0.04045) {
             Math.pow((g + 0.055) / 1.055, 2.4)
-        else
+        } else {
             g / 12.92
+        }
 
-        b = if (b > 0.04045)
+        b = if (b > 0.04045) {
             Math.pow((b + 0.055) / 1.055, 2.4)
-        else
+        } else {
             b / 12.92
+        }
 
         r *= 100.0
         g *= 100.0
@@ -202,7 +209,7 @@ object ColorHelper {
         xyz[1] = coef[3] * r + coef[4] * g + coef[5] * b
         xyz[2] = coef[6] * r + coef[7] * g + coef[8] * b
 
-        //round values
+        // round values
         xyz[0] = BigDecimal(xyz[0]).setScale(4, BigDecimal.ROUND_HALF_UP).toDouble()
         xyz[1] = BigDecimal(xyz[1]).setScale(4, BigDecimal.ROUND_HALF_UP).toDouble()
         xyz[2] = BigDecimal(xyz[2]).setScale(4, BigDecimal.ROUND_HALF_UP).toDouble()
@@ -227,20 +234,23 @@ object ColorHelper {
         yr = xyz[1] / Yr
         zr = xyz[2] / Zr
 
-        xr = if (xr > eps)
+        xr = if (xr > eps) {
             Math.pow(xr, 1 / 3.0)
-        else
+        } else {
             k * xr + 16 / 116.0
+        }
 
-        yr = if (yr > eps)
+        yr = if (yr > eps) {
             Math.pow(yr, 1 / 3.0)
-        else
+        } else {
             k * yr + 16 / 116.0
+        }
 
-        zr = if (zr > eps)
+        zr = if (zr > eps) {
             Math.pow(zr, 1 / 3.0)
-        else
+        } else {
             k * zr + 16 / 116.0
+        }
 
         val lab = DoubleArray(3)
 
@@ -259,9 +269,11 @@ object ColorHelper {
         if (colors != null) {
             for ((name1, value) in colors) {
                 val ncsRgb = dec2Rgb(hex2Dec(value))
-                var error = (Math.pow((ncsRgb[0] - rgb[0]).toDouble(), 2.0)
-                        + Math.pow((ncsRgb[1] - rgb[1]).toDouble(), 2.0)
-                        + Math.pow((ncsRgb[2] - rgb[2]).toDouble(), 2.0))
+                var error = (
+                    Math.pow((ncsRgb[0] - rgb[0]).toDouble(), 2.0) +
+                        Math.pow((ncsRgb[1] - rgb[1]).toDouble(), 2.0) +
+                        Math.pow((ncsRgb[2] - rgb[2]).toDouble(), 2.0)
+                    )
                 error = Math.sqrt(error)
                 if (error < minError) {
                     minError = error

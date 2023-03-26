@@ -8,13 +8,13 @@ import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter @Inject constructor(
-    private val pageAppearanceInteractor: PageAppearanceInteractor
+    private val pageAppearanceInteractor: PageAppearanceInteractor,
 ) : BasePresenter<MainView>() {
 
     override fun onFirstViewAttach() {
         execute(
             pageAppearanceInteractor.observePageAppearance(),
-            onSuccess = { pageAppearance -> handlePageAppearanceChanged(pageAppearance) }
+            onSuccess = { pageAppearance -> handlePageAppearanceChanged(pageAppearance) },
         )
     }
 

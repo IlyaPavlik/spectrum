@@ -63,7 +63,7 @@ class MainActivity : BaseActivity(R.layout.activity_main), MainView {
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
         )
 
         toolbarViewHolder = ToolbarViewHolder(this, viewBinding.toolbar)
@@ -94,5 +94,4 @@ class MainActivity : BaseActivity(R.layout.activity_main), MainView {
     private fun setupActionBar(navController: NavController, appBarConfig: AppBarConfiguration) {
         setupActionBarWithNavController(navController, appBarConfig)
     }
-
 }

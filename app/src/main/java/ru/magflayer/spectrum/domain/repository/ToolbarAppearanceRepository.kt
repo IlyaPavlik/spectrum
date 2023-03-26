@@ -8,5 +8,4 @@ interface ToolbarAppearanceRepository {
     fun setToolbarAppearance(toolbarAppearance: ToolbarAppearance)
 
     fun observeToolbarAppearance(): Flow<ToolbarAppearance>
-
 }

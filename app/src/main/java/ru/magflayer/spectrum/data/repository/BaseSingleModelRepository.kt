@@ -14,5 +14,4 @@ abstract class BaseSingleModelRepository<T : Any> {
     fun emitModel(model: T) {
         _modelStateFlow.value = model
     }
-
 }

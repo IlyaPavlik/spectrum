@@ -6,7 +6,11 @@ import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -57,7 +61,7 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
     fun providePresenter(): HistoryPresenter {
         return EntryPointAccessors.fromActivity(
             requireActivity(),
-            HistoryEntryPoint::class.java
+            HistoryEntryPoint::class.java,
         ).historyPresenter()
     }
 
@@ -72,8 +76,8 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
             this.addItemDecoration(
                 DividerItemDecoration(
                     context,
-                    DividerItemDecoration.VERTICAL
-                )
+                    DividerItemDecoration.VERTICAL,
+                ),
             )
         }
 
@@ -128,7 +132,7 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
             val dialog = DialogHelper.buildYesNoDialog(
                 it,
                 title,
-                message
+                message,
             ) { _, _ ->
                 historyAdapter.getItem(position)?.let { presenter.removeColor(it) }
                 viewBinding.empty.visibility =

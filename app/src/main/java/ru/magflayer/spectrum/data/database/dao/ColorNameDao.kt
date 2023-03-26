@@ -20,5 +20,4 @@ interface ColorNameDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveColorNames(vararg colorNames: ColorName): LongArray
-
 }

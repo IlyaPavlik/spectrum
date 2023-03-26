@@ -11,5 +11,4 @@ interface PhotoRepository {
     suspend fun loadPhoto(filePath: String): ColorPhotoEntity
 
     suspend fun removePhoto(entity: ColorPhotoEntity): Boolean
-
 }

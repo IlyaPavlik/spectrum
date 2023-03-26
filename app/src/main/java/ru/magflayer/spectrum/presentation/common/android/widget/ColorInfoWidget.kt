@@ -11,7 +11,7 @@ import ru.magflayer.spectrum.databinding.WidgetColorInfoItemBinding
 class ColorInfoWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = -1
+    defStyleAttr: Int = -1,
 ) : CardView(context, attrs, defStyleAttr) {
 
     companion object {
@@ -21,7 +21,7 @@ class ColorInfoWidget @JvmOverloads constructor(
     private val viewBinding = WidgetColorInfoBinding.inflate(
         LayoutInflater.from(context),
         this,
-        true
+        true,
     )
 
     fun setTitle(title: CharSequence) {
@@ -40,11 +40,10 @@ class ColorInfoWidget @JvmOverloads constructor(
             val itemViewBinding = WidgetColorInfoItemBinding.inflate(
                 LayoutInflater.from(context),
                 tableRow,
-                false
+                false,
             )
             itemViewBinding.textView.text = param
             tableRow.addView(itemViewBinding.root)
         }
     }
-
 }
