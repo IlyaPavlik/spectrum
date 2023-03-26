@@ -1,11 +1,11 @@
 ext.versions = [
         /* Plugins */
-        gradlePlugin       : "4.2.2",
+        gradlePlugin       : "7.4.2",
         googleServicePlugin: "4.3.8",
         proguardPlugin     : "6.0.3",
-        kotlinPlugin       : "1.4.32",
+        kotlinPlugin       : "1.8.10",
         crashlyticsPlugin  : "2.6.1",
-        navigationArgs     : "2.1.0",
+        navigationArgs     : "2.5.3",
 
         /* Dependencies */
         kotlin             : "1.5.30",
@@ -28,11 +28,12 @@ ext.versions = [
         glide              : "4.12.0",
         gson               : "2.8.6",
         moxy               : "2.2.2",
-        room               : "2.3.0",
+        room               : "2.5.1",
         viewBindingDelegate: "1.5.0-beta01",
         camera             : "1.1.0-alpha09",
         cameraView         : "1.0.0-alpha27",
         navigation         : "2.3.5",
+        activity           : "1.6.1",
 ]
 
 ext.plugin = [
@@ -64,6 +65,7 @@ ext.library = [
         cardView             : "androidx.cardview:cardview:$versions.cardview",
         multidex             : "androidx.multidex:multidex:$versions.multidex",
         material             : "com.google.android.material:material:$versions.material",
+        activity             : "androidx.activity:activity-ktx:$versions.activity",
 
         //Google Firebase
         firebaseCore         : "com.google.firebase:firebase-core:$versions.firebaseCore",

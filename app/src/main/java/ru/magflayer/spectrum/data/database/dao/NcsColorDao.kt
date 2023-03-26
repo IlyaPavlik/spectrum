@@ -2,7 +2,7 @@ package ru.magflayer.spectrum.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.magflayer.spectrum.data.entity.NcsColor
 
@@ -18,7 +18,6 @@ interface NcsColorDao {
     @Query("SELECT * FROM NcsColor WHERE hex=:hex")
     suspend fun loadNcsColorByHex(hex: String): NcsColor
 
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveNcsColors(vararg ncsColors: NcsColor): LongArray
-
 }

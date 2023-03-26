@@ -259,6 +259,7 @@ class ColorCameraPresenter @Inject constructor(
         }
         val zoom = zoomState.zoom - zoomState.minZoom
         val maxZoom = (zoomState.maxZoom - zoomState.minZoom).roundToInt()
+            .takeIf { it > 0 } ?: 1
         val zoomRatio = (zoom * 100 / maxZoom).roundToInt()
         bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode)
         bundle.putBoolean(AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT, flashEnabled)
