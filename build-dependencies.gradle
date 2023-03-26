@@ -57,6 +57,8 @@ ext.library = [
         powermockJunitRule   : "org.powermock:powermock-module-junit4-rule:$versions.powermock",
         powermockMockito     : "org.powermock:powermock-api-mockito2:$versions.powermock",
         powermockClassloading: "org.powermock:powermock-classloading-xstream:$versions.powermock",
+        coroutinesTest       : "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutines",
+        kotlinTest           : "org.jetbrains.kotlin:kotlin-test",
 
         //Google Support
         recyclerView         : "androidx.recyclerview:recyclerview:$versions.recyclerView",

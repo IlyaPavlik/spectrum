@@ -2,12 +2,15 @@ package ru.magflayer.spectrum.domain.interactor
 
 import android.content.Context
 import com.google.gson.Gson
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.data.database.ColorInfoRepositoryTest
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ColorsInteractorTest {
 
@@ -27,39 +30,30 @@ class ColorsInteractorTest {
     }
 
     @Test
-    fun colorName_available() {
+    fun colorName_available() = runTest {
         val result = colorInfoInteractor?.findColorNameByHex("#FF2400")
 
-        result?.test()
-                ?.assertValue("Алый")
-                ?.assertCompleted()
-                ?.assertNoErrors()
+        assertEquals("Алый", result)
     }
 
     @Test
-    fun colorName_error() {
-        val errorResult = colorInfoInteractor?.findColorNameByHex("")
-
-        errorResult?.test()
-                ?.assertError(IndexOutOfBoundsException::class.java)
+    fun colorName_error() = runTest {
+        assertFailsWith<IndexOutOfBoundsException> {
+            colorInfoInteractor?.findColorNameByHex("")
+        }
     }
 
     @Test
-    fun ncsColor_available() {
+    fun ncsColor_available() = runTest {
         val result = colorInfoInteractor?.findNcsColorByHex("#D8D8D7")
 
-        result?.test()
-                ?.assertValue("NCS S 2000-N")
-                ?.assertCompleted()
-                ?.assertNoErrors()
+        assertEquals("NCS S 2000-N", result)
     }
 
     @Test
-    fun ncsColor_error() {
-        val errorResult = colorInfoInteractor?.findNcsColorByHex("")
-
-        errorResult?.test()
-                ?.assertError(IndexOutOfBoundsException::class.java)
+    fun ncsColor_error() = runTest {
+        assertFailsWith<IndexOutOfBoundsException> {
+            colorInfoInteractor?.findNcsColorByHex("")
+        }
     }
-
 }
