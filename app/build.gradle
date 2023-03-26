@@ -95,6 +95,8 @@ dependencies {
     testImplementation library.powermockJunitRule
     testImplementation library.powermockMockito
     testImplementation library.powermockClassloading
+    testImplementation library.coroutinesTest
+    testImplementation library.kotlinTest
 
     //Google Support
     implementation library.recyclerView

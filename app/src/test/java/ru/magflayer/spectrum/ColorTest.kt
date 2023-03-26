@@ -10,21 +10,76 @@ class ColorTest {
 
     private val testColorList = object : ArrayList<ColorSpace>() {
         init {
-            add(ColorSpace(Color.RED, ColorSpace.RGB.RED, ColorSpace.CMYK.RED,
-                    ColorSpace.RYB.RED, ColorSpace.HEX.RED, ColorSpace.HSL.RED,
-                    ColorSpace.HSV.RED, ColorSpace.XYZ.RED, ColorSpace.CIE_LAB.RED, ColorSpace.NCS.RED))
-            add(ColorSpace(Color.GREEN, ColorSpace.RGB.GREEN, ColorSpace.CMYK.GREEN,
-                    ColorSpace.RYB.GREEN, ColorSpace.HEX.GREEN, ColorSpace.HSL.GREEN,
-                    ColorSpace.HSV.GREEN, ColorSpace.XYZ.GREEN, ColorSpace.CIE_LAB.GREEN, ColorSpace.NCS.GREEN))
-            add(ColorSpace(Color.BLUE, ColorSpace.RGB.BLUE, ColorSpace.CMYK.BLUE,
-                    ColorSpace.RYB.BLUE, ColorSpace.HEX.BLUE, ColorSpace.HSL.BLUE,
-                    ColorSpace.HSV.BLUE, ColorSpace.XYZ.BLUE, ColorSpace.CIE_LAB.BLUE, ColorSpace.NCS.BLUE))
-            add(ColorSpace(Color.BLACK, ColorSpace.RGB.BLACK, ColorSpace.CMYK.BLACK,
-                    ColorSpace.RYB.BLACK, ColorSpace.HEX.BLACK, ColorSpace.HSL.BLACK,
-                    ColorSpace.HSV.BLACK, ColorSpace.XYZ.BLACK, ColorSpace.CIE_LAB.BLACK, ColorSpace.NCS.BLACK))
-            add(ColorSpace(Color.WHITE, ColorSpace.RGB.WHITE, ColorSpace.CMYK.WHITE,
-                    ColorSpace.RYB.WHITE, ColorSpace.HEX.WHITE, ColorSpace.HSL.WHITE,
-                    ColorSpace.HSV.WHITE, ColorSpace.XYZ.WHITE, ColorSpace.CIE_LAB.WHITE, ColorSpace.NCS.WHITE))
+            add(
+                ColorSpace(
+                    Color.RED,
+                    ColorSpace.RGB.RED,
+                    ColorSpace.CMYK.RED,
+                    ColorSpace.RYB.RED,
+                    ColorSpace.HEX.RED,
+                    ColorSpace.HSL.RED,
+                    ColorSpace.HSV.RED,
+                    ColorSpace.XYZ.RED,
+                    ColorSpace.CIE_LAB.RED,
+                    ColorSpace.NCS.RED,
+                ),
+            )
+            add(
+                ColorSpace(
+                    Color.GREEN,
+                    ColorSpace.RGB.GREEN,
+                    ColorSpace.CMYK.GREEN,
+                    ColorSpace.RYB.GREEN,
+                    ColorSpace.HEX.GREEN,
+                    ColorSpace.HSL.GREEN,
+                    ColorSpace.HSV.GREEN,
+                    ColorSpace.XYZ.GREEN,
+                    ColorSpace.CIE_LAB.GREEN,
+                    ColorSpace.NCS.GREEN,
+                ),
+            )
+            add(
+                ColorSpace(
+                    Color.BLUE,
+                    ColorSpace.RGB.BLUE,
+                    ColorSpace.CMYK.BLUE,
+                    ColorSpace.RYB.BLUE,
+                    ColorSpace.HEX.BLUE,
+                    ColorSpace.HSL.BLUE,
+                    ColorSpace.HSV.BLUE,
+                    ColorSpace.XYZ.BLUE,
+                    ColorSpace.CIE_LAB.BLUE,
+                    ColorSpace.NCS.BLUE,
+                ),
+            )
+            add(
+                ColorSpace(
+                    Color.BLACK,
+                    ColorSpace.RGB.BLACK,
+                    ColorSpace.CMYK.BLACK,
+                    ColorSpace.RYB.BLACK,
+                    ColorSpace.HEX.BLACK,
+                    ColorSpace.HSL.BLACK,
+                    ColorSpace.HSV.BLACK,
+                    ColorSpace.XYZ.BLACK,
+                    ColorSpace.CIE_LAB.BLACK,
+                    ColorSpace.NCS.BLACK,
+                ),
+            )
+            add(
+                ColorSpace(
+                    Color.WHITE,
+                    ColorSpace.RGB.WHITE,
+                    ColorSpace.CMYK.WHITE,
+                    ColorSpace.RYB.WHITE,
+                    ColorSpace.HEX.WHITE,
+                    ColorSpace.HSL.WHITE,
+                    ColorSpace.HSV.WHITE,
+                    ColorSpace.XYZ.WHITE,
+                    ColorSpace.CIE_LAB.WHITE,
+                    ColorSpace.NCS.WHITE,
+                ),
+            )
         }
     }
 
@@ -33,7 +88,7 @@ class ColorTest {
     fun rgbTest() {
         for (colorSpace in testColorList) {
             val rgb = ColorHelper.dec2Rgb(colorSpace.color)
-            assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.rgb.rgb, rgb))
+            assertTrue(colorSpace.hex.toString(), colorSpace.rgb.rgb.contentEquals(rgb))
         }
     }
 
@@ -41,7 +96,7 @@ class ColorTest {
     fun cmykTest() {
         for (colorSpace in testColorList) {
             val cmyk = ColorHelper.dec2Cmyk(colorSpace.color)
-            assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.cmyk.cmyk, cmyk))
+            assertTrue(colorSpace.hex.toString(), colorSpace.cmyk.cmyk.contentEquals(cmyk))
         }
     }
 
@@ -49,7 +104,7 @@ class ColorTest {
     fun hslTest() {
         for (colorSpace in testColorList) {
             val hsl = ColorHelper.dec2Hsl(colorSpace.color)
-            assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.hsl.hsl, hsl))
+            assertTrue(colorSpace.hex.toString(), colorSpace.hsl.hsl.contentEquals(hsl))
         }
     }
 
@@ -57,7 +112,7 @@ class ColorTest {
     fun xyzTest() {
         for (colorSpace in testColorList) {
             val xyz = ColorHelper.dec2Xyz(colorSpace.color)
-            assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.xyz.xyz, xyz))
+            assertTrue(colorSpace.hex.toString(), colorSpace.xyz.xyz.contentEquals(xyz))
         }
     }
 
@@ -65,7 +120,7 @@ class ColorTest {
     fun labTest() {
         for (colorSpace in testColorList) {
             val ciaLab = ColorHelper.dec2Lab(colorSpace.color)
-            assertTrue(colorSpace.hex.toString(), Arrays.equals(colorSpace.cieLab.cieLab, ciaLab))
+            assertTrue(colorSpace.hex.toString(), colorSpace.cieLab.cieLab.contentEquals(ciaLab))
         }
     }
 
