@@ -19,13 +19,13 @@ import javax.inject.Singleton
 @Component(modules = [AppModule::class])
 interface AppComponent {
 
-    //ACTIVITY
+    // ACTIVITY
 
     fun inject(activity: MainActivity)
 
     fun inject(activity: SplashActivity)
 
-    //FRAGMENT
+    // FRAGMENT
 
     fun inject(fragment: ColorCameraFragment)
 
@@ -33,10 +33,10 @@ interface AppComponent {
 
     fun inject(fragment: HistoryDetailsFragment)
 
-    //VIEW HOLDER
+    // VIEW HOLDER
     fun inject(viewHolder: ToolbarViewHolder)
 
-    //PRESENTER
+    // PRESENTER
     fun inject(presenter: SplashPresenter)
 
     fun inject(presenter: MainPresenter)
@@ -48,5 +48,4 @@ interface AppComponent {
     fun inject(presenter: HistoryPresenter)
 
     fun inject(presenter: HistoryDetailsPresenter)
-
 }

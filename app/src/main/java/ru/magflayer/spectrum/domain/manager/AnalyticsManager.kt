@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AnalyticsManager @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
 ) {
 
     private val log = LoggerFactory.getLogger(javaClass)

@@ -24,14 +24,14 @@ class HistoryDetailsPresenter @Inject constructor(
     private val resourceManager: ResourceManager,
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
-    private val pageAppearanceInteractor: PageAppearanceInteractor
+    private val pageAppearanceInteractor: PageAppearanceInteractor,
 ) : BasePresenter<HistoryDetailsView>() {
 
     lateinit var filePath: String
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
             ToolbarAppearance.Visibility.VISIBLE,
-            resourceManager.getString(R.string.history_details_title)
+            resourceManager.getString(R.string.history_details_title),
         )
 
     override val pageAppearance: PageAppearance

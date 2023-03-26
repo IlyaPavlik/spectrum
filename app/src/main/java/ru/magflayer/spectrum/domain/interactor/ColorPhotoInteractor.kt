@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class ColorPhotoInteractor @Inject constructor(
     private val photoRepository: PhotoRepository,
-    private val fileManagerRepository: FileManagerRepository
+    private val fileManagerRepository: FileManagerRepository,
 ) {
 
     suspend fun saveColorPhoto(entity: ColorPhotoEntity): Boolean {
@@ -39,5 +39,4 @@ class ColorPhotoInteractor @Inject constructor(
     suspend fun loadColorPhoto(filePath: String): ColorPhotoEntity {
         return photoRepository.loadPhoto(filePath)
     }
-
 }

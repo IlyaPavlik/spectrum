@@ -33,5 +33,4 @@ class PhotoRepositoryImpl(private val appDatabase: AppDatabase) : PhotoRepositor
         val colorPhotoDto = photoConverter.convertToDto(entity)
         appDatabase.colorPhotoDao().deletePhoto(colorPhotoDto) > 0
     }
-
 }

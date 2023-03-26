@@ -16,5 +16,4 @@ interface HistoryView : PageView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun openHistoryDetailsScreen(filePath: String)
-
 }

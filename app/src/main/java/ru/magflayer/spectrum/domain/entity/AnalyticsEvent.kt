@@ -15,5 +15,4 @@ interface AnalyticsEvent {
 
         const val CHOOSE_IMAGE = "choose_image"
     }
-
 }

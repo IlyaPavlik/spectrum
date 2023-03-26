@@ -12,7 +12,7 @@ import ru.magflayer.spectrum.data.entity.NcsColor
 @Database(
     entities = [ColorPhoto::class, ColorName::class, NcsColor::class],
     version = 3,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -25,6 +25,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun colorNameDao(): ColorNameDao
 
     abstract fun ncsColorDao(): NcsColorDao
-
-
 }

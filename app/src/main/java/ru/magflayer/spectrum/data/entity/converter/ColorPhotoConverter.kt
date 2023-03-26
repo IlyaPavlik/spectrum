@@ -12,9 +12,10 @@ class ColorPhotoConverter : BaseConverter<ColorPhoto, ColorPhotoEntity>() {
 
     override fun convertToDto(entity: ColorPhotoEntity): ColorPhoto {
         return ColorPhoto(
-            entity.millis, entity.filePath, entity.rgbColors,
-            entity.type.ordinal
+            entity.millis,
+            entity.filePath,
+            entity.rgbColors,
+            entity.type.ordinal,
         )
     }
-
 }

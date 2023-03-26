@@ -7,7 +7,7 @@ import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import javax.inject.Inject
 
 class PageAppearanceInteractor @Inject constructor(
-    private val pageAppearanceRepository: PageAppearanceRepository
+    private val pageAppearanceRepository: PageAppearanceRepository,
 ) {
 
     fun setPageAppearance(pageAppearance: PageAppearance) {

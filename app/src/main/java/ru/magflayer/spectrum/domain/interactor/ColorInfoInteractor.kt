@@ -19,7 +19,7 @@ import kotlin.math.sqrt
 class ColorInfoInteractor @Inject constructor(
     private val colorInfoRepository: ColorInfoRepository,
     private val resourceManager: ResourceManager,
-    private val gson: Gson
+    private val gson: Gson,
 ) {
 
     companion object {
@@ -134,9 +134,11 @@ class ColorInfoInteractor @Inject constructor(
     }
 
     private fun calculateColorDifference(colorOneRgb: IntArray, colorTwoRgb: IntArray): Double {
-        val error = ((colorTwoRgb[0] - colorOneRgb[0]).toDouble().pow(2.0)
-                + (colorTwoRgb[1] - colorOneRgb[1]).toDouble().pow(2.0)
-                + (colorTwoRgb[2] - colorOneRgb[2]).toDouble().pow(2.0))
+        val error = (
+            (colorTwoRgb[0] - colorOneRgb[0]).toDouble().pow(2.0) +
+                (colorTwoRgb[1] - colorOneRgb[1]).toDouble().pow(2.0) +
+                (colorTwoRgb[2] - colorOneRgb[2]).toDouble().pow(2.0)
+            )
         return sqrt(error)
     }
 

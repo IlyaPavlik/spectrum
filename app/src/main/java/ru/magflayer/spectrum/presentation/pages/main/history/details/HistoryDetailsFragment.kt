@@ -61,7 +61,7 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
     fun providePresenter(): HistoryDetailsPresenter {
         return EntryPointAccessors.fromActivity(
             requireActivity(),
-            HistoryDetailsEntryPoint::class.java
+            HistoryDetailsEntryPoint::class.java,
         ).historyDetailsPresenter().apply {
             val safeArgs: HistoryDetailsFragmentArgs by navArgs()
             filePath = safeArgs.filePath
@@ -83,7 +83,7 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
             layoutManager = LinearLayoutManager(
                 context,
                 LinearLayoutManager.HORIZONTAL,
-                false
+                false,
             )
         }
     }
@@ -139,8 +139,8 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
                 listOf(
                     getString(R.string.ryb_r_format, ryb[0]),
                     getString(R.string.ryb_y_format, ryb[1]),
-                    getString(R.string.ryb_b_format, ryb[2])
-                )
+                    getString(R.string.ryb_b_format, ryb[2]),
+                ),
             )
         }
     }
@@ -198,8 +198,8 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
                 listOf(
                     getString(R.string.hue_long_format, hue),
                     getString(R.string.saturation_long_format, saturation),
-                    getString(R.string.value_long_format, value)
-                )
+                    getString(R.string.value_long_format, value),
+                ),
             )
         }
     }
@@ -213,8 +213,8 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
                 listOf(
                     getString(R.string.x_format, xyz[0]),
                     getString(R.string.y_format, xyz[1]),
-                    getString(R.string.z_format, xyz[2])
-                )
+                    getString(R.string.z_format, xyz[2]),
+                ),
             )
         }
     }
@@ -228,8 +228,8 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
                 listOf(
                     getString(R.string.l_format, lab[0]),
                     getString(R.string.a_format, lab[1]),
-                    getString(R.string.b_format, lab[2])
-                )
+                    getString(R.string.b_format, lab[2]),
+                ),
             )
         }
     }
@@ -249,7 +249,6 @@ class HistoryDetailsFragment : BaseFragment(R.layout.fragment_history_details), 
         }
 
         override fun onBindViewHolder(holder: ColorViewHolder, position: Int) {
-
             getItem(position)?.let { holder.colorView.setBackgroundColor(it) }
 
             if (position == selectedPosition) {

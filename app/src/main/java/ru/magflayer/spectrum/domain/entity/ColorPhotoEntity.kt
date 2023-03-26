@@ -4,13 +4,13 @@ data class ColorPhotoEntity(
     val type: Type,
     val filePath: String,
     val rgbColors: List<Int>,
-    val millis: Long = System.currentTimeMillis()
+    val millis: Long = System.currentTimeMillis(),
 ) {
 
     constructor(
         type: Type,
         filePath: String,
-        rgbColors: List<Int>
+        rgbColors: List<Int>,
     ) : this(type, filePath, rgbColors, System.currentTimeMillis())
 
     enum class Type {

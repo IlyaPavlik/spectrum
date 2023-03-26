@@ -11,5 +11,4 @@ interface MainView : BaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showFloatingButton(showFloatingButton: Boolean)
-
 }

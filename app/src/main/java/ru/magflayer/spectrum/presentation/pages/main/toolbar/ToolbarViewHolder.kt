@@ -13,7 +13,7 @@ import moxy.presenter.ProvidePresenter
 
 class ToolbarViewHolder(
     private val activity: AppCompatActivity,
-    private val toolbar: Toolbar
+    private val toolbar: Toolbar,
 ) : ToolbarView {
 
     @InjectPresenter
@@ -38,7 +38,7 @@ class ToolbarViewHolder(
     fun providePresenter(): ToolbarPresenter {
         return EntryPointAccessors.fromActivity(
             activity,
-            ToolbarEntryPoint::class.java
+            ToolbarEntryPoint::class.java,
         ).presenter()
     }
 

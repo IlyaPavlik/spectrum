@@ -5,7 +5,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.FloatRange
-import androidx.camera.core.*
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfo
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -38,7 +47,7 @@ class ColorCameraHolder(val context: Context) {
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView,
         analyzer: ImageAnalysis.Analyzer,
-        initialized: (CameraInfo) -> Unit = {}
+        initialized: (CameraInfo) -> Unit = {},
     ) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
@@ -59,7 +68,7 @@ class ColorCameraHolder(val context: Context) {
                     cameraSelector,
                     preview,
                     analysis,
-                    imageCapture
+                    imageCapture,
                 ).also {
                     initialized.invoke(it.cameraInfo)
                 }
@@ -72,11 +81,11 @@ class ColorCameraHolder(val context: Context) {
     fun autoFocus(previewView: PreviewView): Unit = camera?.run {
         val factory = SurfaceOrientedMeteringPointFactory(
             previewView.width.toFloat(),
-            previewView.height.toFloat()
+            previewView.height.toFloat(),
         )
         val point = factory.createPoint(
             previewView.width / 2f,
-            previewView.height / 2f
+            previewView.height / 2f,
         )
         val focusAction = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).build()
 
@@ -126,7 +135,8 @@ class ColorCameraHolder(val context: Context) {
                 override fun onError(exception: ImageCaptureException) {
                     onError(exception)
                 }
-            })
+            },
+        )
     }
 
     fun ImageProxy.toBitmap(): Bitmap? {

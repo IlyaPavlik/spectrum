@@ -26,14 +26,19 @@ abstract class SwipeToDeleteCallback(context: Context?) :
     override fun onMove(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
+        target: RecyclerView.ViewHolder,
     ): Boolean {
-        return false// We don't want support moving items up/down
+        return false // We don't want support moving items up/down
     }
 
     override fun onChildDraw(
-        c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-        dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean,
     ) {
         val itemView = viewHolder.itemView
         val itemHeight = itemView.bottom - itemView.top
@@ -45,7 +50,7 @@ abstract class SwipeToDeleteCallback(context: Context?) :
                 itemView.right + dX,
                 itemView.top.toFloat(),
                 itemView.right.toFloat(),
-                itemView.bottom.toFloat()
+                itemView.bottom.toFloat(),
             )
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             return
@@ -54,8 +59,10 @@ abstract class SwipeToDeleteCallback(context: Context?) :
         // Draw the red delete background
         backgroundColor?.let { background.color = it }
         background.setBounds(
-            itemView.left, itemView.top,
-            itemView.left + dX.toInt(), itemView.bottom
+            itemView.left,
+            itemView.top,
+            itemView.left + dX.toInt(),
+            itemView.bottom,
         )
         background.draw(c)
 

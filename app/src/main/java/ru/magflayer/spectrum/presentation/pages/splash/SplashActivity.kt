@@ -24,7 +24,6 @@ class SplashActivity : BaseActivity(), SplashView {
 
         private const val CAMERA_PERMISSION_REQUEST = 111
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
-
     }
 
     @EntryPoint
@@ -51,7 +50,7 @@ class SplashActivity : BaseActivity(), SplashView {
             ActivityCompat.requestPermissions(
                 this,
                 REQUIRED_PERMISSIONS,
-                CAMERA_PERMISSION_REQUEST
+                CAMERA_PERMISSION_REQUEST,
             )
         }
     }
@@ -59,7 +58,7 @@ class SplashActivity : BaseActivity(), SplashView {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         when (requestCode) {
             CAMERA_PERMISSION_REQUEST -> if (allPermissionsGranted()) {

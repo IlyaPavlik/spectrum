@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class LocalFileManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : FileManagerRepository {
 
     companion object {
@@ -62,7 +62,7 @@ class LocalFileManager @Inject constructor(
                 val fileName = File(sourceFilePath.toString()).name
                 val outputFile = File(
                     context.getExternalFilesDir(null),
-                    fileName
+                    fileName,
                 )
                 FileOutputStream(outputFile).use { outputStream ->
                     inputStream.copyTo(outputStream)
@@ -82,5 +82,4 @@ class LocalFileManager @Inject constructor(
     private fun getUriForFile(file: File): Uri {
         return FileProvider.getUriForFile(context, URI_AUTHORITY, file)
     }
-
 }

@@ -11,5 +11,4 @@ interface FileManagerRepository {
     suspend fun isFileExists(filePath: String): Boolean
 
     suspend fun copyFileToExternalEndpoint(sourceFilePath: Uri): Uri
-
 }

@@ -8,5 +8,4 @@ interface SplashView : BaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun openMainScreen()
-
 }

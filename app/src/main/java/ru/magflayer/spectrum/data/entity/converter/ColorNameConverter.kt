@@ -10,5 +10,4 @@ class ColorNameConverter : BaseConverter<ColorName, ColorInfoEntity>() {
 
     override fun convertToDto(entity: ColorInfoEntity): ColorName =
         ColorName(entity.id, entity.name)
-
 }

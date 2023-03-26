@@ -8,14 +8,14 @@ import javax.inject.Inject
 
 @InjectViewState
 class ToolbarPresenter @Inject constructor(
-    private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor
+    private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
 ) : BasePresenter<ToolbarView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         execute(
             toolbarAppearanceInteractor.observeToolbarAppearance(),
-            onSuccess = { toolbarAppearance -> handleToolbarAppearance(toolbarAppearance) }
+            onSuccess = { toolbarAppearance -> handleToolbarAppearance(toolbarAppearance) },
         )
     }
 

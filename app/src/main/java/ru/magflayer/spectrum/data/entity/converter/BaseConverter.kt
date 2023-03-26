@@ -9,5 +9,4 @@ abstract class BaseConverter<DTO, ENTITY> {
     fun convertToEntities(dtos: Iterable<DTO>) = dtos.map { convertToEntity(it) }
 
     fun convertToDtos(entities: Iterable<ENTITY>) = entities.map { convertToDto(it) }
-
 }

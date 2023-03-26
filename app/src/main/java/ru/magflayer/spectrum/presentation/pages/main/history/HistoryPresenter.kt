@@ -27,13 +27,13 @@ class HistoryPresenter @Inject constructor(
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val fileManagerInteractor: FileManagerInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
-    private val pageAppearanceInteractor: PageAppearanceInteractor
+    private val pageAppearanceInteractor: PageAppearanceInteractor,
 ) : BasePresenter<HistoryView>() {
 
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
             ToolbarAppearance.Visibility.VISIBLE,
-            resourceManager.getString(R.string.history_toolbar_title)
+            resourceManager.getString(R.string.history_toolbar_title),
         )
 
     override val pageAppearance: PageAppearance
@@ -49,7 +49,7 @@ class HistoryPresenter @Inject constructor(
         analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY)
         execute(
             pageAppearanceInteractor.observeFabEvent(),
-            onSuccess = { handleFabClicked() }
+            onSuccess = { handleFabClicked() },
         )
     }
 
@@ -85,7 +85,7 @@ class HistoryPresenter @Inject constructor(
             val cacheFileUri = fileManagerInteractor.copyToLocalStorage(fileUri)
             val swatches = ArrayList(palette.swatches)
 
-            //filtered by brightness
+            // filtered by brightness
             swatches.sortWith { lhs, rhs ->
                 lhs.hsl[2].compareTo(rhs.hsl[2])
             }
@@ -94,7 +94,7 @@ class HistoryPresenter @Inject constructor(
             val entity = ColorPhotoEntity(
                 ColorPhotoEntity.Type.EXTERNAL,
                 cacheFileUri.toString(),
-                rgbColors
+                rgbColors,
             )
             val success = colorPhotoInteractor.saveColorPhoto(entity)
 

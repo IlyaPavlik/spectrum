@@ -5,11 +5,18 @@ import android.graphics.Matrix
 import android.os.Bundle
 import androidx.camera.core.CameraInfo
 import androidx.palette.graphics.Palette
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import moxy.InjectViewState
 import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
-import ru.magflayer.spectrum.domain.interactor.*
+import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
+import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
+import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
+import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
+import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
 import ru.magflayer.spectrum.presentation.common.extension.convertBitmapToBytes
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
@@ -20,7 +27,7 @@ import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
 import ru.magflayer.spectrum.presentation.pages.main.camera.holder.CenterColorResult
 import ru.magflayer.spectrum.presentation.pages.main.camera.holder.ColorAnalyzerResult
 import ru.magflayer.spectrum.presentation.pages.main.camera.holder.SwatchesResult
-import java.util.*
+import java.util.Collections
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -32,7 +39,7 @@ class ColorCameraPresenter @Inject constructor(
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val fileManagerInteractor: FileManagerInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
-    private val pageAppearanceInteractor: PageAppearanceInteractor
+    private val pageAppearanceInteractor: PageAppearanceInteractor,
 ) : BasePresenter<ColorCameraView>() {
 
     companion object {
@@ -60,7 +67,7 @@ class ColorCameraPresenter @Inject constructor(
     override val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
             ToolbarAppearance.Visibility.INVISIBLE,
-            ""
+            "",
         )
 
     override fun attachView(view: ColorCameraView) {
@@ -195,7 +202,7 @@ class ColorCameraPresenter @Inject constructor(
                 return@withContext
             }
 
-            //to reduce times of updating
+            // to reduce times of updating
             val dominantSwatch = palette.dominantSwatch
             if (dominantSwatch != null) {
                 val currentColor = dominantSwatch.rgb
@@ -209,7 +216,7 @@ class ColorCameraPresenter @Inject constructor(
             }
             val colors = ArrayList(palette.swatches)
 
-            //filtered by brightness
+            // filtered by brightness
             colors.sortWith { lhs, rhs -> lhs.hsl[2].compareTo(rhs.hsl[2]) }
 
             swatches.clear()
@@ -223,7 +230,7 @@ class ColorCameraPresenter @Inject constructor(
     private suspend fun saveColorPicture(
         bitmap: Bitmap,
         swatches: List<Palette.Swatch>,
-        rotationDegree: Int
+        rotationDegree: Int,
     ) = withContext(Dispatchers.Default) {
         presenterScope.launch { viewState.showProgressBar() }
 
@@ -234,13 +241,13 @@ class ColorCameraPresenter @Inject constructor(
         val fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis())
         val savedFileUri = fileManagerInteractor.saveFileToExternalStorage(
             fileName,
-            bitmapBytes
+            bitmapBytes,
         )
         val rgbColors = convertSwatches(swatches)
         val entity = ColorPhotoEntity(
             ColorPhotoEntity.Type.INTERNAL,
             savedFileUri.path ?: "",
-            rgbColors
+            rgbColors,
         )
 
         colorPhotoInteractor.saveColorPhoto(entity)
@@ -284,23 +291,27 @@ class ColorCameraPresenter @Inject constructor(
             scaledBitmap.width,
             scaledBitmap.height,
             matrix,
-            true
+            true,
         )
     }
 
     private fun isPortrait(orientation: Int): Boolean {
-        return (orientation <= ROTATION_INTERVAL || orientation >= 360 - ROTATION_INTERVAL // [350 : 10]
-                || orientation <= 180 + ROTATION_INTERVAL && orientation >= 180 - ROTATION_INTERVAL) //[170 : 190]
+        return (
+            orientation <= ROTATION_INTERVAL || orientation >= 360 - ROTATION_INTERVAL || // [350 : 10]
+                orientation <= 180 + ROTATION_INTERVAL && orientation >= 180 - ROTATION_INTERVAL
+            ) // [170 : 190]
     }
 
     private fun isLandscape(orientation: Int): Boolean {
-        return (orientation <= 90 + ROTATION_INTERVAL && orientation >= 90 - ROTATION_INTERVAL // [100 : 80]
-                || orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL) // [280 : 260]
+        return (
+            orientation <= 90 + ROTATION_INTERVAL && orientation >= 90 - ROTATION_INTERVAL || // [100 : 80]
+                orientation <= 270 + ROTATION_INTERVAL && orientation >= 270 - ROTATION_INTERVAL
+            ) // [280 : 260]
     }
 
     private data class ZoomState(
         val minZoom: Float = 0F,
         val maxZoom: Float = 0F,
-        val zoom: Float = 0F
+        val zoom: Float = 0F,
     )
 }

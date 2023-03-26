@@ -8,13 +8,12 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-
 import ru.magflayer.spectrum.presentation.common.helper.AppHelper
 
 class PointView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = -1
+    defStyleAttr: Int = -1,
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
@@ -60,8 +59,8 @@ class PointView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec)
-        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
+        val parentWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val parentHeight = MeasureSpec.getSize(heightMeasureSpec)
 
         currentX = (parentWidth / 2).toFloat()
         currentY = (parentHeight / 2).toFloat()
@@ -101,10 +100,10 @@ class PointView @JvmOverloads constructor(
     }
 
     private fun touchDown(x: Float, y: Float): Boolean {
-        if (x > currentX - circleRadius
-            && x < currentX + circleRadius
-            && y > currentY - circleRadius
-            && y < currentY + circleRadius
+        if (x > currentX - circleRadius &&
+            x < currentX + circleRadius &&
+            y > currentY - circleRadius &&
+            y < currentY + circleRadius
         ) {
             moveEnabled = true
             currentX = x

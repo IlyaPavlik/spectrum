@@ -13,5 +13,4 @@ interface PageAppearanceRepository {
     fun publishFabEvent()
 
     fun observeFabEvent(): Flow<FabClickEvent>
-
 }

@@ -7,14 +7,15 @@ import ru.magflayer.spectrum.domain.entity.event.FabClickEvent
 import ru.magflayer.spectrum.domain.repository.PageAppearanceRepository
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 
-class PageAppearanceRepositoryImpl : BaseSingleModelRepository<PageAppearance>(),
+class PageAppearanceRepositoryImpl :
+    BaseSingleModelRepository<PageAppearance>(),
     PageAppearanceRepository {
 
     private val fabSharedFlow by lazy {
         MutableSharedFlow<FabClickEvent>(
             replay = 0,
             extraBufferCapacity = 1,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
     }
 

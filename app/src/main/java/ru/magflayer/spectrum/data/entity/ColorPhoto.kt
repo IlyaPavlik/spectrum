@@ -8,8 +8,10 @@ import com.google.gson.reflect.TypeToken
 data class ColorPhoto(
     @field:PrimaryKey var id: Long,
     @field:ColumnInfo(name = "file_path") var filePath: String,
-    @field:ColumnInfo(name = "colors") @field:TypeConverters(RgbColorsConverters::class) var rgbColors: List<Int>,
-    @field:ColumnInfo(name = "type") var type: Int
+    @field:ColumnInfo(name = "colors")
+    @field:TypeConverters(RgbColorsConverters::class)
+    var rgbColors: List<Int>,
+    @field:ColumnInfo(name = "type") var type: Int,
 ) {
 
     internal class RgbColorsConverters {
@@ -23,7 +25,6 @@ data class ColorPhoto(
             }
 
             val listType = object : TypeToken<List<Int>>() {
-
             }.type
             return gson.fromJson(data, listType)
         }

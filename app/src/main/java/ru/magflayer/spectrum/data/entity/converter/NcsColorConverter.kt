@@ -8,5 +8,4 @@ class NcsColorConverter : BaseConverter<NcsColor, ColorInfoEntity>() {
     override fun convertToEntity(dto: NcsColor) = ColorInfoEntity(dto.hex, dto.name)
 
     override fun convertToDto(entity: ColorInfoEntity) = NcsColor(entity.id, entity.name)
-
 }

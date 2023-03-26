@@ -4,7 +4,8 @@ import android.graphics.Color
 import androidx.core.graphics.ColorUtils
 import androidx.palette.graphics.Palette
 import androidx.palette.graphics.Palette.Swatch
-import java.util.*
+import java.util.Arrays
+import java.util.PriorityQueue
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -28,7 +29,7 @@ import kotlin.math.roundToInt
 internal class ColorCutQuantizer(
     pixels: IntArray,
     maxColors: Int,
-    private val filters: Array<Palette.Filter>?
+    private val filters: Array<Palette.Filter>?,
 ) {
 
     /**
@@ -148,7 +149,7 @@ internal class ColorCutQuantizer(
      */
     private inner class Vbox constructor(
         private val mLowerIndex: Int,
-        private var mUpperIndex: Int
+        private var mUpperIndex: Int,
     ) {
         // Population of colors within this box
         private var mPopulation: Int = 0
@@ -159,8 +160,10 @@ internal class ColorCutQuantizer(
         private var mMinBlue: Int = 0
         private var mMaxBlue: Int = 0
         val volume: Int
-            get() = ((mMaxRed - mMinRed + 1) * (mMaxGreen - mMinGreen + 1) *
-                    (mMaxBlue - mMinBlue + 1))
+            get() = (
+                (mMaxRed - mMinRed + 1) * (mMaxGreen - mMinGreen + 1) *
+                    (mMaxBlue - mMinBlue + 1)
+                )
 
         fun canSplit(): Boolean {
             return colorCount > 1
@@ -374,7 +377,7 @@ internal class ColorCutQuantizer(
             a: IntArray,
             dimension: Int,
             lower: Int,
-            upper: Int
+            upper: Int,
         ) {
             when (dimension) {
                 COMPONENT_RED -> Unit
@@ -383,9 +386,11 @@ internal class ColorCutQuantizer(
                     while (i <= upper) {
                         val color: Int = a[i]
                         a[i] =
-                            (quantizedGreen(color) shl (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)
-                                    ) or (quantizedRed(color) shl QUANTIZE_WORD_WIDTH
-                                    ) or quantizedBlue(color)
+                            (
+                                quantizedGreen(color) shl (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)
+                                ) or (
+                                quantizedRed(color) shl QUANTIZE_WORD_WIDTH
+                                ) or quantizedBlue(color)
                         i++
                     }
                 }
@@ -394,9 +399,11 @@ internal class ColorCutQuantizer(
                     while (i <= upper) {
                         val color: Int = a[i]
                         a[i] =
-                            (quantizedBlue(color) shl (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)
-                                    ) or (quantizedGreen(color) shl QUANTIZE_WORD_WIDTH
-                                    ) or quantizedRed(color)
+                            (
+                                quantizedBlue(color) shl (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)
+                                ) or (
+                                quantizedGreen(color) shl QUANTIZE_WORD_WIDTH
+                                ) or quantizedRed(color)
                         i++
                     }
                 }
@@ -426,7 +433,7 @@ internal class ColorCutQuantizer(
             return Color.rgb(
                 modifyWordWidth(r, QUANTIZE_WORD_WIDTH, 8),
                 modifyWordWidth(g, QUANTIZE_WORD_WIDTH, 8),
-                modifyWordWidth(b, QUANTIZE_WORD_WIDTH, 8)
+                modifyWordWidth(b, QUANTIZE_WORD_WIDTH, 8),
             )
         }
 
@@ -434,7 +441,7 @@ internal class ColorCutQuantizer(
             return approximateToRgb888(
                 quantizedRed(color),
                 quantizedGreen(color),
-                quantizedBlue(color)
+                quantizedBlue(color),
             )
         }
 

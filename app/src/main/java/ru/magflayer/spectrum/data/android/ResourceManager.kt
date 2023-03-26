@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ResourceManager @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
 ) {
 
     private val resources = context.resources

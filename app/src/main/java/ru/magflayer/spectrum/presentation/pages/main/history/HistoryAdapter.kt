@@ -15,7 +15,7 @@ import ru.magflayer.spectrum.presentation.common.android.BaseViewHolder
 import ru.magflayer.spectrum.presentation.common.extension.createMultiColorHorizontalBitmap
 
 internal class HistoryAdapter(
-    context: Context
+    context: Context,
 ) : BaseRecyclerAdapter<HistoryAdapter.HistoryViewHolder, ColorPhotoEntity>(context) {
 
     private val colorContainerSize: Int =

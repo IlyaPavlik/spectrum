@@ -5,7 +5,7 @@ import ru.magflayer.spectrum.domain.repository.FileManagerRepository
 import javax.inject.Inject
 
 class FileManagerInteractor @Inject constructor(
-    private val fileManagerRepository: FileManagerRepository
+    private val fileManagerRepository: FileManagerRepository,
 ) {
 
     suspend fun saveFileToExternalStorage(fileName: String, bytes: ByteArray): Uri {

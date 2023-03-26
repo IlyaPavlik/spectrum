@@ -19,5 +19,4 @@ interface ColorInfoRepository {
     suspend fun loadNcsColors(): List<ColorInfoEntity>
 
     suspend fun loadNcsColorByHex(hex: String): String
-
 }

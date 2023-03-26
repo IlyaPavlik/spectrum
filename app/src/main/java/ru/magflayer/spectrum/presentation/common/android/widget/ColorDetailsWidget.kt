@@ -15,13 +15,13 @@ import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 class ColorDetailsWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = -1
+    defStyleAttr: Int = -1,
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val viewBinding = WidgetColorDetailsBinding.inflate(
         LayoutInflater.from(context),
         this,
-        true
+        true,
     )
 
     fun setColor(@ColorInt color: Int) = with(viewBinding) {

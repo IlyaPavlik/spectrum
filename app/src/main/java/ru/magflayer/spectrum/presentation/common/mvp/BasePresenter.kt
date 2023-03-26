@@ -5,7 +5,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import moxy.MvpPresenter
 import moxy.MvpView
@@ -24,7 +23,7 @@ abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
     open val toolbarAppearance: ToolbarAppearance
         get() = ToolbarAppearance(
             ToolbarAppearance.Visibility.NO_INFLUENCE,
-            ""
+            "",
         )
 
     open val pageAppearance: PageAppearance
@@ -40,7 +39,7 @@ abstract class BasePresenter<View : MvpView> : MvpPresenter<View>() {
     protected fun <T> execute(
         flow: Flow<T>,
         onSuccess: (T) -> Unit,
-        onError: (Throwable) -> Unit = defaultErrorHandler
+        onError: (Throwable) -> Unit = defaultErrorHandler,
     ) {
         presenterScope.launch {
             flow

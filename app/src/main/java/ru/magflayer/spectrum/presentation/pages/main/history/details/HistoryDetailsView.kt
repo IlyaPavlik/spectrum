@@ -33,5 +33,4 @@ interface HistoryDetailsView : BaseView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun showNcs(color: Int, ncsName: String)
-
 }

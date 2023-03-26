@@ -14,14 +14,14 @@ import ru.magflayer.spectrum.presentation.common.extension.setColor
 class TextSeekBarView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = -1
+    defStyleAttr: Int = -1,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val viewBinding by lazy {
         WidgetTextSeekBarBinding.inflate(
             LayoutInflater.from(context),
             this,
-            true
+            true,
         )
     }
 
