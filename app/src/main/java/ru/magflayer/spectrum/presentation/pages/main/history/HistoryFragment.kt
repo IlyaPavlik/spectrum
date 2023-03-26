@@ -1,13 +1,10 @@
 package ru.magflayer.spectrum.presentation.pages.main.history
 
-import android.app.Activity
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
-import androidx.core.content.ContextCompat
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.*
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -28,10 +25,6 @@ import ru.magflayer.spectrum.presentation.common.helper.DialogHelper
 class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
 
     companion object {
-
-        private const val REQUEST_PICK_IMAGE = 1
-        private const val REQUEST_WRITE_EXTERNAL_STORAGE = 2
-
         fun newInstance(): HistoryFragment {
             return HistoryFragment()
         }
@@ -43,6 +36,16 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
     lateinit var presenter: HistoryPresenter
 
     private lateinit var historyAdapter: HistoryAdapter
+
+    private val pickMedia =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            uri?.let { safeUri ->
+                logger.debug("Try to build bitmap from: {}", safeUri)
+                val inputStream = requireContext().contentResolver.openInputStream(safeUri)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                presenter.handleSelectedImage(safeUri, bitmap)
+            } ?: logger.warn("Data uri is null")
+        }
 
     @EntryPoint
     @InstallIn(ActivityComponent::class)
@@ -109,65 +112,12 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
 
     override fun openPickPhoto() {
         logger.debug("openPickPhoto")
-        if (hasStoragePermission()) {
-            requestPermission()
-            return
-        }
-
-        val title = getString(R.string.select_image_title)
-        val getContentIntent = Intent(Intent.ACTION_GET_CONTENT)
-        getContentIntent.type = "image/*"
-
-        val pickIntent = Intent(Intent.ACTION_PICK)
-        pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-
-        val chooserIntent = Intent.createChooser(getContentIntent, title)
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(pickIntent))
-
-        startActivityForResult(chooserIntent, REQUEST_PICK_IMAGE)
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     override fun openHistoryDetailsScreen(filePath: String) {
         val action = HistoryFragmentDirections.nextAction(filePath)
         findNavController().navigate(action)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (context == null) {
-            logger.warn("Context is null")
-            return
-        }
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_PICK_IMAGE) {
-                val dataUri = data?.data
-                try {
-                    dataUri?.let { uri ->
-                        logger.debug("Try to build bitmap from: {}", uri)
-                        val inputStream = requireContext().contentResolver.openInputStream(uri)
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        presenter.handleSelectedImage(uri, bitmap)
-                    } ?: logger.warn("Data uri is null")
-                } catch (e: Exception) {
-                    logger.warn("Cannot load bitmap: ", e)
-                }
-            }
-        } else {
-            logger.warn("Result doesn't success: {}", resultCode)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            REQUEST_WRITE_EXTERNAL_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openPickPhoto()
-                }
-            }
-        }
     }
 
     private fun openAcceptDeleteColor(position: Int) {
@@ -187,19 +137,5 @@ class HistoryFragment : BaseFragment(R.layout.fragment_history), HistoryView {
             dialog.setOnCancelListener { historyAdapter.notifyItemChanged(position) }
             dialog.show()
         }
-    }
-
-    private fun hasStoragePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestPermission() {
-        requestPermissions(
-            arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            REQUEST_WRITE_EXTERNAL_STORAGE
-        )
     }
 }

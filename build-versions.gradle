@@ -6,7 +6,7 @@ ext.config = [
         ],
         sdk    : [
                 min    : 21,
-                target : 31,
-                compile: 31
+                target : 33,
+                compile: 33
         ]
 ]

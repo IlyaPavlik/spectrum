@@ -4,7 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.firebase.crashlytics")
     id("dagger.hilt.android.plugin")
-    id("androidx.navigation.safeargs.kotlin")
+    id("androidx.navigation.safeargs")
 }
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -103,6 +103,7 @@ dependencies {
     implementation library.cardView
     implementation library.multidex
     implementation library.material
+    implementation library.activity
 
     //Google Firebase
     implementation library.firebaseCore
