@@ -1,11 +1,9 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera.holder
 
-import android.graphics.Color
+import androidx.annotation.ColorInt
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.palette.graphics.Palette
-import java.nio.ByteBuffer
-import java.nio.IntBuffer
 import java.util.concurrent.TimeUnit
 
 class ColorAnalyzer : ImageAnalysis.Analyzer {
@@ -35,70 +33,37 @@ class ColorAnalyzer : ImageAnalysis.Analyzer {
         image: ImageProxy,
         analyzerType: Type,
     ): ColorAnalyzerResult {
-        val planes = image.planes
-
         val height = image.height
         val width = image.width
-
-        // Y
-        val yArr = planes[0].buffer
-        val yArrByteArray = yArr.toByteArray()
-        val yPixelStride = planes[0].pixelStride
-        val yRowStride = planes[0].rowStride
-
-        // U
-        val uArr = planes[1].buffer
-        val uArrByteArray = uArr.toByteArray()
-        val uPixelStride = planes[1].pixelStride
-        val uRowStride = planes[1].rowStride
-
-        // V
-        val vArr = planes[2].buffer
-        val vArrByteArray = vArr.toByteArray()
-        val vPixelStride = planes[2].pixelStride
-        val vRowStride = planes[2].rowStride
+        val rgbPlane = image.planes[0]
 
         return when (analyzerType) {
             Type.CENTER -> {
-                val yIndex = (height * yRowStride + width * yPixelStride) / 2
-                val uIndex = (height * uRowStride + width * uPixelStride) / 4
-                val vIndex = (height * vRowStride + width * vPixelStride) / 4
+                val centerIndex = ((width / 2) + (height / 2) * width) * rgbPlane.pixelStride
 
-                val y = yArrByteArray[yIndex].toInt() and 255
-                val u = (uArrByteArray[uIndex].toInt() and 255) - 128
-                val v = (vArrByteArray[vIndex].toInt() and 255) - 128
+                // for some reason Red and Blue bytes are swapped
+                val b = rgbPlane.buffer[centerIndex].toInt() and 0xff
+                val g = rgbPlane.buffer[centerIndex + 1].toInt() and 0xff
+                val r = rgbPlane.buffer[centerIndex + 2].toInt() and 0xff
+                val a = rgbPlane.buffer[centerIndex + 3].toInt() and 0xff
 
-                val (r, g, b) = convertYUVToRGB(y, u, v)
-
-                CenterColorResult(Color.rgb(r, g, b))
+                CenterColorResult(rgbaToColor(r, g, b, a))
             }
             Type.SWATCHES -> {
-                val pixels = IntBuffer.allocate(width * height).apply {
-                    position(0)
+                val pixels = IntArray(width * height)
+                var j = 0
+
+                for (i in pixels.indices) {
+                    val b = rgbPlane.buffer[j++].toInt() and 0xff
+                    val g = rgbPlane.buffer[j++].toInt() and 0xff
+                    val r = rgbPlane.buffer[j++].toInt() and 0xff
+                    val a = rgbPlane.buffer[j++].toInt() and 0xff
+
+                    pixels[i] = rgbaToColor(r, g, b, a)
                 }
-                for (xCord in 0 until width) {
-                    for (yCord in 0 until height) {
-                        val uvx = xCord / 2
-                        val uvy = yCord / 2
-
-                        val yIndex = yCord * yRowStride + xCord * yPixelStride
-                        val uIndex = uvy * uRowStride + uvx * uPixelStride
-                        val vIndex = uvy * vRowStride + uvx * vPixelStride
-
-                        val y = yArrByteArray[yIndex].toInt() and 255
-                        val u = (uArrByteArray[uIndex].toInt() and 255) - 128
-                        val v = (vArrByteArray[vIndex].toInt() and 255) - 128
-
-                        val (r, g, b) = convertYUVToRGB(y, u, v)
-
-                        pixels.put(Color.rgb(r, g, b))
-                    }
-                }
-
-                pixels.flip()
 
                 val quantizer = ColorCutQuantizer(
-                    pixels.array(),
+                    pixels,
                     MAX_SWATCHES_COLORS,
                     arrayOf(paletteFilter),
                 )
@@ -112,19 +77,12 @@ class ColorAnalyzer : ImageAnalysis.Analyzer {
         }
     }
 
-    private fun ByteBuffer.toByteArray(): ByteArray {
-        rewind() // Rewind the buffer to zero
-        val data = ByteArray(remaining())
-        get(data) // Copy the buffer into a byte array
-        return data // Return the byte array
-    }
-
-    private fun convertYUVToRGB(y: Int, u: Int, v: Int): Triple<Int, Int, Int> =
-        Triple(
-            (y + (1.370705 * v)).toInt(), // red
-            (y - (0.698001 * v) - (0.337633 * u)).toInt(), // green
-            (y + (1.732446 * u)).toInt(), // blue
-        )
+    /**
+     * see [Bitmap.Config.ARGB_8888]
+     */
+    @ColorInt
+    private fun rgbaToColor(r: Int, g: Int, b: Int, a: Int): Int =
+        (a shl 24) or (b shl 16) or (g shl 8) or (r)
 
     enum class Type {
         CENTER,

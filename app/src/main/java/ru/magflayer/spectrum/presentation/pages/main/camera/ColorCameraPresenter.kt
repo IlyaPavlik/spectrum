@@ -194,11 +194,11 @@ class ColorCameraPresenter @Inject constructor(
 
     private suspend fun handleMultipleColorImage(swatchesResult: SwatchesResult) =
         withContext(Dispatchers.Default) {
-            val paletteSwatches =
-                swatchesResult.swatches.map { Palette.Swatch(it.color, it.population) }
-            val palette = Palette.from(paletteSwatches)
+            val paletteSwatches = swatchesResult.swatches.map { Palette.Swatch(it.color, it.population) }
+            val palette = paletteSwatches.takeIf { it.isNotEmpty() }
+                ?.let { Palette.from(it) }
 
-            if (palette.swatches.isEmpty()) {
+            if (palette == null || palette.swatches.isEmpty()) {
                 return@withContext
             }
 

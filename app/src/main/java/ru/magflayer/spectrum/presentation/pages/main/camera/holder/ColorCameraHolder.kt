@@ -55,7 +55,9 @@ class ColorCameraHolder(val context: Context) {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             val preview = Preview.Builder().build()
-            val analysis = ImageAnalysis.Builder().build()
+            val analysis = ImageAnalysis.Builder()
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                .build()
 
             preview.setSurfaceProvider(previewView.surfaceProvider)
 
