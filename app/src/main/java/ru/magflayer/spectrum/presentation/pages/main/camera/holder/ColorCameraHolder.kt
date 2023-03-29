@@ -2,8 +2,9 @@ package ru.magflayer.spectrum.presentation.pages.main.camera.holder
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Size
+import android.view.Surface
 import androidx.annotation.FloatRange
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
@@ -12,7 +13,6 @@ import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -20,9 +20,19 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import ru.magflayer.spectrum.presentation.common.extension.logger
+import ru.magflayer.spectrum.presentation.pages.main.camera.CameraOrientation
+import java.io.File
 import java.util.concurrent.Executors
 
-class ColorCameraHolder(val context: Context) {
+class ColorCameraHolder(private val context: Context) {
+
+    companion object {
+        private const val SAVE_FILE_FORMAT = "spectre_%d.png"
+
+        // keep aspect ratio 4:3
+        private const val SAVE_IMAGE_WIDTH = 640
+        private const val SAVE_IMAGE_HEIGHT = 480
+    }
 
     private val log by logger("ColorCameraHolder")
 
@@ -37,7 +47,12 @@ class ColorCameraHolder(val context: Context) {
     private val mainExecutor by lazy { ContextCompat.getMainExecutor(context) }
     private val analyzerExecutor by lazy { Executors.newSingleThreadExecutor() }
     private val imageCaptureExecutor by lazy { Executors.newSingleThreadExecutor() }
-    private val imageCapture by lazy { ImageCapture.Builder().build() }
+
+    private val imageCapture: ImageCapture by lazy {
+        ImageCapture.Builder()
+            .setTargetResolution(Size(SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT))
+            .build()
+    }
 
     @FloatRange(from = 0.0, to = 1.0)
     val zoom: Float = camera?.cameraInfo?.zoomState?.value?.linearZoom ?: 0.0F
@@ -125,13 +140,29 @@ class ColorCameraHolder(val context: Context) {
         }, mainExecutor)
     } ?: Unit
 
-    fun takePicture(onSuccess: (Bitmap) -> Unit, onError: (Exception) -> Unit) {
+    fun setTargetRotation(orientation: CameraOrientation) {
+        val rotation = when (orientation) {
+            CameraOrientation.PORTRAIT -> Surface.ROTATION_0
+            CameraOrientation.LANDSCAPE -> Surface.ROTATION_90
+        }
+        imageCapture.targetRotation = rotation
+    }
+
+    fun takePicture(onSuccess: (Uri) -> Unit, onError: (Exception) -> Unit) {
+        val fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis())
+        val externalFile = File(context.getExternalFilesDir(null), fileName)
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(externalFile)
+            .build()
+
         imageCapture.takePicture(
+            outputOptions,
             imageCaptureExecutor,
-            object : ImageCapture.OnImageCapturedCallback() {
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    image.toBitmap()?.let { onSuccess(it) }
-                        ?: onError(IllegalStateException("Cannot create bitmap"))
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    outputFileResults.savedUri?.let {
+                        onSuccess(it)
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
@@ -139,13 +170,5 @@ class ColorCameraHolder(val context: Context) {
                 }
             },
         )
-    }
-
-    fun ImageProxy.toBitmap(): Bitmap? {
-        val buffer = planes[0].buffer
-        buffer.rewind()
-        val bytes = ByteArray(buffer.capacity())
-        buffer.get(bytes)
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 }

@@ -114,8 +114,8 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         viewBinding.menu.setOnClickListener { openHistoryScreen() }
         viewBinding.save.setOnClickListener {
             cameraHolder.takePicture(
-                onSuccess = { presenter.handlePictureCaptureSucceed(it) },
-                onError = { presenter.handlePictureCaptureFailed(it) },
+                onSuccess = presenter::handlePictureCaptureSucceed,
+                onError = presenter::handlePictureCaptureFailed,
             )
         }
         viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
@@ -236,13 +236,13 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         flash.rotate(orientation.degree)
         colorDetails.rotate(orientation.degree)
         zoomContainer.rotate((orientation.degree - 90).rem(360))
-        viewBinding.colorRecycler.layoutManager =
-            GridLayoutManager(
-                context,
-                COLOR_SPAN_COUNT,
-                GridLayoutManager.HORIZONTAL,
-                orientation == CameraOrientation.LANDSCAPE,
-            )
+        viewBinding.colorRecycler.layoutManager = GridLayoutManager(
+            context,
+            COLOR_SPAN_COUNT,
+            GridLayoutManager.HORIZONTAL,
+            orientation == CameraOrientation.LANDSCAPE,
+        )
+        cameraHolder.setTargetRotation(orientation)
     }
 
     override fun autoFocus() {
