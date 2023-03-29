@@ -1,7 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
-import android.graphics.Bitmap
-import android.graphics.Matrix
+import android.net.Uri
 import android.os.Bundle
 import androidx.camera.core.CameraInfo
 import androidx.palette.graphics.Palette
@@ -14,11 +13,9 @@ import ru.magflayer.spectrum.domain.entity.AnalyticsEvent
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
-import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
 import ru.magflayer.spectrum.domain.manager.AnalyticsManager
-import ru.magflayer.spectrum.presentation.common.extension.convertBitmapToBytes
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo
@@ -37,16 +34,11 @@ class ColorCameraPresenter @Inject constructor(
     private val analyticsManager: AnalyticsManager,
     private val colorInfoInteractor: ColorInfoInteractor,
     private val colorPhotoInteractor: ColorPhotoInteractor,
-    private val fileManagerInteractor: FileManagerInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
     private val pageAppearanceInteractor: PageAppearanceInteractor,
 ) : BasePresenter<ColorCameraView>() {
 
     companion object {
-        private const val SAVE_IMAGE_WIDTH = 640
-        private const val SAVE_IMAGE_HEIGHT = 360
-
-        private const val SAVE_FILE_FORMAT = "spectre_%d.png"
         private const val ROTATION_INTERVAL = 5
         private const val ZOOM_STEP_FACTOR = 50
     }
@@ -131,13 +123,12 @@ class ColorCameraPresenter @Inject constructor(
         viewState.autoFocus()
     }
 
-    fun handlePictureCaptureSucceed(bitmap: Bitmap) {
-        val orientationDegree = if (orientation == CameraOrientation.LANDSCAPE) 0 else 90
+    fun handlePictureCaptureSucceed(uri: Uri) {
         val errorHandler = CoroutineExceptionHandler { _, exception ->
             logger.warn("Error while saving photo: ", exception)
         }
         presenterScope.launch(errorHandler) {
-            saveColorPicture(bitmap, swatches, orientationDegree)
+            saveColorPicture(uri, swatches)
         }
     }
 
@@ -228,25 +219,17 @@ class ColorCameraPresenter @Inject constructor(
         }
 
     private suspend fun saveColorPicture(
-        bitmap: Bitmap,
+        imageUri: Uri,
         swatches: List<Palette.Swatch>,
-        rotationDegree: Int,
     ) = withContext(Dispatchers.Default) {
         presenterScope.launch { viewState.showProgressBar() }
 
         sendTakePhotoAnalytics()
 
-        val scaledBitmap = scaleBitmapWithRotate(bitmap, rotationDegree)
-        val bitmapBytes = scaledBitmap.convertBitmapToBytes()
-        val fileName = String.format(SAVE_FILE_FORMAT, System.currentTimeMillis())
-        val savedFileUri = fileManagerInteractor.saveFileToExternalStorage(
-            fileName,
-            bitmapBytes,
-        )
         val rgbColors = convertSwatches(swatches)
         val entity = ColorPhotoEntity(
             ColorPhotoEntity.Type.INTERNAL,
-            savedFileUri.path ?: "",
+            imageUri.path ?: "",
             rgbColors,
         )
 
@@ -277,22 +260,6 @@ class ColorCameraPresenter @Inject constructor(
 
     private fun convertSwatches(swatches: List<Palette.Swatch>): List<Int> {
         return swatches.map { it.rgb }
-    }
-
-    private fun scaleBitmapWithRotate(sourceBitmap: Bitmap, degrees: Int): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(degrees.toFloat())
-        val scaledBitmap =
-            Bitmap.createScaledBitmap(sourceBitmap, SAVE_IMAGE_WIDTH, SAVE_IMAGE_HEIGHT, false)
-        return Bitmap.createBitmap(
-            scaledBitmap,
-            0,
-            0,
-            scaledBitmap.width,
-            scaledBitmap.height,
-            matrix,
-            true,
-        )
     }
 
     private fun isPortrait(orientation: Int): Boolean {
