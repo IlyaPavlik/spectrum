@@ -14,7 +14,7 @@ import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
 import ru.magflayer.spectrum.domain.interactor.FileManagerInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
-import ru.magflayer.spectrum.domain.manager.AnalyticsManager
+import ru.magflayer.spectrum.domain.repository.AnalyticsRepository
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
 import ru.magflayer.spectrum.presentation.common.mvp.BasePresenter
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @InjectViewState
 class HistoryPresenter @Inject constructor(
-    private val analyticsManager: AnalyticsManager,
+    private val analyticsRepository: AnalyticsRepository,
     private val resourceManager: ResourceManager,
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val fileManagerInteractor: FileManagerInteractor,
@@ -46,7 +46,7 @@ class HistoryPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         loadHistory()
-        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY)
+        analyticsRepository.logEvent(AnalyticsEvent.OPEN_HISTORY)
         execute(
             pageAppearanceInteractor.observeFabEvent(),
             onSuccess = { handleFabClicked() },
@@ -122,6 +122,6 @@ class HistoryPresenter @Inject constructor(
 
     private fun handleFabClicked() {
         viewState.openPickPhoto()
-        analyticsManager.logEvent(AnalyticsEvent.CHOOSE_IMAGE)
+        analyticsRepository.logEvent(AnalyticsEvent.CHOOSE_IMAGE)
     }
 }

@@ -1,7 +1,6 @@
 package ru.magflayer.spectrum.presentation.pages.main.camera
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.camera.core.CameraInfo
 import androidx.palette.graphics.Palette
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -15,7 +14,7 @@ import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
-import ru.magflayer.spectrum.domain.manager.AnalyticsManager
+import ru.magflayer.spectrum.domain.repository.AnalyticsRepository
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.SurfaceInfo
@@ -31,7 +30,7 @@ import kotlin.math.sign
 
 @InjectViewState
 class ColorCameraPresenter @Inject constructor(
-    private val analyticsManager: AnalyticsManager,
+    private val analyticsRepository: AnalyticsRepository,
     private val colorInfoInteractor: ColorInfoInteractor,
     private val colorPhotoInteractor: ColorPhotoInteractor,
     private val toolbarAppearanceInteractor: ToolbarAppearanceInteractor,
@@ -242,7 +241,6 @@ class ColorCameraPresenter @Inject constructor(
     }
 
     private fun sendTakePhotoAnalytics() {
-        val bundle = Bundle()
         val mode = when (colorMode) {
             SurfaceInfo.Type.SINGLE -> AnalyticsEvent.TAKE_PHOTO_MODE_SINGLE
             SurfaceInfo.Type.MULTIPLE -> AnalyticsEvent.TAKE_PHOTO_MODE_MULTIPLE
@@ -251,11 +249,13 @@ class ColorCameraPresenter @Inject constructor(
         val maxZoom = (zoomState.maxZoom - zoomState.minZoom).roundToInt()
             .takeIf { it > 0 } ?: 1
         val zoomRatio = (zoom * 100 / maxZoom).roundToInt()
-        bundle.putString(AnalyticsEvent.TAKE_PHOTO_MODE, mode)
-        bundle.putBoolean(AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT, flashEnabled)
-        bundle.putString(AnalyticsEvent.TAKE_PHOTO_ZOOM, "$zoomRatio%")
+        val params = mapOf(
+            AnalyticsEvent.TAKE_PHOTO_MODE to mode,
+            AnalyticsEvent.TAKE_PHOTO_FLASHLIGHT to flashEnabled,
+            AnalyticsEvent.TAKE_PHOTO_ZOOM to "$zoomRatio%",
+        )
 
-        analyticsManager.logEvent(AnalyticsEvent.TAKE_PHOTO, bundle)
+        analyticsRepository.logEvent(AnalyticsEvent.TAKE_PHOTO, params)
     }
 
     private fun convertSwatches(swatches: List<Palette.Swatch>): List<Int> {

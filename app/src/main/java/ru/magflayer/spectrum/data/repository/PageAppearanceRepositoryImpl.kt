@@ -6,8 +6,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.magflayer.spectrum.domain.entity.event.FabClickEvent
 import ru.magflayer.spectrum.domain.repository.PageAppearanceRepository
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
+import javax.inject.Inject
 
-class PageAppearanceRepositoryImpl :
+class PageAppearanceRepositoryImpl @Inject constructor() :
     BaseSingleModelRepository<PageAppearance>(),
     PageAppearanceRepository {
 

@@ -10,8 +10,9 @@ import ru.magflayer.spectrum.data.entity.converter.ColorNameConverter
 import ru.magflayer.spectrum.data.entity.converter.NcsColorConverter
 import ru.magflayer.spectrum.domain.entity.ColorInfoEntity
 import ru.magflayer.spectrum.domain.repository.ColorInfoRepository
+import javax.inject.Inject
 
-class ColorInfoRepositoryImpl(private val appDatabase: AppDatabase) : ColorInfoRepository {
+class ColorInfoRepositoryImpl @Inject constructor(private val appDatabase: AppDatabase) : ColorInfoRepository {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     private val colorNameConverter = ColorNameConverter()
