@@ -108,7 +108,6 @@ dependencies {
     implementation library.activity
 
     //Google Firebase
-    implementation library.firebaseCore
     implementation library.firebaseAnalytics
     implementation library.firebaseCrashlytics
 
