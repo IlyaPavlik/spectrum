@@ -1,7 +1,7 @@
 ext.config = [
         package: "ru.magflayer.spectrum",
         build  : [
-                code: 11,
+                code: 12,
                 name: "0.8"
         ],
         sdk    : [
