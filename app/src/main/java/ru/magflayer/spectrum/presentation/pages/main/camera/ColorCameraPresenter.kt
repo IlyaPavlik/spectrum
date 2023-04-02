@@ -3,6 +3,8 @@ package ru.magflayer.spectrum.presentation.pages.main.camera
 import android.net.Uri
 import androidx.camera.core.CameraInfo
 import androidx.palette.graphics.Palette
+import androidx.palette.graphics.Target
+import androidx.palette.graphics.get
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,6 +44,14 @@ class ColorCameraPresenter @Inject constructor(
         private const val ZOOM_STEP_FACTOR = 50
     }
 
+    private val targetColors = listOf(
+        Target.MUTED,
+        Target.DARK_MUTED,
+        Target.LIGHT_MUTED,
+        Target.VIBRANT,
+        Target.DARK_VIBRANT,
+        Target.LIGHT_VIBRANT,
+    )
     private val swatches = Collections.synchronizedList(ArrayList<Palette.Swatch>())
     private var previousColor = -1
     private var currentDetailsColor: Int = 0
@@ -186,7 +196,15 @@ class ColorCameraPresenter @Inject constructor(
         withContext(Dispatchers.Default) {
             val paletteSwatches = swatchesResult.swatches.map { Palette.Swatch(it.color, it.population) }
             val palette = paletteSwatches.takeIf { it.isNotEmpty() }
-                ?.let { Palette.from(it) }
+                ?.let {
+                    Palette.Builder(it)
+                        .apply {
+                            targetColors.forEach { target ->
+                                addTarget(target)
+                            }
+                        }
+                        .generate()
+                }
 
             if (palette == null || palette.swatches.isEmpty()) {
                 return@withContext
@@ -204,10 +222,10 @@ class ColorCameraPresenter @Inject constructor(
                     return@withContext
                 }
             }
-            val colors = ArrayList(palette.swatches)
 
-            // filtered by brightness
-            colors.sortWith { lhs, rhs -> lhs.hsl[2].compareTo(rhs.hsl[2]) }
+            val colors = targetColors.mapNotNull { target ->
+                palette[target]
+            }
 
             swatches.clear()
             swatches.addAll(colors)
