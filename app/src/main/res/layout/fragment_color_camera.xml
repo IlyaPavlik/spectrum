@@ -119,10 +119,12 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/color_recycler"
+        <LinearLayout
+            android:id="@+id/color_palette"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="6" />
 
         <ru.magflayer.spectrum.presentation.common.android.widget.ColorDetailsWidget
             android:id="@+id/color_details"

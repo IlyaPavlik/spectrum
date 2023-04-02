@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.core.view.GestureDetectorCompat
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
-import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -36,7 +35,6 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
     companion object {
 
         private const val ZOOM_VISIBLE_DELAY = 1000L // ms
-        private const val COLOR_SPAN_COUNT = 2
         private const val MENU_ANIMATION_DURATION = 800L
 
         fun newInstance(): ColorCameraFragment {
@@ -80,8 +78,6 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         }
     }
 
-    private lateinit var adapter: ColorCameraAdapter
-
     @EntryPoint
     @InstallIn(ActivityComponent::class)
     interface ColorCameraEntryPoint {
@@ -120,16 +116,6 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         }
         viewBinding.flash.setOnClickListener { presenter.handleFlashClick(viewBinding.flash.isChecked) }
 
-        adapter = ColorCameraAdapter(requireContext())
-        val layoutManager = GridLayoutManager(
-            requireContext(),
-            COLOR_SPAN_COUNT,
-            GridLayoutManager.HORIZONTAL,
-            false,
-        )
-        viewBinding.colorRecycler.layoutManager = layoutManager
-        viewBinding.colorRecycler.adapter = adapter
-
         viewBinding.cameraPreview.setOnClickListener { presenter.handleFocusClicked() }
         viewBinding.cameraPreview.setOnTouchListener { _, motionEvent ->
             gestureDetector.onTouchEvent(motionEvent)
@@ -155,7 +141,16 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
     }
 
     override fun showColors(colors: List<Palette.Swatch>) {
-        adapter.setData(colors)
+        viewBinding.colorPalette.also { paletteView ->
+            paletteView.removeAllViews()
+
+            colors.forEach { swatch ->
+                val view = layoutInflater.inflate(R.layout.item_color_camera, paletteView, false).apply {
+                    setBackgroundColor(swatch.rgb)
+                }
+                paletteView.addView(view)
+            }
+        }
     }
 
     override fun showColorDetails(mainColor: Int, titleColor: Int) {
@@ -219,14 +214,14 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
     override fun showSingleColorMode() = with(viewBinding) {
         colorDetails.show()
         pointDetector.show()
-        colorRecycler.hide()
+        colorPalette.hide()
         colorAnalyzer.analyzerType = ColorAnalyzer.Type.CENTER
     }
 
     override fun showMultipleColorMode() = with(viewBinding) {
         colorDetails.hide()
         pointDetector.hide()
-        colorRecycler.show()
+        colorPalette.show()
         colorAnalyzer.analyzerType = ColorAnalyzer.Type.SWATCHES
     }
 
@@ -236,12 +231,6 @@ class ColorCameraFragment : BaseFragment(R.layout.fragment_color_camera), ColorC
         flash.rotate(orientation.degree)
         colorDetails.rotate(orientation.degree)
         zoomContainer.rotate((orientation.degree - 90).rem(360))
-        viewBinding.colorRecycler.layoutManager = GridLayoutManager(
-            context,
-            COLOR_SPAN_COUNT,
-            GridLayoutManager.HORIZONTAL,
-            orientation == CameraOrientation.LANDSCAPE,
-        )
         cameraHolder.setTargetRotation(orientation)
     }
 
