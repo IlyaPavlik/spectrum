@@ -6,9 +6,10 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.View
-import ru.magflayer.spectrum.presentation.common.helper.AppHelper
+import kotlin.math.roundToInt
 
 class PointView @JvmOverloads constructor(
     context: Context,
@@ -33,8 +34,8 @@ class PointView @JvmOverloads constructor(
     private val rightTopArc = RectF()
     private val rightBottomArc = RectF()
 
-    private val radius = AppHelper.convertDpToPixel(RADIUS_DP, context).toInt()
-    private var circleRadius: Float = radius.toFloat()
+    private val radius = RADIUS_DP.dpToPx()
+    private var circleRadius: Float = radius
 
     private var onPointChangeListener: OnPointChangeListener? = null
     private var moveEnabled: Boolean = false
@@ -45,7 +46,7 @@ class PointView @JvmOverloads constructor(
     }
 
     init {
-        val circleStrokeWidth = AppHelper.convertDpToPixel(STROKE_WIDTH_DP, context)
+        val circleStrokeWidth = STROKE_WIDTH_DP.dpToPx()
 
         aimPaint.isAntiAlias = true
         aimPaint.strokeWidth = circleStrokeWidth
@@ -79,7 +80,7 @@ class PointView @JvmOverloads constructor(
         canvas.drawArc(rightTopArc, 0f, -90f, false, aimPaint)
         canvas.drawArc(rightBottomArc, 0f, 90f, false, aimPaint)
 
-        onPointChangeListener?.onPointChanged(currentX, currentY, radius)
+        onPointChangeListener?.onPointChanged(currentX, currentY, radius.roundToInt())
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -127,5 +128,11 @@ class PointView @JvmOverloads constructor(
     private fun touchUp(): Boolean {
         moveEnabled = false
         return true
+    }
+
+    private fun Float.dpToPx(): Float {
+        val resources = context.resources
+        val metrics = resources.displayMetrics
+        return this * (metrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }
