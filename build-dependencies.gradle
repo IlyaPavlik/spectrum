@@ -19,7 +19,6 @@ ext.versions = [
         cardview           : "1.0.0",
         multidex           : "2.0.1",
         material           : "1.8.0",
-        firebaseCore       : "21.1.1",
         firebaseAnalytics  : "21.2.1",
         firebaseCrashlytics: "18.3.6",
         hilt               : "2.44",
@@ -70,7 +69,6 @@ ext.library = [
         activity             : "androidx.activity:activity-ktx:$versions.activity",
 
         //Google Firebase
-        firebaseCore         : "com.google.firebase:firebase-core:$versions.firebaseCore",
         firebaseAnalytics    : "com.google.firebase:firebase-analytics:$versions.firebaseAnalytics",
         firebaseCrashlytics  : "com.google.firebase:firebase-crashlytics:$versions.firebaseCrashlytics",
 
