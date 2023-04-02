@@ -7,8 +7,9 @@ import ru.magflayer.spectrum.data.database.AppDatabase
 import ru.magflayer.spectrum.data.entity.converter.ColorPhotoConverter
 import ru.magflayer.spectrum.domain.entity.ColorPhotoEntity
 import ru.magflayer.spectrum.domain.repository.PhotoRepository
+import javax.inject.Inject
 
-class PhotoRepositoryImpl(private val appDatabase: AppDatabase) : PhotoRepository {
+class PhotoRepositoryImpl @Inject constructor(private val appDatabase: AppDatabase) : PhotoRepository {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     private val photoConverter = ColorPhotoConverter()

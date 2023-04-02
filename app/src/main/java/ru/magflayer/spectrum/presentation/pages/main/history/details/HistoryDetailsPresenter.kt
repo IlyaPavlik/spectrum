@@ -10,7 +10,7 @@ import ru.magflayer.spectrum.domain.interactor.ColorInfoInteractor
 import ru.magflayer.spectrum.domain.interactor.ColorPhotoInteractor
 import ru.magflayer.spectrum.domain.interactor.PageAppearanceInteractor
 import ru.magflayer.spectrum.domain.interactor.ToolbarAppearanceInteractor
-import ru.magflayer.spectrum.domain.manager.AnalyticsManager
+import ru.magflayer.spectrum.domain.repository.AnalyticsRepository
 import ru.magflayer.spectrum.presentation.common.helper.ColorHelper
 import ru.magflayer.spectrum.presentation.common.model.PageAppearance
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @InjectViewState
 class HistoryDetailsPresenter @Inject constructor(
-    private val analyticsManager: AnalyticsManager,
+    private val analyticsRepository: AnalyticsRepository,
     private val colorInfoInteractor: ColorInfoInteractor,
     private val resourceManager: ResourceManager,
     private val colorPhotoInteractor: ColorPhotoInteractor,
@@ -46,7 +46,7 @@ class HistoryDetailsPresenter @Inject constructor(
 
     override fun attachView(view: HistoryDetailsView) {
         super.attachView(view)
-        analyticsManager.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS)
+        analyticsRepository.logEvent(AnalyticsEvent.OPEN_HISTORY_DETAILS)
         toolbarAppearanceInteractor.setToolbarAppearance(toolbarAppearance)
         pageAppearanceInteractor.setPageAppearance(pageAppearance)
     }

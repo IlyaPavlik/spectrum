@@ -3,8 +3,9 @@ package ru.magflayer.spectrum.data.repository
 import kotlinx.coroutines.flow.Flow
 import ru.magflayer.spectrum.domain.repository.ToolbarAppearanceRepository
 import ru.magflayer.spectrum.presentation.common.model.ToolbarAppearance
+import javax.inject.Inject
 
-class ToolbarAppearanceRepositoryImpl :
+class ToolbarAppearanceRepositoryImpl @Inject constructor() :
     BaseSingleModelRepository<ToolbarAppearance>(),
     ToolbarAppearanceRepository {
 
