@@ -5,13 +5,16 @@ import com.google.gson.Gson
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 import ru.magflayer.spectrum.data.android.ResourceManager
 import ru.magflayer.spectrum.data.database.ColorInfoRepositoryTest
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+@RunWith(MockitoJUnitRunner::class)
 class ColorsInteractorTest {
 
     @Mock
@@ -21,7 +24,7 @@ class ColorsInteractorTest {
 
     @Before
     fun init() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
 
         val resourceManager = ResourceManager(context)
         val colorInfoRepository = ColorInfoRepositoryTest()
